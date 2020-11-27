@@ -3,10 +3,10 @@ import {
   useDragControls,
   useMotionValue,
   useAnimation,
-} from "framer-motion";
-import { useRef, useState } from "react";
-import styles from "./panel.module.css";
-import { Card } from "@material-ui/core";
+} from 'framer-motion';
+import { useRef, useState } from 'react';
+import styles from './panel.module.css';
+import { Card } from '@material-ui/core';
 
 interface PanelProps {
   constraints: any;
@@ -25,9 +25,9 @@ export default function Panel(props: PanelProps) {
       info.velocity.y > 20 || (info.velocity.y >= 0 && info.point.y > 45);
     console.log(info);
     if (shouldClose) {
-      controls.start("stage0");
+      controls.start('stage0');
     } else {
-      controls.start("stage1");
+      controls.start('stage1');
     }
   };
   const onUpdate = (latest) => {
@@ -42,7 +42,7 @@ export default function Panel(props: PanelProps) {
       onUpdate={onUpdate}
       animate={controls}
       transition={{
-        type: "spring",
+        type: 'spring',
         damping: 40,
         stiffness: 400,
       }}

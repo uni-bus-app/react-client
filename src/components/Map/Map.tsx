@@ -3,26 +3,26 @@ import {
   LoadScript,
   Marker,
   Polyline,
-} from "@react-google-maps/api";
-import { mapStylesLight } from "./mapstyles-light";
-import { mapStylesDark } from "./mapstyles-dark";
-import { useEffect, useState } from "react";
+} from '@react-google-maps/api';
+import { mapStylesLight } from './mapstyles-light';
+import { mapStylesDark } from './mapstyles-dark';
+import { useEffect, useState } from 'react';
 
 const containerStyle = {
-  width: "100vw",
-  height: "50vh",
+  width: '100vw',
+  height: '50vh',
 };
 const mapOptions = {
   disableDefaultUI: true,
-  gestureHandling: "greedy",
+  gestureHandling: 'greedy',
   clickableIcons: false,
 };
 
 const getRoutePath = async () => {
   const res = await fetch(
-    "https://20200817t190317-dot-unibus-app.nw.r.appspot.com/u1routepath",
+    'https://20200817t190317-dot-unibus-app.nw.r.appspot.com/u1routepath',
     {
-      method: "GET",
+      method: 'GET',
     }
   );
   return await res.json();
@@ -30,11 +30,12 @@ const getRoutePath = async () => {
 
 const getStops = async () => {
   const res = await fetch(
-    "https://20200817t190317-dot-unibus-app.nw.r.appspot.com/stops",
+    'https://20200817t190317-dot-unibus-app.nw.r.appspot.com/stops',
     {
-      method: "GET",
+      method: 'GET',
     }
   );
+  return await res.json();
 };
 
 export const Map = () => {
@@ -48,6 +49,12 @@ export const Map = () => {
       setRouteOverlay(routePath);
     });
     getStops().then((data: any) => {
+      const result = [];
+      console.log(data);
+      data.forEach((item) => {
+        // const parsedStop =
+        console.log(item);
+      });
       setStops(data);
       console.log(data);
     });
@@ -61,14 +68,14 @@ export const Map = () => {
         zoom={zoom}
         options={{
           disableDefaultUI: true,
-          gestureHandling: "greedy",
+          gestureHandling: 'greedy',
           clickableIcons: false,
           styles: darkMode ? mapStylesDark : mapStylesLight,
         }}
       >
         <Polyline
           path={routeOverlay}
-          options={{ strokeColor: "#7B1FA2", strokeOpacity: 0.75 }}
+          options={{ strokeColor: '#7B1FA2', strokeOpacity: 0.75 }}
         />
         {stops?.map((name, index) => {
           return <Marker position={name.location} />;
