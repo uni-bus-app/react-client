@@ -8,6 +8,7 @@ import { mapStylesLight } from './mapstyles-light';
 import { mapStylesDark } from './mapstyles-dark';
 import { useEffect, useState } from 'react';
 import { getRoutePath, getStops } from '../../api/APIUtils';
+import { Stop } from '../../models/stop';
 
 const containerStyle = {
   width: '100vw',
@@ -21,15 +22,16 @@ const mapOptions: google.maps.MapOptions = {
 
 export const Map = () => {
   const [darkMode, setDarkMode] = useState<boolean>(false);
-  const [position, setPosition] = useState({ lat: 50.794236, lng: -1.075 });
+  const [position, setPosition] = useState<google.maps.LatLngLiteral>(null);
   const [zoom, setZoom] = useState<number>(13);
-  const [routeOverlay, setRouteOverlay] = useState<any>(null);
-  const [stops, setStops] = useState<Array<any>>(null);
+  const [routeOverlay, setRouteOverlay] = useState<google.maps.LatLng[]>(null);
+  const [stops, setStops] = useState<Stop[]>(null);
   useEffect(() => {
+    setPosition({ lat: 50.794236, lng: -1.075 });
     getRoutePath().then((routePath) => {
       setRouteOverlay(routePath);
     });
-    getStops().then((data: any) => {
+    getStops().then((data: Stop[]) => {
       const result = [];
       console.log(data);
       data.forEach((item) => {

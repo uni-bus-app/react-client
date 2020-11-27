@@ -1,4 +1,4 @@
-export let mapStylesLight: Array<google.maps.MapTypeStyle> = [
+export const mapStylesLight: Array<google.maps.MapTypeStyle> = [
   {
     featureType: 'administrative',
     elementType: 'geometry.fill',

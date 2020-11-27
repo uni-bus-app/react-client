@@ -1,4 +1,4 @@
-export let mapStylesDark: Array<google.maps.MapTypeStyle> = [
+export const mapStylesDark: Array<google.maps.MapTypeStyle> = [
   {
     elementType: 'geometry',
     stylers: [
