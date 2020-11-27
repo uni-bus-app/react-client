@@ -6,7 +6,7 @@ import {
 } from "@react-google-maps/api";
 import { mapStylesLight } from "./mapstyles-light";
 import { mapStylesDark } from "./mapstyles-dark";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const containerStyle = {
   width: "100vw",
@@ -43,13 +43,15 @@ export const Map = () => {
   const [zoom, setZoom] = useState<number>(13);
   const [routeOverlay, setRouteOverlay] = useState<any>(null);
   const [stops, setStops] = useState<Array<any>>(null);
-  getRoutePath().then((routePath) => {
-    setRouteOverlay(routePath);
-  });
-  getStops().then((data: any) => {
-    setStops(data);
-    console.log(data);
-  });
+  useEffect(() => {
+    getRoutePath().then((routePath) => {
+      setRouteOverlay(routePath);
+    });
+    getStops().then((data: any) => {
+      setStops(data);
+      console.log(data);
+    });
+  }, []);
 
   return (
     <LoadScript googleMapsApiKey="AIzaSyDkT81ky0Yn3JYuk6bFCsq4PVmjXawppFI">
