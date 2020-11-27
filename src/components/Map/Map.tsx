@@ -7,35 +7,16 @@ import {
 import { mapStylesLight } from './mapstyles-light';
 import { mapStylesDark } from './mapstyles-dark';
 import { useEffect, useState } from 'react';
+import { getRoutePath, getStops } from '../../api/APIUtils';
 
 const containerStyle = {
   width: '100vw',
   height: '50vh',
 };
-const mapOptions = {
+const mapOptions: google.maps.MapOptions = {
   disableDefaultUI: true,
   gestureHandling: 'greedy',
   clickableIcons: false,
-};
-
-const getRoutePath = async () => {
-  const res = await fetch(
-    'https://20200817t190317-dot-unibus-app.nw.r.appspot.com/u1routepath',
-    {
-      method: 'GET',
-    }
-  );
-  return await res.json();
-};
-
-const getStops = async () => {
-  const res = await fetch(
-    'https://20200817t190317-dot-unibus-app.nw.r.appspot.com/stops',
-    {
-      method: 'GET',
-    }
-  );
-  return await res.json();
 };
 
 export const Map = () => {
@@ -67,9 +48,7 @@ export const Map = () => {
         center={position}
         zoom={zoom}
         options={{
-          disableDefaultUI: true,
-          gestureHandling: 'greedy',
-          clickableIcons: false,
+          ...mapOptions,
           styles: darkMode ? mapStylesDark : mapStylesLight,
         }}
       >
