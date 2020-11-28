@@ -10,11 +10,6 @@ import { useEffect, useState } from 'react';
 import { getRoutePath, getStops } from '../../api/APIUtils';
 import { Stop } from '../../models/stop';
 
-const containerStyle = {
-  width: '100vw',
-  height: '50vh',
-};
-
 const mapOptions: google.maps.MapOptions = {
   disableDefaultUI: true,
   gestureHandling: 'greedy',
@@ -37,13 +32,21 @@ interface MapProps {
   darkModeEnabled?: boolean;
   routeOverlayEnabled?: boolean;
   stopMarkersEnabled?: boolean;
+  position?: google.maps.LatLngLiteral;
+  width?: string;
+  height?: string;
 }
 
 export const Map = (props: MapProps) => {
-  const { darkModeEnabled, routeOverlayEnabled, stopMarkersEnabled } = props;
+  const {
+    darkModeEnabled,
+    routeOverlayEnabled,
+    stopMarkersEnabled,
+    position,
+    width,
+    height,
+  } = props;
 
-  const [darkMode, setDarkMode] = useState<boolean>(false);
-  const [position, setPosition] = useState<google.maps.LatLngLiteral>(null);
   const [zoom, setZoom] = useState<number>(13);
   const [routeOverlay, setRouteOverlay] = useState<google.maps.LatLng[]>(null);
   const [stops, setStops] = useState<Stop[]>(null);
@@ -54,22 +57,17 @@ export const Map = (props: MapProps) => {
       setStops(await getStops());
     };
     getData();
-    setPosition({ lat: 50.794236, lng: -1.075 });
   }, []);
-
-  useEffect(() => {
-    setDarkMode(darkModeEnabled);
-  }, [darkModeEnabled]);
 
   return (
     <LoadScript googleMapsApiKey="AIzaSyDkT81ky0Yn3JYuk6bFCsq4PVmjXawppFI">
       <GoogleMap
-        mapContainerStyle={containerStyle}
+        mapContainerStyle={{ width, height }}
         center={position}
         zoom={zoom}
         options={{
           ...mapOptions,
-          styles: darkMode ? mapStylesDark : mapStylesLight,
+          styles: darkModeEnabled ? mapStylesDark : mapStylesLight,
         }}
       >
         {routeOverlayEnabled && (
