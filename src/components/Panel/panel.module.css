@@ -13,3 +13,8 @@
 .panel > * {
   height: 100%;
 }
+
+.panelButton {
+  margin: auto;
+  width: 100%;
+}

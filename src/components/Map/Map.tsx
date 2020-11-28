@@ -20,6 +20,18 @@ const mapOptions: google.maps.MapOptions = {
   clickableIcons: false,
 };
 
+const getLocation: () => Promise<google.maps.LatLngLiteral> = () => {
+  return new Promise((resolve) => {
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const position: google.maps.LatLngLiteral = {
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude,
+      };
+      resolve(position);
+    });
+  });
+};
+
 export const Map = () => {
   const [darkMode, setDarkMode] = useState<boolean>(false);
   const [position, setPosition] = useState<google.maps.LatLngLiteral>(null);
@@ -27,20 +39,12 @@ export const Map = () => {
   const [routeOverlay, setRouteOverlay] = useState<google.maps.LatLng[]>(null);
   const [stops, setStops] = useState<Stop[]>(null);
   useEffect(() => {
+    const getData = async () => {
+      setRouteOverlay(await getRoutePath());
+      setStops(await getStops());
+    };
+    getData();
     setPosition({ lat: 50.794236, lng: -1.075 });
-    getRoutePath().then((routePath) => {
-      setRouteOverlay(routePath);
-    });
-    getStops().then((data: Stop[]) => {
-      const result = [];
-      console.log(data);
-      data.forEach((item) => {
-        // const parsedStop =
-        console.log(item);
-      });
-      setStops(data);
-      console.log(data);
-    });
   }, []);
 
   return (
@@ -59,7 +63,7 @@ export const Map = () => {
           options={{ strokeColor: '#7B1FA2', strokeOpacity: 0.75 }}
         />
         {stops?.map((name, index) => {
-          return <Marker position={name.location} />;
+          return <Marker key={index} position={name.location} />;
         })}
       </GoogleMap>
     </LoadScript>
