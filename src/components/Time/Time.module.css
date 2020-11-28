@@ -1,0 +1,12 @@
+.TimeContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.Title {
+  display: flex;
+  flex-direction: row;
+}
+.Title > * {
+  margin: 0.25em;
+}
