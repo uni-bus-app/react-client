@@ -34,7 +34,7 @@ const parseStops: (data: any[]) => Stop[] = (data: any[]) => {
   return result;
 };
 
-export const getTimes: (stopID: string) => Promise<any> = async (
+export const getTimes: (stopID: string) => Promise<Time[]> = async (
   stopID: string
 ) => {
   const res = await fetch(`${apiURL}/stops/${stopID}/times`);
@@ -48,15 +48,40 @@ const parseTimes: (data: any[]) => Time[] = (data: any[]) => {
       .set('hour', Number(item.scheduled.substring(0, 2)))
       .set('minute', item.scheduled.substring(2, 4))
       .set('second', 0);
+    const res = updateServiceEta(timeValue);
     const time: Time = {
       destination: 'University Library',
       service: 'U1',
-      time: '',
-      eta: '',
+      time: timeValue.format('HH:mm'),
+      eta: res.eta,
+      etaUnit: res.etaUnit,
       timeValue,
       routeNumber: item.routeNumber,
     };
-    result.push(time);
+    if (res.eta > 0) {
+      result.push(time);
+    }
   });
   return result;
+};
+
+export const updateServiceEta: (timeValue: Dayjs) => any = (
+  timeValue: Dayjs
+) => {
+  const etaValue = timeValue.diff(dayjs());
+  let eta: string;
+  let etaUnit: string;
+  if (etaValue > 3600000) {
+    eta = (etaValue / 3600000).toFixed(1);
+    if (eta === '1.0') {
+      eta = '1';
+    }
+    etaUnit = 'hours';
+  } else if (etaValue > 120000) {
+    eta = (etaValue / 60000).toFixed(0);
+    etaUnit = 'min';
+  } else {
+    eta = 'Now';
+  }
+  return { eta, etaUnit };
 };
