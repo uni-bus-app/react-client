@@ -1,18 +1,13 @@
-import { useState, useEffect } from 'react';
+import { ReactNode } from 'react';
 import styles from './databox.module.css';
 
 interface DataBoxProps {
-  icon: Node;
-  text: String;
+  icon: ReactNode;
+  text: string;
 }
 
 export default function DataBox(props: DataBoxProps) {
-  const { text } = props;
-
-  const [icon, setIcon] = useState(null);
-  useEffect(() => {
-    setIcon(props.icon);
-  }, []);
+  const { text, icon } = props;
 
   return (
     <div className={styles.container}>

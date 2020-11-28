@@ -13,5 +13,5 @@ export const Default = Template.bind({});
 
 Default.args = {
   icon: [<DirectionsBus />],
-  text: 'Primary',
+  text: '15 Minutes',
 };
