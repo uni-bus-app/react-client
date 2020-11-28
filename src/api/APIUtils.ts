@@ -1,4 +1,6 @@
+import dayjs, { Dayjs } from 'dayjs';
 import { Stop } from '../models/stop';
+import { Time } from '../models/time';
 
 const apiURL = 'https://20200817t190317-dot-unibus-app.nw.r.appspot.com';
 
@@ -35,6 +37,26 @@ const parseStops: (data: any[]) => Stop[] = (data: any[]) => {
 export const getTimes: (stopID: string) => Promise<any> = async (
   stopID: string
 ) => {
-  const res = await fetch(`${apiURL}/times/${stopID}`);
-  return await res.json();
+  const res = await fetch(`${apiURL}/stops/${stopID}/times`);
+  return parseTimes(await res.json());
+};
+
+const parseTimes: (data: any[]) => Time[] = (data: any[]) => {
+  const result: Time[] = [];
+  data.forEach((item) => {
+    const timeValue = dayjs()
+      .set('hour', Number(item.scheduled.substring(0, 2)))
+      .set('minute', item.scheduled.substring(2, 4))
+      .set('second', 0);
+    const time: Time = {
+      destination: 'University Library',
+      service: 'U1',
+      time: '',
+      eta: '',
+      timeValue,
+      routeNumber: item.routeNumber,
+    };
+    result.push(time);
+  });
+  return result;
 };
