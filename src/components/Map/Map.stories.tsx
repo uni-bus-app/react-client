@@ -6,6 +6,6 @@ export default {
   component: Map,
 };
 
-const Template = () => <Map />;
+const Template = (args) => <Map {...args} />;
 
 export const Default = Template.bind({});
