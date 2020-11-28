@@ -5,6 +5,7 @@ export interface Time {
   service: string;
   time: string;
   eta: string;
+  etaUnit?: string;
   timeValue: Dayjs;
   routeNumber: number;
 }

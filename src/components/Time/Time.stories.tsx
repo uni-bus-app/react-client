@@ -14,5 +14,6 @@ Default.args = {
   destination: 'University Library',
   service: 'U1',
   time: '11:15',
-  eta: '32 min',
+  eta: '32',
+  etaUnit: 'min',
 };
