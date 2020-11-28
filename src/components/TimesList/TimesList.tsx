@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { getTimes, updateServiceEta } from '../../api/APIUtils';
 import { Time } from '../../models/time';
 import { TimeComponent } from '../Time/Time';
+import styles from './TimesList.module.css';
 
 interface TimesListProps {
   stopID: string;
@@ -37,7 +38,7 @@ export function TimesListComponent(props: TimesListProps) {
   }, [stopID]);
 
   return (
-    <div>
+    <div className={styles.TimesList}>
       {times?.map((time, index) => {
         return (
           <TimeComponent
