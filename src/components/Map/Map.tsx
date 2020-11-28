@@ -14,6 +14,7 @@ const containerStyle = {
   width: '100vw',
   height: '50vh',
 };
+
 const mapOptions: google.maps.MapOptions = {
   disableDefaultUI: true,
   gestureHandling: 'greedy',
@@ -32,12 +33,21 @@ const getLocation: () => Promise<google.maps.LatLngLiteral> = () => {
   });
 };
 
-export const Map = () => {
+interface MapProps {
+  darkModeEnabled?: boolean;
+  routeOverlayEnabled?: boolean;
+  stopMarkersEnabled?: boolean;
+}
+
+export const Map = (props: MapProps) => {
+  const { darkModeEnabled, routeOverlayEnabled, stopMarkersEnabled } = props;
+
   const [darkMode, setDarkMode] = useState<boolean>(false);
   const [position, setPosition] = useState<google.maps.LatLngLiteral>(null);
   const [zoom, setZoom] = useState<number>(13);
   const [routeOverlay, setRouteOverlay] = useState<google.maps.LatLng[]>(null);
   const [stops, setStops] = useState<Stop[]>(null);
+
   useEffect(() => {
     const getData = async () => {
       setRouteOverlay(await getRoutePath());
@@ -46,6 +56,10 @@ export const Map = () => {
     getData();
     setPosition({ lat: 50.794236, lng: -1.075 });
   }, []);
+
+  useEffect(() => {
+    setDarkMode(darkModeEnabled);
+  }, [darkModeEnabled]);
 
   return (
     <LoadScript googleMapsApiKey="AIzaSyDkT81ky0Yn3JYuk6bFCsq4PVmjXawppFI">
@@ -58,13 +72,16 @@ export const Map = () => {
           styles: darkMode ? mapStylesDark : mapStylesLight,
         }}
       >
-        <Polyline
-          path={routeOverlay}
-          options={{ strokeColor: '#7B1FA2', strokeOpacity: 0.75 }}
-        />
-        {stops?.map((name, index) => {
-          return <Marker key={index} position={name.location} />;
-        })}
+        {routeOverlayEnabled && (
+          <Polyline
+            path={routeOverlay}
+            options={{ strokeColor: '#7B1FA2', strokeOpacity: 0.75 }}
+          />
+        )}
+        {stopMarkersEnabled &&
+          stops?.map((name, index) => {
+            return <Marker key={index} position={name.location} />;
+          })}
       </GoogleMap>
     </LoadScript>
   );
