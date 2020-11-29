@@ -1,6 +1,5 @@
-import { ReactNode } from 'react';
 import styles from './rater.module.css';
-import { Card, Icon, IconButton } from '@material-ui/core';
+import { Card, IconButton } from '@material-ui/core';
 import {
   SentimentSatisfiedAlt,
   SentimentVeryDissatisfied,
@@ -9,34 +8,25 @@ import {
 
 interface RaterProps {
   text: string;
+  action1: () => void;
+  action2: () => void;
+  action3: () => void;
 }
 
 export default function Rater(props: RaterProps) {
-  const { text } = props;
+  const { text, action1, action2, action3 } = props;
   return (
     <Card>
       <div className={styles.container}>
         <div className={styles.text}>{text}</div>
         <div className={styles.ratings}>
-          <IconButton
-            onClick={() => {
-              console.log('Happy');
-            }}
-          >
+          <IconButton onClick={action1}>
             <SentimentSatisfiedAlt />
           </IconButton>
-          <IconButton
-            onClick={() => {
-              console.log('Not Upset/Happy');
-            }}
-          >
+          <IconButton onClick={action2}>
             <SentimentSatisfied />
           </IconButton>
-          <IconButton
-            onClick={() => {
-              console.log('Upset');
-            }}
-          >
+          <IconButton onClick={action3}>
             <SentimentVeryDissatisfied />
           </IconButton>
         </div>
