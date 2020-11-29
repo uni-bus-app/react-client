@@ -8,12 +8,11 @@ import {
 } from '@material-ui/icons';
 
 interface RaterProps {
-  icons: ReactNode;
   text: string;
 }
 
 export default function Rater(props: RaterProps) {
-  const { icons, text } = props;
+  const { text } = props;
   return (
     <Card>
       <div className={styles.container}>
