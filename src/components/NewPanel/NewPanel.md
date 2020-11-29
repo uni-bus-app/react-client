@@ -1,4 +1,4 @@
-# Data Box
+# New Panel
 
 ## Interface
 
