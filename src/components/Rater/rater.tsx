@@ -18,9 +18,27 @@ export default function Rater(props: RaterProps) {
       <div className={styles.container}>
         <div className={styles.text}>{text}</div>
         <div className={styles.ratings}>
-          <SentimentSatisfiedAlt />
-          <SentimentSatisfied />
-          <SentimentVeryDissatisfied />
+          <IconButton
+            onClick={() => {
+              console.log('Happy');
+            }}
+          >
+            <SentimentSatisfiedAlt />
+          </IconButton>
+          <IconButton
+            onClick={() => {
+              console.log('Not Upset/Happy');
+            }}
+          >
+            <SentimentSatisfied />
+          </IconButton>
+          <IconButton
+            onClick={() => {
+              console.log('Upset');
+            }}
+          >
+            <SentimentVeryDissatisfied />
+          </IconButton>
         </div>
       </div>
     </Card>
