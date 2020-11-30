@@ -29,3 +29,4 @@ function VideoComponent() {
 A video player that autoplays video on a loop with no audio, will automatically detect between iOS and Android if required.
 
 If the video is device specific, you should put the 2 videos in an array (with iOS being in array position 0 and Android being array position 1)
+You must also set the specific prop to true
