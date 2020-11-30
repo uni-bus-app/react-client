@@ -1,4 +1,4 @@
-# VideoComponent
+# Video Component
 
 ## Interface
 
