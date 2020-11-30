@@ -30,7 +30,6 @@ export default function Draggable(props: DraggableProps) {
       controls.start('stage0');
     } else {
       controls.start('stage1');
-      console.info(true);
       endAction();
     }
   };
