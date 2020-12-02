@@ -51,15 +51,33 @@ export const Map = (props: MapProps) => {
   } = props;
 
   const [map, setMap] = useState<google.maps.Map>();
-  const [zoom, setZoom] = useState<number>(13);
   const [routeOverlay, setRouteOverlay] = useState<google.maps.LatLng[]>(null);
   const [stops, setStops] = useState<Stop[]>(null);
-  const [pos, setPos] = useState<google.maps.LatLngLiteral>();
 
-  const onLoad = useCallback((map) => {
+  const getBounds = (
+    value: google.maps.LatLngLiteral,
+    r: number
+  ): google.maps.LatLngBounds => {
+    const dY = (360 * r) / 6371;
+    const dX = dY * Math.cos(value.lng);
+    const lat1 = value.lat - dX;
+    const lng1 = value.lng - dY;
+    const lat2 = value.lat + dX;
+    const lng2 = value.lng + dY;
+    return new google.maps.LatLngBounds(
+      { lat: lat1, lng: lng1 },
+      { lat: lat2, lng: lng2 }
+    );
+  };
+
+  const onLoad = useCallback((map: google.maps.Map) => {
     setMap(map);
+    const bounds = getBounds(position, 0.5);
+    map.fitBounds(bounds, {
+      bottom: window.innerHeight / 2,
+    });
   }, []);
-  const onUnmount = useCallback((map) => {
+  const onUnmount = useCallback(() => {
     setMap(null);
   }, []);
 
@@ -71,7 +89,10 @@ export const Map = (props: MapProps) => {
     getData();
   }, []);
   useEffect(() => {
-    setPos(position);
+    const bounds = getBounds(position, 0.5);
+    map?.fitBounds(bounds, {
+      bottom: window.innerHeight / 2,
+    });
   }, [position]);
 
   return (
@@ -81,16 +102,9 @@ export const Map = (props: MapProps) => {
           ...(style || { width: '100vw', height: '100vh' }),
           zIndex: 10,
         }}
-        center={pos}
-        zoom={zoom}
         options={{
           ...mapOptions,
           styles: darkModeEnabled ? mapStylesDark : mapStylesLight,
-        }}
-        onZoomChanged={() => {
-          if (map) {
-            setZoom(map.zoom);
-          }
         }}
         onLoad={onLoad}
         onUnmount={onUnmount}
@@ -119,12 +133,15 @@ export const Map = (props: MapProps) => {
                   },
                 }}
                 onClick={() => {
-                  setZoom(16);
-                  setPos({
-                    lat: stop.location.lat(),
-                    lng: stop.location.lng(),
-                  });
-                  onMarkerSelect(stop);
+                  const bounds = getBounds(
+                    {
+                      lat: stop.location.lat(),
+                      lng: stop.location.lng(),
+                    },
+                    0.05
+                  );
+                  map.fitBounds(bounds, { bottom: window.innerHeight / 2 });
+                  onMarkerSelect && onMarkerSelect(stop);
                 }}
               />
             );
