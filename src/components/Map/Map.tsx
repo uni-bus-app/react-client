@@ -9,6 +9,7 @@ import { mapStylesDark } from './mapstyles-dark';
 import { useEffect, useState } from 'react';
 import { getRoutePath, getStops } from '../../api/APIUtils';
 import { Stop } from '../../models/stop';
+import marker from '../../assets/stop-marker-icon-purple.svg';
 
 const mapOptions: google.maps.MapOptions = {
   disableDefaultUI: true,
@@ -62,7 +63,7 @@ export const Map = (props: MapProps) => {
   return (
     <LoadScript googleMapsApiKey="AIzaSyDkT81ky0Yn3JYuk6bFCsq4PVmjXawppFI">
       <GoogleMap
-        mapContainerStyle={{ width, height }}
+        mapContainerStyle={{ width, height, zIndex: 10 }}
         center={position}
         zoom={zoom}
         options={{
@@ -78,7 +79,20 @@ export const Map = (props: MapProps) => {
         )}
         {stopMarkersEnabled &&
           stops?.map((name, index) => {
-            return <Marker key={index} position={name.location} />;
+            return (
+              <Marker
+                key={index}
+                position={name.location}
+                options={{
+                  icon: {
+                    url: marker,
+                    scaledSize: new google.maps.Size(35, 50),
+                    origin: new google.maps.Point(0, 0),
+                    anchor: new google.maps.Point(17.5, 50),
+                  },
+                }}
+              />
+            );
           })}
       </GoogleMap>
     </LoadScript>
