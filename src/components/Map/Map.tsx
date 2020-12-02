@@ -9,6 +9,9 @@ import { mapStylesDark } from './mapstyles-dark';
 import { useEffect, useState } from 'react';
 import { getRoutePath, getStops } from '../../api/APIUtils';
 import { Stop } from '../../models/stop';
+import purpleStopMarker from '../../assets/stop-marker-icon-purple.svg';
+import blueStopMarker from '../../assets/stop-marker-icon-blue.svg';
+import { CSSProperties } from '@material-ui/core/styles/withStyles';
 
 const mapOptions: google.maps.MapOptions = {
   disableDefaultUI: true,
@@ -29,22 +32,20 @@ const getLocation: () => Promise<google.maps.LatLngLiteral> = () => {
 };
 
 interface MapProps {
+  style: CSSProperties;
+  position: google.maps.LatLngLiteral;
   darkModeEnabled?: boolean;
   routeOverlayEnabled?: boolean;
   stopMarkersEnabled?: boolean;
-  position?: google.maps.LatLngLiteral;
-  width?: string;
-  height?: string;
 }
 
 export const Map = (props: MapProps) => {
   const {
+    position,
+    style,
     darkModeEnabled,
     routeOverlayEnabled,
     stopMarkersEnabled,
-    position,
-    width,
-    height,
   } = props;
 
   const [zoom, setZoom] = useState<number>(13);
@@ -62,7 +63,10 @@ export const Map = (props: MapProps) => {
   return (
     <LoadScript googleMapsApiKey="AIzaSyDkT81ky0Yn3JYuk6bFCsq4PVmjXawppFI">
       <GoogleMap
-        mapContainerStyle={{ width, height }}
+        mapContainerStyle={{
+          ...(style || { width: '100vw', height: '100vh' }),
+          zIndex: 10,
+        }}
         center={position}
         zoom={zoom}
         options={{
@@ -73,12 +77,28 @@ export const Map = (props: MapProps) => {
         {routeOverlayEnabled && (
           <Polyline
             path={routeOverlay}
-            options={{ strokeColor: '#7B1FA2', strokeOpacity: 0.75 }}
+            options={{
+              strokeColor: darkModeEnabled ? '#03A9F4' : '#7B1FA2',
+              strokeOpacity: 0.75,
+            }}
           />
         )}
         {stopMarkersEnabled &&
           stops?.map((name, index) => {
-            return <Marker key={index} position={name.location} />;
+            return (
+              <Marker
+                key={index}
+                position={name.location}
+                options={{
+                  icon: {
+                    url: darkModeEnabled ? blueStopMarker : purpleStopMarker,
+                    scaledSize: new google.maps.Size(35, 50),
+                    origin: new google.maps.Point(0, 0),
+                    anchor: new google.maps.Point(17.5, 50),
+                  },
+                }}
+              />
+            );
           })}
       </GoogleMap>
     </LoadScript>
