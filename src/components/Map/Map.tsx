@@ -9,7 +9,8 @@ import { mapStylesDark } from './mapstyles-dark';
 import { useEffect, useState } from 'react';
 import { getRoutePath, getStops } from '../../api/APIUtils';
 import { Stop } from '../../models/stop';
-import marker from '../../assets/stop-marker-icon-purple.svg';
+import purpleStopMarker from '../../assets/stop-marker-icon-purple.svg';
+import blueStopMarker from '../../assets/stop-marker-icon-blue.svg';
 
 const mapOptions: google.maps.MapOptions = {
   disableDefaultUI: true,
@@ -74,7 +75,10 @@ export const Map = (props: MapProps) => {
         {routeOverlayEnabled && (
           <Polyline
             path={routeOverlay}
-            options={{ strokeColor: '#7B1FA2', strokeOpacity: 0.75 }}
+            options={{
+              strokeColor: darkModeEnabled ? '#03A9F4' : '#7B1FA2',
+              strokeOpacity: 0.75,
+            }}
           />
         )}
         {stopMarkersEnabled &&
@@ -85,7 +89,7 @@ export const Map = (props: MapProps) => {
                 position={name.location}
                 options={{
                   icon: {
-                    url: marker,
+                    url: darkModeEnabled ? blueStopMarker : purpleStopMarker,
                     scaledSize: new google.maps.Size(35, 50),
                     origin: new google.maps.Point(0, 0),
                     anchor: new google.maps.Point(17.5, 50),
