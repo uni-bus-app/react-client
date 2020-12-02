@@ -11,6 +11,7 @@ import { getRoutePath, getStops } from '../../api/APIUtils';
 import { Stop } from '../../models/stop';
 import purpleStopMarker from '../../assets/stop-marker-icon-purple.svg';
 import blueStopMarker from '../../assets/stop-marker-icon-blue.svg';
+import { CSSProperties } from '@material-ui/core/styles/withStyles';
 
 const mapOptions: google.maps.MapOptions = {
   disableDefaultUI: true,
@@ -31,22 +32,20 @@ const getLocation: () => Promise<google.maps.LatLngLiteral> = () => {
 };
 
 interface MapProps {
+  style: CSSProperties;
+  position: google.maps.LatLngLiteral;
   darkModeEnabled?: boolean;
   routeOverlayEnabled?: boolean;
   stopMarkersEnabled?: boolean;
-  position?: google.maps.LatLngLiteral;
-  width?: string;
-  height?: string;
 }
 
 export const Map = (props: MapProps) => {
   const {
+    position,
+    style,
     darkModeEnabled,
     routeOverlayEnabled,
     stopMarkersEnabled,
-    position,
-    width,
-    height,
   } = props;
 
   const [zoom, setZoom] = useState<number>(13);
@@ -64,7 +63,10 @@ export const Map = (props: MapProps) => {
   return (
     <LoadScript googleMapsApiKey="AIzaSyDkT81ky0Yn3JYuk6bFCsq4PVmjXawppFI">
       <GoogleMap
-        mapContainerStyle={{ width, height, zIndex: 10 }}
+        mapContainerStyle={{
+          ...(style || { width: '100vw', height: '100vh' }),
+          zIndex: 10,
+        }}
         center={position}
         zoom={zoom}
         options={{
