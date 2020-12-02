@@ -6,7 +6,7 @@ import {
 } from '@react-google-maps/api';
 import { mapStylesLight } from './mapstyles-light';
 import { mapStylesDark } from './mapstyles-dark';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { getRoutePath, getStops } from '../../api/APIUtils';
 import { Stop } from '../../models/stop';
 import purpleStopMarker from '../../assets/stop-marker-icon-purple.svg';
@@ -32,11 +32,12 @@ const getLocation: () => Promise<google.maps.LatLngLiteral> = () => {
 };
 
 interface MapProps {
-  style: CSSProperties;
+  style?: CSSProperties;
   position: google.maps.LatLngLiteral;
   darkModeEnabled?: boolean;
   routeOverlayEnabled?: boolean;
   stopMarkersEnabled?: boolean;
+  onMarkerSelect?: (stop: Stop) => void;
 }
 
 export const Map = (props: MapProps) => {
@@ -46,11 +47,21 @@ export const Map = (props: MapProps) => {
     darkModeEnabled,
     routeOverlayEnabled,
     stopMarkersEnabled,
+    onMarkerSelect,
   } = props;
 
+  const [map, setMap] = useState<google.maps.Map>();
   const [zoom, setZoom] = useState<number>(13);
   const [routeOverlay, setRouteOverlay] = useState<google.maps.LatLng[]>(null);
   const [stops, setStops] = useState<Stop[]>(null);
+  const [pos, setPos] = useState<google.maps.LatLngLiteral>();
+
+  const onLoad = useCallback((map) => {
+    setMap(map);
+  }, []);
+  const onUnmount = useCallback((map) => {
+    setMap(null);
+  }, []);
 
   useEffect(() => {
     const getData = async () => {
@@ -59,6 +70,9 @@ export const Map = (props: MapProps) => {
     };
     getData();
   }, []);
+  useEffect(() => {
+    setPos(position);
+  }, [position]);
 
   return (
     <LoadScript googleMapsApiKey="AIzaSyDkT81ky0Yn3JYuk6bFCsq4PVmjXawppFI">
@@ -67,12 +81,19 @@ export const Map = (props: MapProps) => {
           ...(style || { width: '100vw', height: '100vh' }),
           zIndex: 10,
         }}
-        center={position}
+        center={pos}
         zoom={zoom}
         options={{
           ...mapOptions,
           styles: darkModeEnabled ? mapStylesDark : mapStylesLight,
         }}
+        onZoomChanged={() => {
+          if (map) {
+            setZoom(map.zoom);
+          }
+        }}
+        onLoad={onLoad}
+        onUnmount={onUnmount}
       >
         {routeOverlayEnabled && (
           <Polyline
@@ -84,11 +105,11 @@ export const Map = (props: MapProps) => {
           />
         )}
         {stopMarkersEnabled &&
-          stops?.map((name, index) => {
+          stops?.map((stop, index) => {
             return (
               <Marker
                 key={index}
-                position={name.location}
+                position={stop.location}
                 options={{
                   icon: {
                     url: darkModeEnabled ? blueStopMarker : purpleStopMarker,
@@ -96,6 +117,14 @@ export const Map = (props: MapProps) => {
                     origin: new google.maps.Point(0, 0),
                     anchor: new google.maps.Point(17.5, 50),
                   },
+                }}
+                onClick={() => {
+                  setZoom(16);
+                  setPos({
+                    lat: stop.location.lat(),
+                    lng: stop.location.lng(),
+                  });
+                  onMarkerSelect(stop);
                 }}
               />
             );
