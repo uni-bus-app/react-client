@@ -34,6 +34,7 @@ const getLocation: () => Promise<google.maps.LatLngLiteral> = () => {
 interface MapProps {
   style?: CSSProperties;
   position: google.maps.LatLngLiteral;
+  padding?: google.maps.Padding;
   darkModeEnabled?: boolean;
   routeOverlayEnabled?: boolean;
   stopMarkersEnabled?: boolean;
@@ -44,6 +45,7 @@ export const Map = (props: MapProps) => {
   const {
     position,
     style,
+    padding,
     darkModeEnabled,
     routeOverlayEnabled,
     stopMarkersEnabled,
@@ -53,6 +55,7 @@ export const Map = (props: MapProps) => {
   const [map, setMap] = useState<google.maps.Map>();
   const [routeOverlay, setRouteOverlay] = useState<google.maps.LatLng[]>(null);
   const [stops, setStops] = useState<Stop[]>(null);
+  const [selectedStop, setSelectedStop] = useState<number>();
 
   const getBounds = (
     value: google.maps.LatLngLiteral,
@@ -73,9 +76,7 @@ export const Map = (props: MapProps) => {
   const onLoad = useCallback((map: google.maps.Map) => {
     setMap(map);
     const bounds = getBounds(position, 0.5);
-    map.fitBounds(bounds, {
-      bottom: window.innerHeight / 2,
-    });
+    map.fitBounds(bounds, padding);
   }, []);
   const onUnmount = useCallback(() => {
     setMap(null);
@@ -89,10 +90,10 @@ export const Map = (props: MapProps) => {
     getData();
   }, []);
   useEffect(() => {
-    const bounds = getBounds(position, 0.5);
-    map?.fitBounds(bounds, {
-      bottom: window.innerHeight / 2,
-    });
+    if (map) {
+      const bounds = getBounds(position, 0.5);
+      map.fitBounds(bounds, padding);
+    }
   }, [position]);
 
   return (
@@ -126,13 +127,18 @@ export const Map = (props: MapProps) => {
                 position={stop.location}
                 options={{
                   icon: {
-                    url: darkModeEnabled ? blueStopMarker : purpleStopMarker,
+                    url:
+                      (darkModeEnabled && selectedStop !== index) ||
+                      (!darkModeEnabled && selectedStop === index)
+                        ? blueStopMarker
+                        : purpleStopMarker,
                     scaledSize: new google.maps.Size(35, 50),
                     origin: new google.maps.Point(0, 0),
                     anchor: new google.maps.Point(17.5, 50),
                   },
                 }}
                 onClick={() => {
+                  setSelectedStop(index);
                   const bounds = getBounds(
                     {
                       lat: stop.location.lat(),
@@ -140,7 +146,7 @@ export const Map = (props: MapProps) => {
                     },
                     0.05
                   );
-                  map.fitBounds(bounds, { bottom: window.innerHeight / 2 });
+                  map.fitBounds(bounds, padding);
                   onMarkerSelect && onMarkerSelect(stop);
                 }}
               />
