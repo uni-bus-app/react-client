@@ -7,12 +7,10 @@ export default function Home() {
   return (
     <>
       <Map
-        width="100vw"
-        height="100vh"
         position={{ lat: 50.767688, lng: -1.077812 }}
         stopMarkersEnabled={true}
         routeOverlayEnabled={true}
-      ></Map>
+      />
       <NewPanelComponent />
     </>
   );

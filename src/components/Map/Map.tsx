@@ -6,7 +6,7 @@ import {
 } from '@react-google-maps/api';
 import { mapStylesLight } from './mapstyles-light';
 import { mapStylesDark } from './mapstyles-dark';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { getRoutePath, getStops } from '../../api/APIUtils';
 import { Stop } from '../../models/stop';
 import purpleStopMarker from '../../assets/stop-marker-icon-purple.svg';
@@ -32,25 +32,55 @@ const getLocation: () => Promise<google.maps.LatLngLiteral> = () => {
 };
 
 interface MapProps {
-  style: CSSProperties;
+  style?: CSSProperties;
   position: google.maps.LatLngLiteral;
+  padding?: google.maps.Padding;
   darkModeEnabled?: boolean;
   routeOverlayEnabled?: boolean;
   stopMarkersEnabled?: boolean;
+  onMarkerSelect?: (stop: Stop) => void;
 }
 
 export const Map = (props: MapProps) => {
   const {
     position,
     style,
+    padding,
     darkModeEnabled,
     routeOverlayEnabled,
     stopMarkersEnabled,
+    onMarkerSelect,
   } = props;
 
-  const [zoom, setZoom] = useState<number>(13);
+  const [map, setMap] = useState<google.maps.Map>();
   const [routeOverlay, setRouteOverlay] = useState<google.maps.LatLng[]>(null);
   const [stops, setStops] = useState<Stop[]>(null);
+  const [selectedStop, setSelectedStop] = useState<number>();
+
+  const getBounds = (
+    value: google.maps.LatLngLiteral,
+    r: number
+  ): google.maps.LatLngBounds => {
+    const dY = (360 * r) / 6371;
+    const dX = dY * Math.cos(value.lng);
+    const lat1 = value.lat - dX;
+    const lng1 = value.lng - dY;
+    const lat2 = value.lat + dX;
+    const lng2 = value.lng + dY;
+    return new google.maps.LatLngBounds(
+      { lat: lat1, lng: lng1 },
+      { lat: lat2, lng: lng2 }
+    );
+  };
+
+  const onLoad = useCallback((map: google.maps.Map) => {
+    setMap(map);
+    const bounds = getBounds(position, 0.5);
+    map.fitBounds(bounds, padding);
+  }, []);
+  const onUnmount = useCallback(() => {
+    setMap(null);
+  }, []);
 
   useEffect(() => {
     const getData = async () => {
@@ -59,6 +89,12 @@ export const Map = (props: MapProps) => {
     };
     getData();
   }, []);
+  useEffect(() => {
+    if (map) {
+      const bounds = getBounds(position, 0.5);
+      map.fitBounds(bounds, padding);
+    }
+  }, [position]);
 
   return (
     <LoadScript googleMapsApiKey="AIzaSyDkT81ky0Yn3JYuk6bFCsq4PVmjXawppFI">
@@ -67,12 +103,12 @@ export const Map = (props: MapProps) => {
           ...(style || { width: '100vw', height: '100vh' }),
           zIndex: 10,
         }}
-        center={position}
-        zoom={zoom}
         options={{
           ...mapOptions,
           styles: darkModeEnabled ? mapStylesDark : mapStylesLight,
         }}
+        onLoad={onLoad}
+        onUnmount={onUnmount}
       >
         {routeOverlayEnabled && (
           <Polyline
@@ -84,18 +120,34 @@ export const Map = (props: MapProps) => {
           />
         )}
         {stopMarkersEnabled &&
-          stops?.map((name, index) => {
+          stops?.map((stop, index) => {
             return (
               <Marker
                 key={index}
-                position={name.location}
+                position={stop.location}
                 options={{
                   icon: {
-                    url: darkModeEnabled ? blueStopMarker : purpleStopMarker,
+                    url:
+                      (darkModeEnabled && selectedStop !== index) ||
+                      (!darkModeEnabled && selectedStop === index)
+                        ? blueStopMarker
+                        : purpleStopMarker,
                     scaledSize: new google.maps.Size(35, 50),
                     origin: new google.maps.Point(0, 0),
                     anchor: new google.maps.Point(17.5, 50),
                   },
+                }}
+                onClick={() => {
+                  setSelectedStop(index);
+                  const bounds = getBounds(
+                    {
+                      lat: stop.location.lat(),
+                      lng: stop.location.lng(),
+                    },
+                    0.05
+                  );
+                  map.fitBounds(bounds, padding);
+                  onMarkerSelect && onMarkerSelect(stop);
                 }}
               />
             );
