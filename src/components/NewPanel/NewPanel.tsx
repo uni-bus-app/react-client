@@ -1,4 +1,9 @@
-import { motion, useAnimation, useMotionValue } from 'framer-motion';
+import {
+  motion,
+  MotionValue,
+  useAnimation,
+  useMotionValue,
+} from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import styles from './NewPanel.module.css';
@@ -8,21 +13,23 @@ interface PanelProps {
   panel1Children?: ReactNode;
   panel2Children?: ReactNode;
   style?: any;
+  onLoad?: (motionValue: MotionValue<number>) => void;
 }
 
 export const NewPanelComponent = (props: PanelProps) => {
-  const { panel1Children, panel2Children, style } = props;
+  const { panel1Children, panel2Children, style, onLoad } = props;
 
   const constrainstRef1 = useRef(null);
   const constrainstRef2 = useRef(null);
 
-  const x = useMotionValue(0);
+  const x = useMotionValue<number>(0);
 
   const [windowWidth, setWindowWidth] = useState<number>(null);
 
   useEffect(() => {
     x.set(window.innerWidth);
     setWindowWidth(window.innerWidth);
+    onLoad(x);
   }, []);
 
   const panel1Controls = useAnimation();
