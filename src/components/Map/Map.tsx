@@ -46,6 +46,7 @@ interface MapProps {
   stopMarkersEnabled?: boolean;
   onMarkerSelect?: (stop: Stop) => void;
   logoPosition: MotionValue<number>;
+  currentStop?: Stop;
 }
 
 export const Map = (props: MapProps) => {
@@ -58,12 +59,13 @@ export const Map = (props: MapProps) => {
     stopMarkersEnabled,
     onMarkerSelect,
     logoPosition,
+    currentStop,
   } = props;
 
   const [map, setMap] = useState<google.maps.Map>();
   const [routeOverlay, setRouteOverlay] = useState<google.maps.LatLng[]>(null);
   const [stops, setStops] = useState<Stop[]>(null);
-  const [selectedStop, setSelectedStop] = useState<number>();
+  const [selectedStop, setSelectedStop] = useState<Stop>();
   const logoContainer = useRef<HTMLDivElement>();
 
   const initialLogoPosition = useMotionValue(0);
@@ -111,6 +113,17 @@ export const Map = (props: MapProps) => {
       map.fitBounds(bounds, padding);
     }
   }, [position]);
+
+  useEffect(() => {
+    setSelectedStop(currentStop);
+    if (map && currentStop) {
+      const bounds = getBounds(
+        { lat: currentStop.location.lat(), lng: currentStop.location.lng() },
+        0.05
+      );
+      map.fitBounds(bounds, padding);
+    }
+  }, [currentStop]);
 
   const moveLogo = (map) => {
     let isCalled = false;
@@ -177,8 +190,9 @@ export const Map = (props: MapProps) => {
                   options={{
                     icon: {
                       url:
-                        (darkModeEnabled && selectedStop !== index) ||
-                        (!darkModeEnabled && selectedStop === index)
+                        (darkModeEnabled &&
+                          selectedStop?.routeOrder !== index) ||
+                        (!darkModeEnabled && selectedStop?.routeOrder === index)
                           ? blueStopMarker
                           : purpleStopMarker,
                       scaledSize: new google.maps.Size(35, 50),
@@ -187,7 +201,7 @@ export const Map = (props: MapProps) => {
                     },
                   }}
                   onClick={() => {
-                    setSelectedStop(index);
+                    setSelectedStop(stop);
                     const bounds = getBounds(
                       {
                         lat: stop.location.lat(),

@@ -120,3 +120,12 @@
     flex-direction: column;
   }
 }
+
+.stopSelector {
+  margin: 1em !important;
+  width: calc(100% - 2em);
+  height: 5em;
+}
+.stopSelectorSelect {
+  height: 3em;
+}
