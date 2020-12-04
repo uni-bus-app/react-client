@@ -1,9 +1,9 @@
 const { join } = require('path');
-const { https } = require('firebase-functions');
+const functions = require('firebase-functions');
 const { default: next } = require('next');
 
 const isDev = process.env.NODE_ENV !== 'production';
-const nextjsDistDir = join('src', require('./src/next.config.js').distDir);
+const nextjsDistDir = join('src', '.next');
 
 const nextjsServer = next({
   dev: isDev,
@@ -13,6 +13,8 @@ const nextjsServer = next({
 });
 const nextjsHandle = nextjsServer.getRequestHandler();
 
-exports.nextjsFunc = https.onRequest((req, res) => {
-  return nextjsServer.prepare().then(() => nextjsHandle(req, res));
-});
+exports.nextjsFunc = functions
+  .region('europe-west2')
+  .https.onRequest((req, res) => {
+    return nextjsServer.prepare().then(() => nextjsHandle(req, res));
+  });
