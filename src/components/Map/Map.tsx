@@ -11,6 +11,7 @@ import { getRoutePath, getStops } from '../../api/APIUtils';
 import { Stop } from '../../models/stop';
 import purpleStopMarker from '../../assets/stop-marker-icon-purple.svg';
 import blueStopMarker from '../../assets/stop-marker-icon-blue.svg';
+import locationMarker from '../../assets/location-marker-icon.svg';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import {
   motion,
@@ -18,6 +19,9 @@ import {
   useMotionValue,
   useTransform,
 } from 'framer-motion';
+import { Fab } from '@material-ui/core';
+import { GpsFixed } from '@material-ui/icons';
+import styles from './Map.module.css';
 
 const mapOptions: google.maps.MapOptions = {
   disableDefaultUI: true,
@@ -26,14 +30,14 @@ const mapOptions: google.maps.MapOptions = {
 };
 
 const getLocation: () => Promise<google.maps.LatLngLiteral> = () => {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     navigator.geolocation.getCurrentPosition((pos) => {
       const position: google.maps.LatLngLiteral = {
         lat: pos.coords.latitude,
         lng: pos.coords.longitude,
       };
       resolve(position);
-    });
+    }, reject);
   });
 };
 
@@ -64,6 +68,12 @@ export const Map = (props: MapProps) => {
   const [routeOverlay, setRouteOverlay] = useState<google.maps.LatLng[]>(null);
   const [stops, setStops] = useState<Stop[]>(null);
   const [selectedStop, setSelectedStop] = useState<number>();
+  const [locationButtonSelected, setLocationButtonSelected] = useState<
+    boolean
+  >();
+  const [currentLocation, setCurrentLocation] = useState<
+    google.maps.LatLngLiteral
+  >();
   const logoContainer = useRef<HTMLDivElement>();
 
   const initialLogoPosition = useMotionValue(0);
@@ -86,6 +96,21 @@ export const Map = (props: MapProps) => {
       { lat: lat1, lng: lng1 },
       { lat: lat2, lng: lng2 }
     );
+  };
+
+  const onLocationButtonPress = async () => {
+    try {
+      const location = await getLocation();
+      setCurrentLocation(location);
+      setLocationButtonSelected(true);
+      const bounds = getBounds(location, 0.05);
+      map.fitBounds(bounds, padding);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  const onChange = () => {
+    setLocationButtonSelected(false);
   };
 
   const onLoad = useCallback((map: google.maps.Map) => {
@@ -138,14 +163,23 @@ export const Map = (props: MapProps) => {
     <>
       <motion.div
         style={{
-          position: 'absolute',
-          zIndex: 99999,
-          bottom: '52vh',
-          left: '4vw',
           x: logoPos,
         }}
-        ref={logoContainer}
-      ></motion.div>
+        className={styles.fabHolder}
+      >
+        <div ref={logoContainer} className={styles.logoContainer} />
+        <Fab
+          size="small"
+          className={styles.locationButton}
+          onClick={onLocationButtonPress}
+        >
+          <GpsFixed
+            className={
+              locationButtonSelected ? styles.locationButtonSelected : null
+            }
+          />
+        </Fab>
+      </motion.div>
       <LoadScript googleMapsApiKey="AIzaSyDkT81ky0Yn3JYuk6bFCsq4PVmjXawppFI">
         <GoogleMap
           mapContainerStyle={{
@@ -158,6 +192,8 @@ export const Map = (props: MapProps) => {
           }}
           onLoad={onLoad}
           onUnmount={onUnmount}
+          onZoomChanged={onChange}
+          onBoundsChanged={onChange}
         >
           {routeOverlayEnabled && (
             <Polyline
@@ -166,6 +202,19 @@ export const Map = (props: MapProps) => {
                 strokeColor: darkModeEnabled ? '#03A9F4' : '#7B1FA2',
                 strokeOpacity: 0.75,
               }}
+            />
+          )}
+          {currentLocation && (
+            <Marker
+              options={{
+                icon: {
+                  url: locationMarker,
+                  scaledSize: new google.maps.Size(20, 20),
+                  origin: new google.maps.Point(0, 0),
+                  anchor: new google.maps.Point(10, 10),
+                },
+              }}
+              position={currentLocation}
             />
           )}
           {stopMarkersEnabled &&

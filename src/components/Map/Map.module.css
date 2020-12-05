@@ -1,0 +1,22 @@
+.fabHolder {
+  position: absolute;
+  z-index: 99999;
+  bottom: 52vh;
+  left: 1em;
+  width: calc(100% - 2em);
+  height: 3em;
+}
+.logoContainer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 99999;
+}
+.locationButton {
+  position: absolute !important;
+  right: 0;
+  z-index: 99999;
+}
+.locationButtonSelected {
+  color: #4285f4;
+}
