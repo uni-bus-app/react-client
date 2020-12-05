@@ -1,12 +1,12 @@
 import {
   GoogleMap,
-  LoadScript,
   Marker,
   Polyline,
+  useJsApiLoader,
 } from '@react-google-maps/api';
 import { mapStylesLight } from './mapstyles-light';
 import { mapStylesDark } from './mapstyles-dark';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getRoutePath, getStops } from '../../api/APIUtils';
 import { Stop } from '../../models/stop';
 import purpleStopMarker from '../../assets/stop-marker-icon-purple.svg';
@@ -18,6 +18,7 @@ import {
   useMotionValue,
   useTransform,
 } from 'framer-motion';
+import { config } from '../../config';
 
 const mapOptions: google.maps.MapOptions = {
   disableDefaultUI: true,
@@ -89,17 +90,6 @@ export const Map = (props: MapProps) => {
       { lat: lat2, lng: lng2 }
     );
   };
-
-  const onLoad = useCallback((map: google.maps.Map) => {
-    setMap(map);
-    const bounds = getBounds(position, 0.5);
-    map.fitBounds(bounds, padding);
-    moveLogo(map);
-  }, []);
-  const onUnmount = useCallback(() => {
-    setMap(null);
-  }, []);
-
   useEffect(() => {
     const getData = async () => {
       setRouteOverlay(await getRoutePath());
@@ -147,19 +137,34 @@ export const Map = (props: MapProps) => {
     mapObserver.observe(map.__gm.Ma, { childList: true, subtree: true });
   };
 
-  return (
-    <>
-      <motion.div
-        style={{
-          position: 'absolute',
-          zIndex: 99999,
-          bottom: '52vh',
-          left: '4vw',
-          x: logoPos,
-        }}
-        ref={logoContainer}
-      ></motion.div>
-      <LoadScript googleMapsApiKey="AIzaSyDkT81ky0Yn3JYuk6bFCsq4PVmjXawppFI">
+  const { isLoaded, loadError } = useJsApiLoader({
+    googleMapsApiKey: config.mapsApiKey,
+  });
+
+  const renderMap = () => {
+    const onLoad = (mapInstance: google.maps.Map) => {
+      setMap(mapInstance);
+      const bounds = getBounds(position, 0.5);
+      mapInstance.fitBounds(bounds, padding);
+      moveLogo(mapInstance);
+    };
+
+    const onUnmount = () => {
+      setMap(null);
+    };
+
+    return (
+      <>
+        <motion.div
+          style={{
+            position: 'absolute',
+            zIndex: 99999,
+            bottom: '52vh',
+            left: '4vw',
+            x: logoPos,
+          }}
+          ref={logoContainer}
+        ></motion.div>
         <GoogleMap
           mapContainerStyle={{
             ...(style || { width: '100vw', height: '100vh' }),
@@ -216,7 +221,13 @@ export const Map = (props: MapProps) => {
               );
             })}
         </GoogleMap>
-      </LoadScript>
-    </>
-  );
+      </>
+    );
+  };
+
+  if (loadError) {
+    return <div>Map cannot be loaded :(</div>;
+  }
+
+  return isLoaded ? renderMap() : <div>loading...</div>;
 };
