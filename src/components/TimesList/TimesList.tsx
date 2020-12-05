@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
-import { getTimes, updateServiceEta } from '../../api/APIUtils';
-import { Time } from '../../models/time';
-import { TimeComponent } from '../Time/Time';
-import styles from './TimesList.module.css';
+import { useEffect, useState } from "react";
+import { getTimes, updateServiceEta } from "../../api/APIUtils";
+import { Time } from "../../models/time";
+import { TimeComponent } from "../Time/Time";
+import styles from "./TimesList.module.css";
 
 interface TimesListProps {
   stopID: string;
@@ -11,7 +11,7 @@ interface TimesListProps {
 export function TimesListComponent(props: TimesListProps) {
   const { stopID } = props;
 
-  const [times, setTimes] = useState<Time[]>(null);
+  const [times, setTimes] = useState<Time[]>();
   const [intervalID, setIntervalID] = useState<number>();
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export function TimesListComponent(props: TimesListProps) {
       setTimes(data);
       setIntervalID(
         window.setInterval(() => {
-          const result = [];
+          const result: Time[] = [];
           data.forEach((time) => {
             const { eta, etaUnit } = updateServiceEta(time.timeValue);
             if (eta) {

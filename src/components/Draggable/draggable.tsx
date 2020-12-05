@@ -1,10 +1,11 @@
-import { ReactNode, useRef, useState, useEffect } from 'react';
+import { ReactNode, useRef, useState, useEffect } from "react";
 import {
   motion,
   useDragControls,
   useMotionValue,
   useAnimation,
-} from 'framer-motion';
+  PanInfo,
+} from "framer-motion";
 
 interface DraggableProps {
   persist: boolean;
@@ -18,28 +19,23 @@ export default function Draggable(props: DraggableProps) {
   const dragControls = useDragControls();
   const controls = useAnimation();
   const panelRef = useRef(null);
-  const [width, setWidth] = useState(null);
   const x = useMotionValue(0);
   const [value, setValue] = useState(true);
   const [x2, setX2] = useState(0);
 
-  const onDragEnd = (ev, info) => {
+  const onDragEnd = (ev: Event, info: PanInfo) => {
     const shouldClose =
       info.velocity.x > 20 || (info.velocity.x >= 0 && info.point.x > 100);
     if (shouldClose || persist) {
-      controls.start('stage0');
+      controls.start("stage0");
     } else {
-      controls.start('stage1');
+      controls.start("stage1");
       endAction();
     }
   };
-  const onUpdate = (latest) => {
+  const onUpdate = (latest: any) => {
     setX2(latest.x);
   };
-
-  useEffect(() => {
-    setWidth(window.innerWidth);
-  }, []);
 
   return (
     <motion.div
@@ -49,13 +45,13 @@ export default function Draggable(props: DraggableProps) {
       onUpdate={onUpdate}
       animate={controls}
       transition={{
-        type: 'spring',
+        type: "spring",
         damping: 40,
         stiffness: 400,
       }}
       variants={{
         stage0: { x: 0 },
-        stage1: { x: -width },
+        stage1: { x: -window.innerWidth },
       }}
       ref={panelRef}
       dragControls={dragControls}
