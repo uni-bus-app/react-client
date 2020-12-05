@@ -1,8 +1,8 @@
-import dayjs, { Dayjs } from 'dayjs';
-import { Stop } from '../models/stop';
-import { Time } from '../models/time';
+import dayjs, { Dayjs } from "dayjs";
+import { Stop } from "../models/stop";
+import { Time } from "../models/time";
 
-const apiURL = 'https://20200817t190317-dot-unibus-app.nw.r.appspot.com';
+const apiURL = "https://20200817t190317-dot-unibus-app.nw.r.appspot.com";
 
 export const getRoutePath: () => Promise<google.maps.LatLng[]> = async () => {
   const res = await fetch(`${apiURL}/u1routepath`);
@@ -45,14 +45,14 @@ const parseTimes: (data: any[]) => Time[] = (data: any[]) => {
   const result: Time[] = [];
   data.forEach((item) => {
     const timeValue = dayjs()
-      .set('hour', Number(item.scheduled.substring(0, 2)))
-      .set('minute', item.scheduled.substring(2, 4))
-      .set('second', 0);
+      .set("hour", Number(item.scheduled.substring(0, 2)))
+      .set("minute", item.scheduled.substring(2, 4))
+      .set("second", 0);
     const res = updateServiceEta(timeValue);
     const time: Time = {
-      destination: 'University Library',
-      service: 'U1',
-      time: timeValue.format('HH:mm'),
+      destination: "University Library",
+      service: "U1",
+      time: timeValue.format("HH:mm"),
       eta: res.eta,
       etaUnit: res.etaUnit,
       timeValue,
@@ -70,18 +70,18 @@ export const updateServiceEta: (timeValue: Dayjs) => any = (
 ) => {
   const etaValue = timeValue.diff(dayjs());
   let eta: string;
-  let etaUnit: string;
+  let etaUnit: string = "";
   if (etaValue > 3600000) {
     eta = (etaValue / 3600000).toFixed(1);
-    if (eta === '1.0') {
-      eta = '1';
+    if (eta === "1.0") {
+      eta = "1";
     }
-    etaUnit = 'hours';
+    etaUnit = "hours";
   } else if (etaValue > 120000) {
     eta = (etaValue / 60000).toFixed(0);
-    etaUnit = 'min';
+    etaUnit = "min";
   } else {
-    eta = 'Now';
+    eta = "Now";
   }
   return { eta, etaUnit };
 };

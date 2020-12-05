@@ -1,10 +1,11 @@
 import {
   motion,
   MotionValue,
+  PanInfo,
   useAnimation,
   useMotionValue,
 } from 'framer-motion';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import styles from './NewPanel.module.css';
 import { Card } from '@material-ui/core';
@@ -24,18 +25,15 @@ export const NewPanelComponent = (props: PanelProps) => {
 
   const x = useMotionValue<number>(0);
 
-  const [windowWidth, setWindowWidth] = useState<number>(null);
-
   useEffect(() => {
     x.set(window.innerWidth);
-    setWindowWidth(window.innerWidth);
-    onLoad(x);
+    onLoad && onLoad(x);
   }, []);
 
   const panel1Controls = useAnimation();
   const panel2Controls = useAnimation();
 
-  const panel2DragEnd = (ev, info) => {
+  const panel2DragEnd = (ev: Event, info: PanInfo) => {
     const shouldClose =
       info.velocity.x > 20 || (info.velocity.x >= 0 && info.point.x > 45);
     if (shouldClose) {
@@ -44,7 +42,7 @@ export const NewPanelComponent = (props: PanelProps) => {
       panel2Controls.start('stage0');
     }
   };
-  const panel1DragEnd = (ev, info) => {
+  const panel1DragEnd = (ev: Event, info: PanInfo) => {
     const shouldClose =
       info.velocity.x > 20 || (info.velocity.x >= 0 && info.point.x > 45);
     if (shouldClose) {
@@ -69,7 +67,7 @@ export const NewPanelComponent = (props: PanelProps) => {
           animate={panel1Controls}
           variants={{
             stage0: { x: 0 },
-            stage1: { x: windowWidth },
+            stage1: { x: window.innerWidth },
           }}
           transition={{
             type: 'spring',
@@ -89,7 +87,7 @@ export const NewPanelComponent = (props: PanelProps) => {
           animate={panel2Controls}
           variants={{
             stage0: { x: 0 },
-            stage1: { x: windowWidth },
+            stage1: { x: window.innerWidth },
           }}
           transition={{
             type: 'spring',

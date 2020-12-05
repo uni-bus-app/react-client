@@ -1,12 +1,12 @@
-import { Map } from './Map';
-import React from 'react';
+import { Map } from "./Map";
+import React from "react";
 
 export default {
-  title: 'Map',
+  title: "Map",
   component: Map,
 };
 
-const Template = (args) => <Map {...args} />;
+const Template = (args: any) => <Map {...args} />;
 
 export const Default = Template.bind({});
 

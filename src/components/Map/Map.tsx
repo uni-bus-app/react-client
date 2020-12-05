@@ -3,26 +3,26 @@ import {
   Marker,
   Polyline,
   useJsApiLoader,
-} from '@react-google-maps/api';
-import { mapStylesLight } from './mapstyles-light';
-import { mapStylesDark } from './mapstyles-dark';
-import { useEffect, useRef, useState } from 'react';
-import { getRoutePath, getStops } from '../../api/APIUtils';
-import { Stop } from '../../models/stop';
-import purpleStopMarker from '../../assets/stop-marker-icon-purple.svg';
-import blueStopMarker from '../../assets/stop-marker-icon-blue.svg';
-import { CSSProperties } from '@material-ui/core/styles/withStyles';
+} from "@react-google-maps/api";
+import { mapStylesLight } from "./mapstyles-light";
+import { mapStylesDark } from "./mapstyles-dark";
+import { useEffect, useRef, useState } from "react";
+import { getRoutePath, getStops } from "../../api/APIUtils";
+import { Stop } from "../../models/stop";
+import purpleStopMarker from "../../assets/stop-marker-icon-purple.svg";
+import blueStopMarker from "../../assets/stop-marker-icon-blue.svg";
+import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import {
   motion,
   MotionValue,
   useMotionValue,
   useTransform,
-} from 'framer-motion';
-import { config } from '../../config';
+} from "framer-motion";
+import { config } from "../../config";
 
 const mapOptions: google.maps.MapOptions = {
   disableDefaultUI: true,
-  gestureHandling: 'greedy',
+  gestureHandling: "greedy",
   clickableIcons: false,
 };
 
@@ -64,15 +64,15 @@ export const Map = (props: MapProps) => {
   } = props;
 
   const [map, setMap] = useState<google.maps.Map>();
-  const [routeOverlay, setRouteOverlay] = useState<google.maps.LatLng[]>(null);
-  const [stops, setStops] = useState<Stop[]>(null);
+  const [routeOverlay, setRouteOverlay] = useState<google.maps.LatLng[]>();
+  const [stops, setStops] = useState<Stop[]>();
   const [selectedStop, setSelectedStop] = useState<Stop>();
-  const logoContainer = useRef<HTMLDivElement>();
+  const logoContainer = useRef() as any;
 
   const initialLogoPosition = useMotionValue(0);
   const logoPos = useTransform(
     logoPosition || initialLogoPosition,
-    (value) => value - ((process.browser && window.innerWidth) || 375)
+    (value) => value - window.innerWidth
   );
 
   const getBounds = (
@@ -115,11 +115,11 @@ export const Map = (props: MapProps) => {
     }
   }, [currentStop]);
 
-  const moveLogo = (map) => {
+  const moveLogo = (map: any) => {
     let isCalled = false;
     const mapObserver = new MutationObserver((mutationList, observer) => {
       for (const mutation of mutationList) {
-        if (mutation.type === 'childList') {
+        if (mutation.type === "childList") {
           const logoElement = map.__gm.Ma.querySelector('[rel="noopener"]');
           if (logoElement) {
             if (!isCalled) {
@@ -127,7 +127,7 @@ export const Map = (props: MapProps) => {
               observer.disconnect();
               const logoEl = logoElement.parentElement.removeChild(logoElement);
               if (logoEl && logoContainer) {
-                logoContainer.current.append(logoEl);
+                logoContainer?.current?.append(logoEl);
               }
             }
           }
@@ -150,24 +150,24 @@ export const Map = (props: MapProps) => {
     };
 
     const onUnmount = () => {
-      setMap(null);
+      setMap(undefined);
     };
 
     return (
       <>
         <motion.div
           style={{
-            position: 'absolute',
+            position: "absolute",
             zIndex: 99999,
-            bottom: '52vh',
-            left: '4vw',
+            bottom: "52vh",
+            left: "4vw",
             x: logoPos,
           }}
           ref={logoContainer}
         ></motion.div>
         <GoogleMap
           mapContainerStyle={{
-            ...(style || { width: '100vw', height: '100vh' }),
+            ...(style || { width: "100vw", height: "100vh" }),
             zIndex: 10,
           }}
           options={{
@@ -181,7 +181,7 @@ export const Map = (props: MapProps) => {
             <Polyline
               path={routeOverlay}
               options={{
-                strokeColor: darkModeEnabled ? '#03A9F4' : '#7B1FA2',
+                strokeColor: darkModeEnabled ? "#03A9F4" : "#7B1FA2",
                 strokeOpacity: 0.75,
               }}
             />
@@ -214,7 +214,7 @@ export const Map = (props: MapProps) => {
                       },
                       0.05
                     );
-                    map.fitBounds(bounds, padding);
+                    map?.fitBounds(bounds, padding);
                     onMarkerSelect && onMarkerSelect(stop);
                   }}
                 />
