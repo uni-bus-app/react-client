@@ -1,12 +1,12 @@
 import {
   GoogleMap,
-  LoadScript,
   Marker,
   Polyline,
+  useJsApiLoader,
 } from '@react-google-maps/api';
 import { mapStylesLight } from './mapstyles-light';
 import { mapStylesDark } from './mapstyles-dark';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getRoutePath, getStops } from '../../api/APIUtils';
 import { Stop } from '../../models/stop';
 import purpleStopMarker from '../../assets/stop-marker-icon-purple.svg';
@@ -22,6 +22,7 @@ import {
 import { Fab } from '@material-ui/core';
 import { GpsFixed } from '@material-ui/icons';
 import styles from './Map.module.css';
+import { config } from '../../config';
 
 const mapOptions: google.maps.MapOptions = {
   disableDefaultUI: true,
@@ -50,6 +51,7 @@ interface MapProps {
   stopMarkersEnabled?: boolean;
   onMarkerSelect?: (stop: Stop) => void;
   logoPosition: MotionValue<number>;
+  currentStop?: Stop;
 }
 
 export const Map = (props: MapProps) => {
@@ -62,12 +64,13 @@ export const Map = (props: MapProps) => {
     stopMarkersEnabled,
     onMarkerSelect,
     logoPosition,
+    currentStop,
   } = props;
 
   const [map, setMap] = useState<google.maps.Map>();
   const [routeOverlay, setRouteOverlay] = useState<google.maps.LatLng[]>(null);
   const [stops, setStops] = useState<Stop[]>(null);
-  const [selectedStop, setSelectedStop] = useState<number>();
+  const [selectedStop, setSelectedStop] = useState<Stop>();
   const [locationButtonSelected, setLocationButtonSelected] = useState<
     boolean
   >();
@@ -105,23 +108,11 @@ export const Map = (props: MapProps) => {
       setLocationButtonSelected(true);
       const bounds = getBounds(location, 0.05);
       map.fitBounds(bounds, padding);
-    } catch (e) {
-      console.log(e);
-    }
+    } catch {}
   };
   const onChange = () => {
     setLocationButtonSelected(false);
   };
-
-  const onLoad = useCallback((map: google.maps.Map) => {
-    setMap(map);
-    const bounds = getBounds(position, 0.5);
-    map.fitBounds(bounds, padding);
-    moveLogo(map);
-  }, []);
-  const onUnmount = useCallback(() => {
-    setMap(null);
-  }, []);
 
   useEffect(() => {
     const getData = async () => {
@@ -136,6 +127,17 @@ export const Map = (props: MapProps) => {
       map.fitBounds(bounds, padding);
     }
   }, [position]);
+
+  useEffect(() => {
+    setSelectedStop(currentStop);
+    if (map && currentStop) {
+      const bounds = getBounds(
+        { lat: currentStop.location.lat(), lng: currentStop.location.lng() },
+        0.05
+      );
+      map.fitBounds(bounds, padding);
+    }
+  }, [currentStop]);
 
   const moveLogo = (map) => {
     let isCalled = false;
@@ -159,28 +161,43 @@ export const Map = (props: MapProps) => {
     mapObserver.observe(map.__gm.Ma, { childList: true, subtree: true });
   };
 
-  return (
-    <>
-      <motion.div
-        style={{
-          x: logoPos,
-        }}
-        className={styles.fabHolder}
-      >
-        <div ref={logoContainer} className={styles.logoContainer} />
-        <Fab
-          size="small"
-          className={styles.locationButton}
-          onClick={onLocationButtonPress}
+  const { isLoaded, loadError } = useJsApiLoader({
+    googleMapsApiKey: config.mapsApiKey,
+  });
+
+  const renderMap = () => {
+    const onLoad = (mapInstance: google.maps.Map) => {
+      setMap(mapInstance);
+      const bounds = getBounds(position, 0.5);
+      mapInstance.fitBounds(bounds, padding);
+      moveLogo(mapInstance);
+    };
+
+    const onUnmount = () => {
+      setMap(null);
+    };
+
+    return (
+      <>
+        <motion.div
+          style={{
+            x: logoPos,
+          }}
+          className={styles.fabHolder}
         >
-          <GpsFixed
-            className={
-              locationButtonSelected ? styles.locationButtonSelected : null
-            }
-          />
-        </Fab>
-      </motion.div>
-      <LoadScript googleMapsApiKey="AIzaSyDkT81ky0Yn3JYuk6bFCsq4PVmjXawppFI">
+          <div ref={logoContainer} className={styles.logoContainer} />
+          <Fab
+            size="small"
+            className={styles.locationButton}
+            onClick={onLocationButtonPress}
+          >
+            <GpsFixed
+              className={
+                locationButtonSelected ? styles.locationButtonSelected : null
+              }
+            />
+          </Fab>
+        </motion.div>
         <GoogleMap
           mapContainerStyle={{
             ...(style || { width: '100vw', height: '100vh' }),
@@ -226,8 +243,9 @@ export const Map = (props: MapProps) => {
                   options={{
                     icon: {
                       url:
-                        (darkModeEnabled && selectedStop !== index) ||
-                        (!darkModeEnabled && selectedStop === index)
+                        (darkModeEnabled &&
+                          selectedStop?.routeOrder !== index) ||
+                        (!darkModeEnabled && selectedStop?.routeOrder === index)
                           ? blueStopMarker
                           : purpleStopMarker,
                       scaledSize: new google.maps.Size(35, 50),
@@ -236,7 +254,7 @@ export const Map = (props: MapProps) => {
                     },
                   }}
                   onClick={() => {
-                    setSelectedStop(index);
+                    setSelectedStop(stop);
                     const bounds = getBounds(
                       {
                         lat: stop.location.lat(),
@@ -251,7 +269,13 @@ export const Map = (props: MapProps) => {
               );
             })}
         </GoogleMap>
-      </LoadScript>
-    </>
-  );
+      </>
+    );
+  };
+
+  if (loadError) {
+    return <div>Map cannot be loaded :(</div>;
+  }
+
+  return isLoaded ? renderMap() : <div>loading...</div>;
 };
