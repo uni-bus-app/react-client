@@ -4,11 +4,11 @@ import {
   PanInfo,
   useAnimation,
   useMotionValue,
-} from "framer-motion";
-import { useEffect, useRef } from "react";
-import type { ReactNode } from "react";
-import styles from "./NewPanel.module.css";
-import { Card } from "@material-ui/core";
+} from 'framer-motion';
+import { useEffect, useRef } from 'react';
+import type { ReactNode } from 'react';
+import styles from './NewPanel.module.css';
+import { Card } from '@material-ui/core';
 
 interface PanelProps {
   panel1Children?: ReactNode;
@@ -26,7 +26,6 @@ export const NewPanelComponent = (props: PanelProps) => {
   const x = useMotionValue<number>(0);
 
   useEffect(() => {
-    console.log(window.innerWidth);
     x.set(window.innerWidth);
     onLoad && onLoad(x);
   }, []);
@@ -38,27 +37,27 @@ export const NewPanelComponent = (props: PanelProps) => {
     const shouldClose =
       info.velocity.x > 20 || (info.velocity.x >= 0 && info.point.x > 45);
     if (shouldClose) {
-      panel2Controls.start("stage1");
+      panel2Controls.start('stage1');
     } else {
-      panel2Controls.start("stage0");
+      panel2Controls.start('stage0');
     }
   };
   const panel1DragEnd = (ev: Event, info: PanInfo) => {
     const shouldClose =
       info.velocity.x > 20 || (info.velocity.x >= 0 && info.point.x > 45);
     if (shouldClose) {
-      panel1Controls.start("stage1");
+      panel1Controls.start('stage1');
     } else {
-      panel1Controls.start("stage0");
+      panel1Controls.start('stage0');
     }
   };
 
   return (
-    <div style={{ height: "100vh" }}>
+    <div style={{ height: '100vh' }}>
       <motion.div
         ref={constrainstRef1}
         className={styles.panelContainer1}
-        style={{ height: "100vh" }}
+        style={{ height: '100vh' }}
       >
         <motion.div
           drag="x"
@@ -71,7 +70,7 @@ export const NewPanelComponent = (props: PanelProps) => {
             stage1: { x: window.innerWidth },
           }}
           transition={{
-            type: "spring",
+            type: 'spring',
             damping: 40,
             stiffness: 400,
           }}
@@ -91,7 +90,7 @@ export const NewPanelComponent = (props: PanelProps) => {
             stage1: { x: window.innerWidth },
           }}
           transition={{
-            type: "spring",
+            type: 'spring',
             damping: 40,
             stiffness: 400,
           }}
@@ -104,7 +103,7 @@ export const NewPanelComponent = (props: PanelProps) => {
       <motion.div
         ref={constrainstRef2}
         className={styles.panelContainer2}
-        style={{ height: "100vh" }}
+        style={{ height: '100vh' }}
       ></motion.div>
     </div>
   );
