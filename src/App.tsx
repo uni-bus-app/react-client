@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { MotionValue } from "framer-motion";
-import logo from "./logo.svg";
-import "./App.css";
-import { Map } from "./components/Map/Map";
-import { NewPanelComponent } from "./components/NewPanel/NewPanel";
-// import "../styles/globals.css";
-import { Stop } from "./models/stop";
-import { getStops } from "./api/APIUtils";
-import { FormControl, MenuItem, Select } from "@material-ui/core";
-import styles from "./styles/Home.module.css";
+import React, { useState, useEffect, ChangeEvent, useMemo } from 'react';
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import { MotionValue } from 'framer-motion';
+import logo from './logo.svg';
+import './App.css';
+import { Map } from './components/Map/Map';
+import { NewPanelComponent } from './components/NewPanel/NewPanel';
+import Home from './components/Home/Home';
+import { Stop } from './models/stop';
+import { TimesListComponent } from './components/TimesList/TimesList';
+import StopView from './components/StopView/StopView';
+import Settings from './components/Settings/Settings';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 
 function App() {
   const [value, setValue] = useState<MotionValue<number>>(new MotionValue(0));
@@ -41,21 +43,22 @@ function App() {
       <NewPanelComponent
         onLoad={onPanelLoad}
         panel1Children={
-          <>
-            <FormControl className={styles.stopSelector}>
-              <Select
-                className={styles.stopSelectorSelect}
-                value={currentStop}
-                onChange={selectStop}
-              >
-                {stops.map((stop: Stop) => {
-                  return <MenuItem value={stop as any}>{stop.name}</MenuItem>;
-                })}
-              </Select>
-            </FormControl>
-          </>
-        }
-      />
+            <Router>
+              <Switch>
+                <Route path="/home">home</Route>
+                <Route path="/stopview">stopview</Route>
+              </Switch>
+            </Router>
+          }
+          panel2Children={
+            <Router>
+              <Switch>
+                <Route path="/stopview">stopview</Route>
+                <Route path="/settings">settings</Route>
+              </Switch>
+            </Router>
+          }
+        />
     </>
     // </div>
   );
