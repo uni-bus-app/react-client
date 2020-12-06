@@ -14,35 +14,49 @@ import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 
 function App() {
   const [value, setValue] = useState<MotionValue<number>>(new MotionValue(0));
+  const [currentStop, setCurrentStop] = useState<Stop>();
   const onPanelLoad = (motionValue: MotionValue<number>) => {
     setValue(motionValue);
   };
-  const [stops, setStops] = useState([]);
-  const [currentStop, setCurrentStop] = useState<Stop>();
-  useEffect(() => {
-    const getData = async () => {
-      const res = await getStops();
-      setStops(res);
-    };
-    getData();
-  }, []);
-  const selectStop = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setCurrentStop(event.target.value as Stop);
+  const [darkMode, setDarkMode] = useState<boolean>(false);
+  const handleDarkModeChange = (
+    event: ChangeEvent<HTMLInputElement>,
+    checked: boolean
+  ) => {
+    setDarkMode(checked);
   };
+  const onMarkerSelect = (stop: Stop) => {
+    console.log(stop);
+    setCurrentStop(stop);
+  };
+
+  const theme = useMemo(
+    () =>
+      createMuiTheme({
+        palette: {
+          type: darkMode ? 'dark' : 'light',
+        },
+      }),
+    [darkMode]
+  );
+
   return (
     // <div className="App">
     <>
-      <Map
-        position={{ lat: 50.794236, lng: -1.075 }}
-        padding={{ bottom: 812 / 2 }}
-        logoPosition={value}
-        stopMarkersEnabled={true}
-        routeOverlayEnabled={true}
-        currentStop={currentStop}
-      />
-      <NewPanelComponent
-        onLoad={onPanelLoad}
-        panel1Children={
+      <ThemeProvider theme={theme}>
+        <Map
+          position={{ lat: 50.794236, lng: -1.075 }}
+          padding={{ bottom: 812 / 2 }}
+          logoPosition={value}
+          stopMarkersEnabled={true}
+          routeOverlayEnabled={true}
+          darkModeEnabled={darkMode}
+          currentStop={currentStop}
+          onMarkerSelect={onMarkerSelect}
+        />
+        <NewPanelComponent
+          onLoad={onPanelLoad}
+          panel1Children={
             <Router>
               <Switch>
                 <Route path="/home">home</Route>
@@ -59,6 +73,7 @@ function App() {
             </Router>
           }
         />
+      </ThemeProvider>
     </>
     // </div>
   );
