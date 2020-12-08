@@ -13,9 +13,7 @@ export default function BottomSheet(props: BottomSheetProps) {
 
   return (
     <>
-      <button onClick={() => setOpen(true)}>Open sheet</button>
-
-      <Sheet isOpen={isOpen} onClose={() => setOpen(false)}>
+      <Sheet isOpen={props.open} onClose={() => setOpen(false)}>
         <Sheet.Container>
           <Sheet.Header>{title}</Sheet.Header>
           <Sheet.Content>{children}</Sheet.Content>

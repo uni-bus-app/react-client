@@ -1,5 +1,5 @@
 import BottomSheet from './bottomsheet';
-import React, { useRef } from 'react';
+import React from 'react';
 
 export default {
   title: 'BottomSheet',
@@ -12,4 +12,5 @@ export const Default = Template.bind({});
 
 Default.args = {
   title: 'TEST',
+  open: true,
 };
