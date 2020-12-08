@@ -1,8 +1,7 @@
-import React, { useState, useEffect, ChangeEvent, useMemo } from 'react';
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import React, { useState, ChangeEvent, useMemo, useEffect } from 'react';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { MotionValue } from 'framer-motion';
-import logo from './logo.svg';
-import './App.css';
+import styles from './App.module.css';
 import { Map } from './components/Map/Map';
 import { NewPanelComponent } from './components/NewPanel/NewPanel';
 import Home from './components/Home/Home';
@@ -10,25 +9,57 @@ import { Stop } from './models/stop';
 import { TimesListComponent } from './components/TimesList/TimesList';
 import StopView from './components/StopView/StopView';
 import Settings from './components/Settings/Settings';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core';
+import {
+  createMuiTheme,
+  FormControl,
+  MenuItem,
+  Select,
+  ThemeProvider,
+  useMediaQuery,
+} from '@material-ui/core';
+import { getStops } from './api/APIUtils';
+import { Time } from './models/time';
 
 function App() {
   const [value, setValue] = useState<MotionValue<number>>(new MotionValue(0));
   const [currentStop, setCurrentStop] = useState<Stop>();
+  const [stops, setStops] = useState([]);
   const onPanelLoad = (motionValue: MotionValue<number>) => {
     setValue(motionValue);
   };
-  const [darkMode, setDarkMode] = useState<boolean>(false);
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+  const [systemTheme, setSystemTheme] = useState<boolean>(true);
+  const [darkModeOverride, setDarkModeOverride] = useState<boolean>(false);
+  const [darkMode, setDarkMode] = useState<boolean>(
+    prefersDarkMode || darkModeOverride
+  );
+
+  const handleAutoDarkModeChange = (
+    event: ChangeEvent<HTMLInputElement>,
+    checked: boolean
+  ) => {
+    setSystemTheme(checked);
+    setDarkMode(checked || darkModeOverride);
+  };
   const handleDarkModeChange = (
     event: ChangeEvent<HTMLInputElement>,
     checked: boolean
   ) => {
-    setDarkMode(checked);
+    setDarkModeOverride(checked);
+    setDarkMode(checked || systemTheme);
   };
   const onMarkerSelect = (stop: Stop) => {
-    console.log(stop);
+    // console.log(stop);
     setCurrentStop(stop);
   };
+
+  useEffect(() => {
+    const getData = async () => {
+      const res = await getStops();
+      setStops(res);
+    };
+    getData();
+  }, []);
 
   const theme = useMemo(
     () =>
@@ -39,10 +70,22 @@ function App() {
       }),
     [darkMode]
   );
+  const navigate = useNavigate();
+  const selectStop = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setCurrentStop(event.target.value as Stop);
+
+    // navigate('stopview');
+  };
+
+  const [nextBusTime, setNextBusTime] = useState<Time>();
+
+  const handleNextTimeChange = (nextTime: Time) => {
+    setNextBusTime(nextTime);
+  };
 
   return (
-    // <div className="App">
     <>
+      {/* <Router> */}
       <ThemeProvider theme={theme}>
         <Map
           position={{ lat: 50.794236, lng: -1.075 }}
@@ -57,25 +100,60 @@ function App() {
         <NewPanelComponent
           onLoad={onPanelLoad}
           panel1Children={
-            <Router>
-              <Switch>
-                <Route path="/home">home</Route>
-                <Route path="/stopview">stopview</Route>
-              </Switch>
-            </Router>
+            <>
+              <FormControl className={styles.stopSelector}>
+                <Select
+                  className={styles.stopSelectorSelect}
+                  value={currentStop}
+                  onChange={selectStop}
+                >
+                  {stops.map((stop: Stop) => {
+                    return <MenuItem value={stop as any}>{stop.name}</MenuItem>;
+                  })}
+                </Select>
+              </FormControl>
+              <Routes>
+                <Route path="/">
+                  <Navigate to="/home" />
+                </Route>
+                <Route path="/home">
+                  <Home
+                    onStopSelected={setCurrentStop}
+                    currentStop={currentStop}
+                  />
+                </Route>
+                <Route path="/stopview">
+                  {currentStop && (
+                    <StopView stop={currentStop} nextTime={nextBusTime} />
+                  )}
+                </Route>
+              </Routes>
+            </>
           }
           panel2Children={
-            <Router>
-              <Switch>
-                <Route path="/stopview">stopview</Route>
-                <Route path="/settings">settings</Route>
-              </Switch>
-            </Router>
+            <Routes>
+              <Route path="/stopview">
+                {currentStop && (
+                  <TimesListComponent
+                    stopID={currentStop.id}
+                    onNextStopUpdate={handleNextTimeChange}
+                  />
+                )}
+              </Route>
+              <Route path="/settings">
+                <Settings
+                  darkMode={darkModeOverride}
+                  onDarkModeChange={handleDarkModeChange}
+                  autoDarkMode={systemTheme}
+                  onAutoDarkModeChange={handleAutoDarkModeChange}
+                />
+              </Route>
+            </Routes>
           }
         />
       </ThemeProvider>
+      {/* </Router> */}
     </>
-    // </div>
   );
 }
 
