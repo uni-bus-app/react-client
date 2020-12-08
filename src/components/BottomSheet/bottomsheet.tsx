@@ -3,7 +3,7 @@ import Sheet from 'react-modal-sheet';
 
 interface BottomSheetProps {
   children: ReactNode;
-  title: string;
+  title?: string;
 }
 
 export default function BottomSheet(props: BottomSheetProps) {
