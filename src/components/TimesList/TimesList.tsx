@@ -1,36 +1,45 @@
-import { useEffect, useState } from "react";
-import { getTimes, updateServiceEta } from "../../api/APIUtils";
-import { Time } from "../../models/time";
-import { TimeComponent } from "../Time/Time";
-import styles from "./TimesList.module.css";
+import { useEffect, useState } from 'react';
+import { getTimes, updateServiceEta } from '../../api/APIUtils';
+import { Time } from '../../models/time';
+import { TimeComponent } from '../Time/Time';
+import styles from './TimesList.module.css';
 
 interface TimesListProps {
-  stopID: string;
+  stopID?: string | undefined;
+  onNextStopUpdate?: (time: Time) => void;
 }
 
 export function TimesListComponent(props: TimesListProps) {
-  const { stopID } = props;
+  const { stopID, onNextStopUpdate } = props;
 
   const [times, setTimes] = useState<Time[]>();
   const [intervalID, setIntervalID] = useState<number>();
 
   useEffect(() => {
-    getTimes(stopID).then((data) => {
-      window.clearInterval(intervalID);
-      setTimes(data);
-      setIntervalID(
-        window.setInterval(() => {
-          const result: Time[] = [];
-          data.forEach((time) => {
-            const { eta, etaUnit } = updateServiceEta(time.timeValue);
-            if (eta) {
-              result.push({ ...time, eta, etaUnit });
+    if (stopID) {
+      getTimes(stopID).then((data) => {
+        window.clearInterval(intervalID);
+        // if (onNextStopUpdate) {
+        //   onNextStopUpdate(data[0]);
+        // }
+        setTimes(data);
+        setIntervalID(
+          window.setInterval(() => {
+            const result: Time[] = [];
+            data.forEach((time) => {
+              const { eta, etaUnit } = updateServiceEta(time.timeValue);
+              if (eta) {
+                result.push({ ...time, eta, etaUnit });
+              }
+            });
+            if (onNextStopUpdate) {
+              // onNextStopUpdate(result[0]);
             }
-          });
-          setTimes(result);
-        }, 1000)
-      );
-    });
+            setTimes(result);
+          }, 1000)
+        );
+      });
+    }
 
     return () => {
       window.clearInterval(intervalID);

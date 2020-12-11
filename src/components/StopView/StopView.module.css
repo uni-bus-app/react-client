@@ -1,0 +1,14 @@
+.stopTitle {
+  width: 100%;
+  display: flex;
+  text-align: center;
+  font-weight: 700;
+  justify-content: center !important;
+  font-size: 1.5em;
+  padding-top: 10px;
+  font-family: Open Sans, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-smooth: antialiased;
+  text-rendering: optimizeLegibility;
+  text-shadow: rgba(0, 0, 0, 0.01) 0 0 1px;
+}
