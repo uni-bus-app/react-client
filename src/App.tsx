@@ -48,10 +48,6 @@ function App() {
     setDarkModeOverride(checked);
     setDarkMode(checked || systemTheme);
   };
-  const onMarkerSelect = (stop: Stop) => {
-    // console.log(stop);
-    setCurrentStop(stop);
-  };
 
   useEffect(() => {
     const getData = async () => {
@@ -73,10 +69,11 @@ function App() {
   const navigate = useNavigate();
   const selectStop = (event: React.ChangeEvent<{ value: unknown }>) => {
     setCurrentStop(event.target.value as Stop);
-
-    // navigate('stopview');
   };
-
+  const onMarkerSelect = (stop: Stop) => {
+    navigate('stopview');
+    setCurrentStop(stop);
+  };
   const [nextBusTime, setNextBusTime] = useState<Time>();
 
   const handleNextTimeChange = (nextTime: Time) => {
