@@ -1,8 +1,8 @@
-import { Map } from "./Map";
-import React from "react";
+import { Map } from './Map';
+import React from 'react';
 
 export default {
-  title: "Map",
+  title: 'Map',
   component: Map,
 };
 

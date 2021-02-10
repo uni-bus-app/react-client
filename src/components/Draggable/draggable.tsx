@@ -1,11 +1,11 @@
-import { ReactNode, useRef, useState, useEffect } from "react";
+import { ReactNode, useRef, useState, useEffect } from 'react';
 import {
   motion,
   useDragControls,
   useMotionValue,
   useAnimation,
   PanInfo,
-} from "framer-motion";
+} from 'framer-motion';
 
 interface DraggableProps {
   persist: boolean;
@@ -27,9 +27,9 @@ export default function Draggable(props: DraggableProps) {
     const shouldClose =
       info.velocity.x > 20 || (info.velocity.x >= 0 && info.point.x > 100);
     if (shouldClose || persist) {
-      controls.start("stage0");
+      controls.start('stage0');
     } else {
-      controls.start("stage1");
+      controls.start('stage1');
       endAction();
     }
   };
@@ -45,7 +45,7 @@ export default function Draggable(props: DraggableProps) {
       onUpdate={onUpdate}
       animate={controls}
       transition={{
-        type: "spring",
+        type: 'spring',
         damping: 40,
         stiffness: 400,
       }}

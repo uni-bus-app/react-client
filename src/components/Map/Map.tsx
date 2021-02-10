@@ -3,26 +3,26 @@ import {
   Marker,
   Polyline,
   useJsApiLoader,
-} from "@react-google-maps/api";
-import { mapStylesLight } from "./mapstyles-light";
-import { mapStylesDark } from "./mapstyles-dark";
-import { useEffect, useRef, useState } from "react";
-import { getRoutePath, getStops } from "../../api/APIUtils";
-import { Stop } from "../../models/stop";
-import purpleStopMarker from "../../assets/stop-marker-icon-purple.svg";
-import blueStopMarker from "../../assets/stop-marker-icon-blue.svg";
-import { CSSProperties } from "@material-ui/core/styles/withStyles";
+} from '@react-google-maps/api';
+import { mapStylesLight } from './mapstyles-light';
+import { mapStylesDark } from './mapstyles-dark';
+import { useEffect, useRef, useState } from 'react';
+import { getRoutePath, getStops } from '../../api/APIUtils';
+import { Stop } from '../../models/stop';
+import purpleStopMarker from '../../assets/stop-marker-icon-purple.svg';
+import blueStopMarker from '../../assets/stop-marker-icon-blue.svg';
+import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import {
   motion,
   MotionValue,
   useMotionValue,
   useTransform,
-} from "framer-motion";
-import { config } from "../../config";
+} from 'framer-motion';
+import { config } from '../../config';
 
 const mapOptions: google.maps.MapOptions = {
   disableDefaultUI: true,
-  gestureHandling: "greedy",
+  gestureHandling: 'greedy',
   clickableIcons: false,
 };
 
@@ -119,7 +119,7 @@ export const Map = (props: MapProps) => {
     let isCalled = false;
     const mapObserver = new MutationObserver((mutationList, observer) => {
       for (const mutation of mutationList) {
-        if (mutation.type === "childList") {
+        if (mutation.type === 'childList') {
           const logoElement = map.__gm.Ma.querySelector('[rel="noopener"]');
           if (logoElement) {
             if (!isCalled) {
@@ -134,7 +134,7 @@ export const Map = (props: MapProps) => {
         }
       }
     });
-    mapObserver.observe(map.__gm.Ma, { childList: true, subtree: true });
+    // mapObserver.observe(map.__gm.Ma, { childList: true, subtree: true });
   };
 
   const { isLoaded, loadError } = useJsApiLoader({
@@ -157,17 +157,17 @@ export const Map = (props: MapProps) => {
       <>
         <motion.div
           style={{
-            position: "absolute",
+            position: 'absolute',
             zIndex: 99999,
-            bottom: "52vh",
-            left: "4vw",
+            bottom: '52vh',
+            left: '4vw',
             x: logoPos,
           }}
           ref={logoContainer}
         ></motion.div>
         <GoogleMap
           mapContainerStyle={{
-            ...(style || { width: "100vw", height: "100vh" }),
+            ...(style || { width: '100vw', height: '100vh' }),
             zIndex: 10,
           }}
           options={{
@@ -181,7 +181,7 @@ export const Map = (props: MapProps) => {
             <Polyline
               path={routeOverlay}
               options={{
-                strokeColor: darkModeEnabled ? "#03A9F4" : "#7B1FA2",
+                strokeColor: darkModeEnabled ? '#03A9F4' : '#7B1FA2',
                 strokeOpacity: 0.75,
               }}
             />
