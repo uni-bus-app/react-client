@@ -19,7 +19,7 @@
     "dayjs": "^1.9.6",
     "framer-motion": "^2.9.5",
     "history": "^5.0.0",
-    "idb": "^5.0.8",
+    "idb-keyval": "^6.0.3",
     "object-hash": "^2.0.3",
     "react": "^17.0.1",
     "react-device-detect": "^1.14.0",

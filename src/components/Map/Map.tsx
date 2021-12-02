@@ -12,7 +12,7 @@ import { Stop } from '../../models/stop';
 import purpleStopMarker from '../../assets/stop-marker-icon-purple.svg';
 import blueStopMarker from '../../assets/stop-marker-icon-blue.svg';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
-import { config } from '../../config';
+import config from '../../config';
 
 const mapOptions: google.maps.MapOptions = {
   disableDefaultUI: true,

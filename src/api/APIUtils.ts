@@ -1,6 +1,7 @@
 import dayjs, { Dayjs } from 'dayjs';
 import { Stop } from '../models/stop';
 import { Time } from '../models/time';
+import idbService from './LocalDB';
 
 const apiURL = 'https://20210404t132447-dot-unibus-app.nw.r.appspot.com';
 
@@ -11,8 +12,13 @@ export const getRoutePath: () => Promise<google.maps.LatLng[]> = async () => {
 
 export const getStops: () => Promise<any> = async () => {
   try {
-    const res = await fetch(`${apiURL}/stops`);
-    return parseStops(await res.json());
+    const stops = await idbService.getStops();
+    if (stops && stops?.length > 0) {
+      return parseStops(stops);
+    } else {
+      const res = await fetch(`${apiURL}/stops`);
+      return parseStops(await res.json());
+    }
   } catch (error) {
     throw error;
   }
@@ -37,8 +43,13 @@ const parseStops: (data: any[]) => Stop[] = (data: any[]) => {
 export const getTimes: (stopID: string) => Promise<Time[]> = async (
   stopID: string
 ) => {
-  const res = await fetch(`${apiURL}/stops/${stopID}/times`);
-  return parseTimes(await res.json());
+  const localTimes = await idbService.getTimes(stopID);
+  if (localTimes?.times?.length) {
+    return parseTimes(localTimes.times);
+  } else {
+    const res = await fetch(`${apiURL}/stops/${stopID}/times`);
+    return parseTimes(await res.json());
+  }
 };
 
 const parseTimes: (data: any[]) => Time[] = (data: any[]) => {

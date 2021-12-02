@@ -17,6 +17,7 @@ import {
 } from '@material-ui/core';
 import { getStops } from './api/APIUtils';
 import { Time } from './models/time';
+import idbService from './api/LocalDB';
 
 function App() {
   const [currentStop, setCurrentStop] = useState<Stop>();
@@ -73,6 +74,10 @@ function App() {
   const handleNextTimeChange = (nextTime: Time) => {
     setNextBusTime(nextTime);
   };
+
+  useEffect(() => {
+    idbService.sync();
+  }, []);
 
   return (
     <>
