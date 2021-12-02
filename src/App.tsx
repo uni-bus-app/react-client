@@ -3,7 +3,6 @@ import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { MotionValue } from 'framer-motion';
 import styles from './App.module.css';
 import { Map } from './components/Map/Map';
-import { NewPanelComponent } from './components/NewPanel/NewPanel';
 import Home from './components/Home/Home';
 import { Stop } from './models/stop';
 import { TimesListComponent } from './components/TimesList/TimesList';
@@ -12,6 +11,7 @@ import Settings from './components/Settings/Settings';
 import {
   createMuiTheme,
   FormControl,
+  InputLabel,
   MenuItem,
   Select,
   ThemeProvider,
@@ -94,38 +94,42 @@ function App() {
           currentStop={currentStop}
           onMarkerSelect={onMarkerSelect}
         />
-        <NewPanelComponent
+        <div style={{ width: '100%', height: '50%' }}>
+          <Routes>
+            <Route path="/">
+              <Navigate to="/home" />
+            </Route>
+            <Route path="/home">
+              {/* <Home onStopSelected={setCurrentStop} currentStop={currentStop} /> */}
+              <>
+                <FormControl className={styles.stopSelector}>
+                  <InputLabel>Select a stop</InputLabel>
+                  <Select
+                    className={styles.stopSelectorSelect}
+                    value={currentStop}
+                    onChange={selectStop}
+                    label="Select a stop"
+                  >
+                    {stops.map((stop: Stop) => {
+                      return (
+                        <MenuItem value={stop as any}>{stop.name}</MenuItem>
+                      );
+                    })}
+                  </Select>
+                </FormControl>
+              </>
+            </Route>
+            <Route path="/stopview">
+              {currentStop && (
+                <StopView stop={currentStop} nextTime={nextBusTime} />
+              )}
+            </Route>
+          </Routes>
+        </div>
+        {/* <NewPanelComponent
           onLoad={onPanelLoad}
           panel1Children={
-            <>
-              <FormControl className={styles.stopSelector}>
-                <Select
-                  className={styles.stopSelectorSelect}
-                  value={currentStop}
-                  onChange={selectStop}
-                >
-                  {stops.map((stop: Stop) => {
-                    return <MenuItem value={stop as any}>{stop.name}</MenuItem>;
-                  })}
-                </Select>
-              </FormControl>
-              <Routes>
-                <Route path="/">
-                  <Navigate to="/home" />
-                </Route>
-                <Route path="/home">
-                  <Home
-                    onStopSelected={setCurrentStop}
-                    currentStop={currentStop}
-                  />
-                </Route>
-                <Route path="/stopview">
-                  {currentStop && (
-                    <StopView stop={currentStop} nextTime={nextBusTime} />
-                  )}
-                </Route>
-              </Routes>
-            </>
+            
           }
           panel2Children={
             <Routes>
@@ -147,7 +151,7 @@ function App() {
               </Route>
             </Routes>
           }
-        />
+        /> */}
       </ThemeProvider>
       {/* </Router> */}
     </>

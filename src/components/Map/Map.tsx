@@ -100,7 +100,7 @@ export const Map = (props: MapProps) => {
   useEffect(() => {
     if (map) {
       const bounds = getBounds(position, 0.5);
-      map.fitBounds(bounds, padding);
+      map.fitBounds(bounds);
     }
   }, [position]);
 
@@ -111,7 +111,7 @@ export const Map = (props: MapProps) => {
         { lat: currentStop.location.lat(), lng: currentStop.location.lng() },
         0.05
       );
-      map.fitBounds(bounds, padding);
+      map.fitBounds(bounds);
     }
   }, [currentStop]);
 
@@ -159,7 +159,7 @@ export const Map = (props: MapProps) => {
           style={{
             position: 'absolute',
             zIndex: 99999,
-            bottom: '52vh',
+            // bottom: '52vh',
             left: '4vw',
             x: logoPos,
           }}
@@ -167,7 +167,7 @@ export const Map = (props: MapProps) => {
         ></motion.div>
         <GoogleMap
           mapContainerStyle={{
-            ...(style || { width: '100vw', height: '100vh' }),
+            ...(style || { width: '100vw', height: '50vh' }),
             zIndex: 10,
           }}
           options={{

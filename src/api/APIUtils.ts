@@ -2,7 +2,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { Stop } from '../models/stop';
 import { Time } from '../models/time';
 
-const apiURL = 'https://20200817t190317-dot-unibus-app.nw.r.appspot.com';
+const apiURL = 'https://20210404t132447-dot-unibus-app.nw.r.appspot.com';
 
 export const getRoutePath: () => Promise<google.maps.LatLng[]> = async () => {
   const res = await fetch(`${apiURL}/u1routepath`);
