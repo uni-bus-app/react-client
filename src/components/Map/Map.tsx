@@ -12,12 +12,6 @@ import { Stop } from '../../models/stop';
 import purpleStopMarker from '../../assets/stop-marker-icon-purple.svg';
 import blueStopMarker from '../../assets/stop-marker-icon-blue.svg';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
-import {
-  motion,
-  MotionValue,
-  useMotionValue,
-  useTransform,
-} from 'framer-motion';
 import { config } from '../../config';
 
 const mapOptions: google.maps.MapOptions = {
@@ -41,12 +35,10 @@ const getLocation: () => Promise<google.maps.LatLngLiteral> = () => {
 interface MapProps {
   style?: CSSProperties;
   position: google.maps.LatLngLiteral;
-  padding?: google.maps.Padding;
   darkModeEnabled?: boolean;
   routeOverlayEnabled?: boolean;
   stopMarkersEnabled?: boolean;
   onMarkerSelect?: (stop: Stop) => void;
-  logoPosition: MotionValue<number>;
   currentStop?: Stop;
 }
 
@@ -54,12 +46,10 @@ export const Map = (props: MapProps) => {
   const {
     position,
     style,
-    padding,
     darkModeEnabled,
     routeOverlayEnabled,
     stopMarkersEnabled,
     onMarkerSelect,
-    logoPosition,
     currentStop,
   } = props;
 
@@ -68,12 +58,6 @@ export const Map = (props: MapProps) => {
   const [stops, setStops] = useState<Stop[]>();
   const [selectedStop, setSelectedStop] = useState<Stop>();
   const logoContainer = useRef() as any;
-
-  const initialLogoPosition = useMotionValue(0);
-  const logoPos = useTransform(
-    logoPosition || initialLogoPosition,
-    (value) => value - window.innerWidth
-  );
 
   const getBounds = (
     value: google.maps.LatLngLiteral,
@@ -145,7 +129,7 @@ export const Map = (props: MapProps) => {
     const onLoad = (mapInstance: google.maps.Map) => {
       setMap(mapInstance);
       const bounds = getBounds(position, 0.5);
-      mapInstance.fitBounds(bounds, padding);
+      mapInstance.fitBounds(bounds);
       moveLogo(mapInstance);
     };
 
@@ -155,16 +139,6 @@ export const Map = (props: MapProps) => {
 
     return (
       <>
-        <motion.div
-          style={{
-            position: 'absolute',
-            zIndex: 99999,
-            // bottom: '52vh',
-            left: '4vw',
-            x: logoPos,
-          }}
-          ref={logoContainer}
-        ></motion.div>
         <GoogleMap
           mapContainerStyle={{
             ...(style || { width: '100vw', height: '50vh' }),
@@ -214,7 +188,7 @@ export const Map = (props: MapProps) => {
                       },
                       0.05
                     );
-                    map?.fitBounds(bounds, padding);
+                    map?.fitBounds(bounds);
                     onMarkerSelect && onMarkerSelect(stop);
                   }}
                 />

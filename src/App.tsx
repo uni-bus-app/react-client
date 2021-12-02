@@ -1,13 +1,11 @@
 import React, { useState, ChangeEvent, useMemo, useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-import { MotionValue } from 'framer-motion';
 import styles from './App.module.css';
 import { Map } from './components/Map/Map';
 import Home from './components/Home/Home';
 import { Stop } from './models/stop';
 import { TimesListComponent } from './components/TimesList/TimesList';
 import StopView from './components/StopView/StopView';
-import Settings from './components/Settings/Settings';
 import {
   createMuiTheme,
   FormControl,
@@ -21,12 +19,8 @@ import { getStops } from './api/APIUtils';
 import { Time } from './models/time';
 
 function App() {
-  const [value, setValue] = useState<MotionValue<number>>(new MotionValue(0));
   const [currentStop, setCurrentStop] = useState<Stop>();
   const [stops, setStops] = useState([]);
-  const onPanelLoad = (motionValue: MotionValue<number>) => {
-    setValue(motionValue);
-  };
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const [systemTheme, setSystemTheme] = useState<boolean>(true);
   const [darkModeOverride, setDarkModeOverride] = useState<boolean>(false);
@@ -82,12 +76,9 @@ function App() {
 
   return (
     <>
-      {/* <Router> */}
       <ThemeProvider theme={theme}>
         <Map
           position={{ lat: 50.794236, lng: -1.075 }}
-          padding={{ bottom: 812 / 2 }}
-          logoPosition={value}
           stopMarkersEnabled={true}
           routeOverlayEnabled={true}
           darkModeEnabled={darkMode}
@@ -153,7 +144,6 @@ function App() {
           }
         /> */}
       </ThemeProvider>
-      {/* </Router> */}
     </>
   );
 }
