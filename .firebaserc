@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "uni-bus-dev"
-  }
+    "default": "uni-bus-dev",
+    "development": "uni-bus-dev"
+  },
+  "targets": {}
 }

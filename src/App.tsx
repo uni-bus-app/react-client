@@ -86,7 +86,7 @@ function App() {
           position={{ lat: 50.794236, lng: -1.075 }}
           stopMarkersEnabled={true}
           routeOverlayEnabled={true}
-          darkModeEnabled={darkMode}
+          darkModeEnabled={prefersDarkMode}
           currentStop={currentStop}
           onMarkerSelect={onMarkerSelect}
         />
