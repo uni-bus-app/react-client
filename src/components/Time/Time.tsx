@@ -1,4 +1,4 @@
-import { DirectionsBus } from '@material-ui/icons';
+import { DirectionsBus } from '@mui/icons-material';
 import styles from './Time.module.css';
 
 interface TimeProps {

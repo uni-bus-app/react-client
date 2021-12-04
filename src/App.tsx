@@ -6,15 +6,12 @@ import Home from './components/Home/Home';
 import { Stop } from './models/stop';
 import { TimesListComponent } from './components/TimesList/TimesList';
 import StopView from './components/StopView/StopView';
-import {
-  createMuiTheme,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  ThemeProvider,
-  useMediaQuery,
-} from '@material-ui/core';
+import FormControl from '@mui/material/FormControl';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { ThemeProvider, createTheme } from '@material-ui/core/styles';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { getStops } from './api/APIUtils';
 import { Time } from './models/time';
 import idbService from './api/LocalDB';
@@ -54,7 +51,7 @@ function App() {
 
   const theme = useMemo(
     () =>
-      createMuiTheme({
+      createTheme({
         palette: {
           type: darkMode ? 'dark' : 'light',
         },
@@ -62,7 +59,7 @@ function App() {
     [darkMode]
   );
   const navigate = useNavigate();
-  const selectStop = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const selectStop = (event: SelectChangeEvent<Stop>) => {
     setCurrentStop(event.target.value as Stop);
   };
   const onMarkerSelect = (stop: Stop) => {
