@@ -60,6 +60,7 @@ function App() {
   );
   const navigate = useNavigate();
   const selectStop = (event: SelectChangeEvent<Stop>) => {
+    navigate('stopview');
     setCurrentStop(event.target.value as Stop);
   };
   const onMarkerSelect = (stop: Stop) => {
@@ -67,6 +68,11 @@ function App() {
     setCurrentStop(stop);
   };
   const [nextBusTime, setNextBusTime] = useState<Time>();
+
+  const unSelectStop = () => {
+    setCurrentStop(undefined);
+    navigate('home');
+  };
 
   const handleNextTimeChange = (nextTime: Time) => {
     setNextBusTime(nextTime);
@@ -114,7 +120,11 @@ function App() {
             </Route>
             <Route path="/stopview">
               {currentStop && (
-                <StopView stop={currentStop} nextTime={nextBusTime} />
+                <StopView
+                  stop={currentStop}
+                  nextTime={nextBusTime}
+                  unSelectStop={unSelectStop}
+                />
               )}
             </Route>
           </Routes>

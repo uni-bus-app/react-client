@@ -1,3 +1,5 @@
+import { IconButton } from '@mui/material';
+import { ArrowBack } from '@mui/icons-material';
 import { useEffect, useState } from 'react';
 import { getTimes, updateServiceEta } from '../../api/APIUtils';
 import { Stop } from '../../models/stop';
@@ -7,10 +9,11 @@ import styles from './StopView.module.css';
 interface StopViewProps {
   stop: Stop;
   nextTime: Time | undefined;
+  unSelectStop: () => void;
 }
 
 const StopView = (props: StopViewProps) => {
-  const { stop, nextTime } = props;
+  const { stop, nextTime, unSelectStop } = props;
   // const { stopID, onNextStopUpdate } = props;
 
   const [times, setTimes] = useState<Time[]>();
@@ -49,6 +52,9 @@ const StopView = (props: StopViewProps) => {
   }, [stop.id]);
   return (
     <>
+      <IconButton onClick={unSelectStop}>
+        <ArrowBack />
+      </IconButton>
       <div className={styles.stopTitle}>{stop.name}</div>
       {times?.[0] && (
         <div>
