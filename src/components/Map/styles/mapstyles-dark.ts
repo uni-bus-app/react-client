@@ -1,4 +1,4 @@
-export const mapStylesDark: Array<google.maps.MapTypeStyle> = [
+const mapStylesDark: Array<google.maps.MapTypeStyle> = [
   {
     elementType: 'geometry',
     stylers: [
@@ -159,3 +159,5 @@ export const mapStylesDark: Array<google.maps.MapTypeStyle> = [
     ],
   },
 ];
+
+export default mapStylesDark;

@@ -1,6 +1,5 @@
 import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
-import { mapStylesLight } from './mapstyles-light';
-import { mapStylesDark } from './mapstyles-dark';
+import { mapStylesLight, mapStylesDark } from './styles';
 import { useEffect, useRef, useState } from 'react';
 import { getRoutePath, getStops } from '../../api/APIUtils';
 import { Stop } from '../../models/stop';
@@ -88,10 +87,7 @@ export const Map = (props: MapProps) => {
     return (
       <>
         <GoogleMap
-          mapContainerStyle={{
-            ...(style || { width: '100vw', height: '50vh' }),
-            zIndex: 10,
-          }}
+          mapContainerStyle={{ width: '100vw', height: '50vh' }}
           options={{
             ...mapOptions,
             styles: darkModeEnabled ? mapStylesDark : mapStylesLight,

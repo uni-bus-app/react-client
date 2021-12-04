@@ -1,4 +1,4 @@
-export const mapStylesLight: Array<google.maps.MapTypeStyle> = [
+const mapStylesLight: Array<google.maps.MapTypeStyle> = [
   {
     featureType: 'administrative',
     elementType: 'geometry.fill',
@@ -278,3 +278,5 @@ export const mapStylesLight: Array<google.maps.MapTypeStyle> = [
     ],
   },
 ];
+
+export default mapStylesLight;
