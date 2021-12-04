@@ -1,35 +1,19 @@
-import {
-  GoogleMap,
-  Marker,
-  Polyline,
-  useJsApiLoader,
-} from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
 import { mapStylesLight } from './mapstyles-light';
 import { mapStylesDark } from './mapstyles-dark';
 import { useEffect, useRef, useState } from 'react';
 import { getRoutePath, getStops } from '../../api/APIUtils';
 import { Stop } from '../../models/stop';
-import purpleStopMarker from '../../assets/stop-marker-icon-purple.svg';
-import blueStopMarker from '../../assets/stop-marker-icon-blue.svg';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import config from '../../config';
+import StopMarkers from './components/StopMarkers';
+import { getBounds, moveLogo } from './Utils';
+import RoutePath from './components/RoutePath';
 
 const mapOptions: google.maps.MapOptions = {
   disableDefaultUI: true,
   gestureHandling: 'greedy',
   clickableIcons: false,
-};
-
-const getLocation: () => Promise<google.maps.LatLngLiteral> = () => {
-  return new Promise((resolve) => {
-    navigator.geolocation.getCurrentPosition((pos) => {
-      const position: google.maps.LatLngLiteral = {
-        lat: pos.coords.latitude,
-        lng: pos.coords.longitude,
-      };
-      resolve(position);
-    });
-  });
 };
 
 interface MapProps {
@@ -59,21 +43,6 @@ export const Map = (props: MapProps) => {
   const [selectedStop, setSelectedStop] = useState<Stop>();
   const logoContainer = useRef() as any;
 
-  const getBounds = (
-    value: google.maps.LatLngLiteral,
-    r: number
-  ): google.maps.LatLngBounds => {
-    const dY = (360 * r) / 6371;
-    const dX = dY * Math.cos(value.lng);
-    const lat1 = value.lat - dX;
-    const lng1 = value.lng - dY;
-    const lat2 = value.lat + dX;
-    const lng2 = value.lng + dY;
-    return new google.maps.LatLngBounds(
-      { lat: lat1, lng: lng1 },
-      { lat: lat2, lng: lng2 }
-    );
-  };
   useEffect(() => {
     const getData = async () => {
       setRouteOverlay(await getRoutePath());
@@ -81,6 +50,7 @@ export const Map = (props: MapProps) => {
     };
     getData();
   }, []);
+
   useEffect(() => {
     if (map) {
       const bounds = getBounds(position, 0.5);
@@ -99,28 +69,6 @@ export const Map = (props: MapProps) => {
     }
   }, [currentStop]);
 
-  const moveLogo = (map: any) => {
-    let isCalled = false;
-    const mapObserver = new MutationObserver((mutationList, observer) => {
-      for (const mutation of mutationList) {
-        if (mutation.type === 'childList') {
-          const logoElement = map.__gm.Ma.querySelector('[rel="noopener"]');
-          if (logoElement) {
-            if (!isCalled) {
-              isCalled = true;
-              observer.disconnect();
-              const logoEl = logoElement.parentElement.removeChild(logoElement);
-              if (logoEl && logoContainer) {
-                logoContainer?.current?.append(logoEl);
-              }
-            }
-          }
-        }
-      }
-    });
-    // mapObserver.observe(map.__gm.Ma, { childList: true, subtree: true });
-  };
-
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: config.mapsApiKey,
   });
@@ -130,7 +78,7 @@ export const Map = (props: MapProps) => {
       setMap(mapInstance);
       const bounds = getBounds(position, 0.5);
       mapInstance.fitBounds(bounds);
-      moveLogo(mapInstance);
+      moveLogo(mapInstance, logoContainer);
     };
 
     const onUnmount = () => {
@@ -151,49 +99,20 @@ export const Map = (props: MapProps) => {
           onLoad={onLoad}
           onUnmount={onUnmount}
         >
-          {routeOverlayEnabled && (
-            <Polyline
-              path={routeOverlay}
-              options={{
-                strokeColor: darkModeEnabled ? '#03A9F4' : '#7B1FA2',
-                strokeOpacity: 0.75,
-              }}
-            />
-          )}
-          {stopMarkersEnabled &&
-            stops?.map((stop, index) => {
-              return (
-                <Marker
-                  key={index}
-                  position={stop.location}
-                  options={{
-                    icon: {
-                      url:
-                        (darkModeEnabled &&
-                          selectedStop?.routeOrder !== index) ||
-                        (!darkModeEnabled && selectedStop?.routeOrder === index)
-                          ? blueStopMarker
-                          : purpleStopMarker,
-                      scaledSize: new google.maps.Size(35, 50),
-                      origin: new google.maps.Point(0, 0),
-                      anchor: new google.maps.Point(17.5, 50),
-                    },
-                  }}
-                  onClick={() => {
-                    setSelectedStop(stop);
-                    const bounds = getBounds(
-                      {
-                        lat: stop.location.lat(),
-                        lng: stop.location.lng(),
-                      },
-                      0.05
-                    );
-                    map?.fitBounds(bounds);
-                    onMarkerSelect && onMarkerSelect(stop);
-                  }}
-                />
-              );
-            })}
+          <RoutePath
+            enabled={routeOverlayEnabled}
+            path={routeOverlay}
+            darkModeEnabled={darkModeEnabled}
+          />
+          <StopMarkers
+            enabled={stopMarkersEnabled}
+            stops={stops}
+            darkModeEnabled={darkModeEnabled}
+            selectedStop={selectedStop}
+            setSelectedStop={setSelectedStop}
+            map={map}
+            onMarkerSelect={onMarkerSelect}
+          />
         </GoogleMap>
       </>
     );
