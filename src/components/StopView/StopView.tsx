@@ -13,36 +13,26 @@ interface StopViewProps {
 }
 
 const StopView = (props: StopViewProps) => {
-  const { stop, nextTime, unSelectStop } = props;
-  // const { stopID, onNextStopUpdate } = props;
+  const { stop, unSelectStop } = props;
 
   const [times, setTimes] = useState<Time[]>();
-  const [intervalID, setIntervalID] = useState<number>();
 
   useEffect(() => {
+    let intervalID = 0;
     if (stop.id) {
       getTimes(stop.id).then((data) => {
         window.clearInterval(intervalID);
-        // if (onNextStopUpdate) {
-        //   onNextStopUpdate(data[0]);
-        // }
         setTimes(data);
-        setIntervalID(
-          window.setInterval(() => {
-            const result: Time[] = [];
-            data.forEach((time) => {
-              const { eta, etaUnit } = updateServiceEta(time.timeValue);
-              if (eta) {
-                result.push({ ...time, eta, etaUnit });
-              }
-            });
-            // if (onNextStopUpdate) {
-            //   // onNextStopUpdate(result[0]);
-            // }
-            setTimes(result);
-            console.log(result);
-          }, 1000)
-        );
+        intervalID = window.setInterval(() => {
+          const result: Time[] = [];
+          data.forEach((time) => {
+            const { eta, etaUnit } = updateServiceEta(time.timeValue);
+            if (eta) {
+              result.push({ ...time, eta, etaUnit });
+            }
+          });
+          setTimes(result);
+        }, 1000);
       });
     }
 
@@ -50,6 +40,7 @@ const StopView = (props: StopViewProps) => {
       window.clearInterval(intervalID);
     };
   }, [stop.id]);
+
   return (
     <>
       <IconButton onClick={unSelectStop}>
