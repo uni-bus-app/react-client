@@ -1,6 +1,6 @@
 import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
 import { mapStylesLight, mapStylesDark } from './styles';
-import { useEffect, useRef, useState } from 'react';
+import { RefObject, useEffect, useState } from 'react';
 import { getRoutePath, getStops } from '../../api/APIUtils';
 import { Stop } from '../../models/stop';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
@@ -13,6 +13,7 @@ const mapOptions: google.maps.MapOptions = {
   disableDefaultUI: true,
   gestureHandling: 'greedy',
   clickableIcons: false,
+  zoom: 13,
 };
 
 interface MapProps {
@@ -23,6 +24,7 @@ interface MapProps {
   stopMarkersEnabled?: boolean;
   onMarkerSelect?: (stop: Stop) => void;
   currentStop?: Stop;
+  logoContainer: RefObject<HTMLDivElement>;
 }
 
 export const Map = (props: MapProps) => {
@@ -34,13 +36,13 @@ export const Map = (props: MapProps) => {
     stopMarkersEnabled,
     onMarkerSelect,
     currentStop,
+    logoContainer,
   } = props;
 
   const [map, setMap] = useState<google.maps.Map>();
   const [routeOverlay, setRouteOverlay] = useState<google.maps.LatLng[]>();
   const [stops, setStops] = useState<Stop[]>();
   const [selectedStop, setSelectedStop] = useState<Stop>();
-  const logoContainer = useRef() as any;
 
   useEffect(() => {
     const getData = async () => {
@@ -87,7 +89,11 @@ export const Map = (props: MapProps) => {
     return (
       <>
         <GoogleMap
-          mapContainerStyle={{ width: '100vw', height: '50vh' }}
+          mapContainerStyle={{
+            width: '100vw',
+            height: '40vh',
+            position: 'absolute',
+          }}
           options={{
             ...mapOptions,
             styles: darkModeEnabled ? mapStylesDark : mapStylesLight,

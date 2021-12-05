@@ -15,25 +15,45 @@ export const getBounds = (
 };
 
 export const moveLogo = (map: any, logoContainer: any) => {
+  let logo: any, tc1: any, tc2: any;
   let isCalled = false;
-  const mapObserver = new MutationObserver((mutationList, observer) => {
-    for (const mutation of mutationList) {
-      if (mutation.type === 'childList') {
-        const logoElement = map.__gm.Ma.querySelector('[rel="noopener"]');
-        if (logoElement) {
+  const observer = new MutationObserver((mutationList) => {
+    mutationList.forEach((mutation) => {
+      const onFinished = () => {
+        if (logo && tc1 && tc2) {
           if (!isCalled) {
             isCalled = true;
             observer.disconnect();
-            const logoEl = logoElement.parentElement.removeChild(logoElement);
-            if (logoEl && logoContainer) {
-              logoContainer?.current?.append(logoEl);
-            }
+            logoContainer.current.append(logo);
+            logoContainer.current.append(tc1);
+            logoContainer.current.append(tc2);
           }
         }
+      };
+      if (
+        Array.from((mutation.target as any).classList)?.includes('gmnoprint')
+      ) {
+        if (!tc1) {
+          tc1 = mutation.target;
+        } else if (!tc2 && mutation.target !== tc1) {
+          tc2 = mutation.target;
+        } else {
+          onFinished();
+        }
+      } else if ((mutation.target as any).getAttribute('rel')) {
+        if (!logo) {
+          logo = mutation.target;
+        } else {
+          onFinished();
+        }
       }
-    }
+    });
   });
-  // mapObserver.observe(map.__gm.Ma, { childList: true, subtree: true });
+  observer.observe(map.getDiv(), {
+    childList: true,
+    subtree: true,
+    attributes: true,
+  });
 };
 
 export const getLocation: () => Promise<google.maps.LatLngLiteral> = () => {

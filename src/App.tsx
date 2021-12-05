@@ -1,20 +1,22 @@
-import React, { useState, ChangeEvent, useMemo, useEffect } from 'react';
+import React, {
+  useState,
+  ChangeEvent,
+  useMemo,
+  useEffect,
+  useRef,
+} from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import styles from './App.module.css';
 import { Map } from './components/Map/Map';
 import Home from './components/Home/Home';
 import { Stop } from './models/stop';
-import { TimesListComponent } from './components/TimesList/TimesList';
 import StopView from './components/StopView/StopView';
-import FormControl from '@mui/material/FormControl';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { ThemeProvider, createTheme } from '@material-ui/core/styles';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { getStops } from './api/APIUtils';
 import { Time } from './models/time';
 import idbService from './api/LocalDB';
+import { Card } from '@material-ui/core';
 
 function App() {
   const [currentStop, setCurrentStop] = useState<Stop>();
@@ -25,6 +27,7 @@ function App() {
   const [darkMode, setDarkMode] = useState<boolean>(
     prefersDarkMode || darkModeOverride
   );
+  const logoContainer = useRef() as any;
 
   const handleAutoDarkModeChange = (
     event: ChangeEvent<HTMLInputElement>,
@@ -59,10 +62,6 @@ function App() {
     [darkMode]
   );
   const navigate = useNavigate();
-  const selectStop = (event: SelectChangeEvent<Stop>) => {
-    navigate('stopview');
-    setCurrentStop(event.target.value as Stop);
-  };
   const onMarkerSelect = (stop: Stop) => {
     navigate('stopview');
     setCurrentStop(stop);
@@ -92,31 +91,27 @@ function App() {
           darkModeEnabled={prefersDarkMode}
           currentStop={currentStop}
           onMarkerSelect={onMarkerSelect}
+          logoContainer={logoContainer}
         />
-        <div style={{ width: '100%', height: '50%' }}>
+        <div className={styles.logoContainer} ref={logoContainer} />
+        <Card
+          style={{
+            width: '100%',
+            height: '62.5%',
+            top: '37.5%',
+            position: 'absolute',
+          }}
+        >
           <Routes>
             <Route path="/">
               <Navigate to="/home" />
             </Route>
             <Route path="/home">
-              {/* <Home onStopSelected={setCurrentStop} currentStop={currentStop} /> */}
-              <>
-                <FormControl className={styles.stopSelector}>
-                  <InputLabel>Select a stop</InputLabel>
-                  <Select
-                    className={styles.stopSelectorSelect}
-                    value={currentStop}
-                    onChange={selectStop}
-                    label="Select a stop"
-                  >
-                    {stops.map((stop: Stop) => {
-                      return (
-                        <MenuItem value={stop as any}>{stop.name}</MenuItem>
-                      );
-                    })}
-                  </Select>
-                </FormControl>
-              </>
+              <Home
+                stops={stops}
+                setCurrentStop={setCurrentStop}
+                currentStop={currentStop}
+              />
             </Route>
             <Route path="/stopview">
               {currentStop && (
@@ -128,33 +123,7 @@ function App() {
               )}
             </Route>
           </Routes>
-        </div>
-        {/* <NewPanelComponent
-          onLoad={onPanelLoad}
-          panel1Children={
-            
-          }
-          panel2Children={
-            <Routes>
-              <Route path="/stopview">
-                {currentStop && (
-                  <TimesListComponent
-                    stopID={currentStop.id}
-                    onNextStopUpdate={handleNextTimeChange}
-                  />
-                )}
-              </Route>
-              <Route path="/settings">
-                <Settings
-                  darkMode={darkModeOverride}
-                  onDarkModeChange={handleDarkModeChange}
-                  autoDarkMode={systemTheme}
-                  onAutoDarkModeChange={handleAutoDarkModeChange}
-                />
-              </Route>
-            </Routes>
-          }
-        /> */}
+        </Card>
       </ThemeProvider>
     </>
   );
