@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getTimes } from '../../api/APIUtils';
-import { Time } from '../../models/time';
+import { Time } from '../../models';
 import { TimeComponent } from '../Time/Time';
 import styles from './TimesList.module.css';
 

@@ -1,7 +1,7 @@
 import hash from 'object-hash';
 import { get, set } from 'idb-keyval';
 import config from '../config';
-import { Stop } from '../models/stop';
+import { Stop } from '../models';
 
 class IdbService {
   constructor() {}

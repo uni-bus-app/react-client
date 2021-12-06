@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
 import styles from './Home.module.css';
-import { Stop } from '../../models/stop';
+import { Stop } from '../../models';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select, { SelectChangeEvent } from '@mui/material/Select';

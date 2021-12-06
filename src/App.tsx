@@ -9,12 +9,11 @@ import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import styles from './App.module.css';
 import { Map } from './components/Map/Map';
 import Home from './components/Home/Home';
-import { Stop } from './models/stop';
+import { Stop, Time } from './models';
 import StopView from './components/StopView/StopView';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { ThemeProvider, createTheme } from '@material-ui/core/styles';
 import { getStops } from './api/APIUtils';
-import { Time } from './models/time';
 import idbService from './api/LocalDB';
 import { Card } from '@material-ui/core';
 

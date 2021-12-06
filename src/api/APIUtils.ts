@@ -1,11 +1,10 @@
-import dayjs, { Dayjs } from 'dayjs';
-import { Stop } from '../models/stop';
-import { Eta, Time } from '../models/time';
+import dayjs from 'dayjs';
+import { Stop, Eta, Time, LatLng } from '../models';
 import idbService from './LocalDB';
 
 const apiURL = 'https://20210404t132447-dot-unibus-app.nw.r.appspot.com';
 
-export const getRoutePath: () => Promise<google.maps.LatLng[]> = async () => {
+export const getRoutePath: () => Promise<LatLng[]> = async () => {
   const res = await fetch(`${apiURL}/u1routepath`);
   return await res.json();
 };
@@ -31,10 +30,7 @@ const parseStops: (data: any[]) => Stop[] = (data: any[]) => {
       name: item.name,
       id: item.id,
       routeOrder: item.routeOrder,
-      location: new google.maps.LatLng(
-        item.location._latitude,
-        item.location._longitude
-      ),
+      location: { lat: item.location._latitude, lng: item.location._longitude },
     });
   });
   return result;

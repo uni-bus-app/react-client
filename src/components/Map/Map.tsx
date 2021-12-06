@@ -2,7 +2,7 @@ import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
 import { mapStylesLight, mapStylesDark } from './styles';
 import { RefObject, useEffect, useState } from 'react';
 import { getRoutePath, getStops } from '../../api/APIUtils';
-import { Stop } from '../../models/stop';
+import { LatLng, Stop } from '../../models';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import config from '../../config';
 import StopMarkers from './components/StopMarkers';
@@ -40,7 +40,7 @@ export const Map = (props: MapProps) => {
   } = props;
 
   const [map, setMap] = useState<google.maps.Map>();
-  const [routeOverlay, setRouteOverlay] = useState<google.maps.LatLng[]>();
+  const [routeOverlay, setRouteOverlay] = useState<LatLng[]>();
   const [stops, setStops] = useState<Stop[]>();
   const [selectedStop, setSelectedStop] = useState<Stop>();
 
@@ -63,7 +63,7 @@ export const Map = (props: MapProps) => {
     setSelectedStop(currentStop);
     if (map && currentStop) {
       const bounds = getBounds(
-        { lat: currentStop.location.lat(), lng: currentStop.location.lng() },
+        { lat: currentStop.location.lat, lng: currentStop.location.lng },
         0.05
       );
       map.fitBounds(bounds);

@@ -1,5 +1,5 @@
 import styles from './styles.module.css';
-import { Time } from '../../models/time';
+import { Time } from '../../models';
 import Card from '@mui/material/Card';
 import { DirectionsBus, NavigateNext } from '@mui/icons-material';
 

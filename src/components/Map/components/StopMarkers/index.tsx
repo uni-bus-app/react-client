@@ -2,7 +2,7 @@ import { Marker } from '@react-google-maps/api';
 import purpleStopMarker from '../../../../assets/stop-marker-icon-purple.svg';
 import blueStopMarker from '../../../../assets/stop-marker-icon-blue.svg';
 import { getBounds } from '../../Utils';
-import { Stop } from '../../../../models/stop';
+import { Stop } from '../../../../models';
 
 interface StopMarkersProps {
   enabled?: boolean;
@@ -48,8 +48,8 @@ const StopMarkers = (props: StopMarkersProps) => {
               setSelectedStop(stop);
               const bounds = getBounds(
                 {
-                  lat: stop.location.lat(),
-                  lng: stop.location.lng(),
+                  lat: stop.location.lat,
+                  lng: stop.location.lng,
                 },
                 0.05
               );
