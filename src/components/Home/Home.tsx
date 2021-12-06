@@ -6,6 +6,7 @@ import InputLabel from '@mui/material/InputLabel';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { useNavigate } from 'react-router';
+import InfoCards from '../InfoCards';
 
 export interface HomeProps {
   stops: Stop[];
@@ -35,6 +36,7 @@ const Home = (props: HomeProps) => {
           })}
         </Select>
       </FormControl>
+      <InfoCards />
     </>
   );
 };

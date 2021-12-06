@@ -27,3 +27,14 @@ code {
 * {
   box-sizing: border-box;
 }
+
+p {
+  font-size: 0.8em;
+  width: 100%;
+  font-family: 'Roboto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-smooth: antialiased;
+  text-rendering: optimizeLegibility;
+  text-shadow: rgba(0, 0, 0, 0.01) 0 0 1px;
+  color: gray;
+}
