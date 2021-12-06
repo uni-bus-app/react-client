@@ -1,14 +1,22 @@
-.stopTitle {
-  width: 100%;
+.header {
+  position: sticky;
   display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  box-sizing: border-box;
+  left: 0 !important;
+}
+
+.floatLeft {
+  position: absolute;
+}
+
+.stopTitle {
+  width: 100% !important;
+  font-size: 25px;
+  font-weight: lighter;
   text-align: center;
-  font-weight: 700;
-  justify-content: center !important;
-  font-size: 1.5em;
-  padding-top: 10px;
-  font-family: Open Sans, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  font-smooth: antialiased;
-  text-rendering: optimizeLegibility;
-  text-shadow: rgba(0, 0, 0, 0.01) 0 0 1px;
+  align-items: center;
 }

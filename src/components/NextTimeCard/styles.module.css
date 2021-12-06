@@ -1,0 +1,63 @@
+.card {
+  display: flex;
+  flex-direction: row;
+  margin: 24px 16px 0 16px;
+  padding: 16px;
+  border-radius: 16px !important;
+}
+
+.icons {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.u1ServiceIcon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 16px;
+  height: 16px;
+  padding: 5px;
+  margin: 5px;
+  font-size: 0.8em;
+  font-weight: bold;
+  border-radius: 25%;
+  color: white;
+}
+
+.lightServiceIcon {
+  background-color: #621360;
+}
+
+.darkServiceIcon {
+  background-color: #00a0ff;
+}
+
+.destination {
+  display: flex;
+  flex-grow: 2;
+  justify-content: center;
+  align-items: center;
+}
+
+.time {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 0.5;
+}
+
+.eta {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5em;
+}
+
+.etaUnit {
+  font-size: 0.8em;
+}

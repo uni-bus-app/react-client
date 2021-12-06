@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getTimes, updateServiceEta } from '../../api/APIUtils';
+import { getTimes } from '../../api/APIUtils';
 import { Time } from '../../models/time';
 import { TimeComponent } from '../Time/Time';
 import styles from './TimesList.module.css';
@@ -17,28 +17,28 @@ export function TimesListComponent(props: TimesListProps) {
 
   useEffect(() => {
     if (stopID) {
-      getTimes(stopID).then((data) => {
-        window.clearInterval(intervalID);
-        // if (onNextStopUpdate) {
-        //   onNextStopUpdate(data[0]);
-        // }
-        setTimes(data);
-        setIntervalID(
-          window.setInterval(() => {
-            const result: Time[] = [];
-            data.forEach((time) => {
-              const { eta, etaUnit } = updateServiceEta(time.timeValue);
-              if (eta) {
-                result.push({ ...time, eta, etaUnit });
-              }
-            });
-            if (onNextStopUpdate) {
-              // onNextStopUpdate(result[0]);
-            }
-            setTimes(result);
-          }, 1000)
-        );
-      });
+      // getTimes(stopID).then((data) => {
+      //   window.clearInterval(intervalID);
+      //   // if (onNextStopUpdate) {
+      //   //   onNextStopUpdate(data[0]);
+      //   // }
+      //   setTimes(data);
+      //   setIntervalID(
+      //     window.setInterval(() => {
+      //       const result: Time[] = [];
+      //       data.forEach((time) => {
+      //         const { eta, etaUnit } = updateServiceEta(time.timeValue);
+      //         if (eta) {
+      //           result.push({ ...time, eta, etaUnit });
+      //         }
+      //       });
+      //       if (onNextStopUpdate) {
+      //         // onNextStopUpdate(result[0]);
+      //       }
+      //       setTimes(result);
+      //     }, 1000)
+      //   );
+      // });
     }
 
     return () => {
@@ -48,18 +48,18 @@ export function TimesListComponent(props: TimesListProps) {
 
   return (
     <div className={styles.TimesList}>
-      {times?.map((time, index) => {
+      {/* {times?.map((time, index) => {
         return (
-          <TimeComponent
-            key={index}
-            destination={time.destination}
-            service={time.service}
-            time={time.time}
-            eta={time.eta}
-            etaUnit={time.etaUnit}
-          />
+          // <TimeComponent
+          //   key={index}
+          //   destination={time.destination}
+          //   service={time.service}
+          //   time={time.time}
+          //   eta={time.eta}
+          //   etaUnit={time.etaUnit}
+          // />
         );
-      })}
+      })} */}
     </div>
   );
 }

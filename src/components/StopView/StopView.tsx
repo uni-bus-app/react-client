@@ -1,10 +1,12 @@
 import { IconButton } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
 import { useEffect, useState } from 'react';
-import { getTimes, updateServiceEta } from '../../api/APIUtils';
+import { getTimes, updateServiceTimes } from '../../api/APIUtils';
 import { Stop } from '../../models/stop';
 import { Time } from '../../models/time';
 import styles from './StopView.module.css';
+import NextTimeCard from '../NextTimeCard';
+import StopInfoCard from '../StopInfoCard';
 
 interface StopViewProps {
   stop: Stop;
@@ -24,14 +26,7 @@ const StopView = (props: StopViewProps) => {
         window.clearInterval(intervalID);
         setTimes(data);
         intervalID = window.setInterval(() => {
-          const result: Time[] = [];
-          data.forEach((time) => {
-            const { eta, etaUnit } = updateServiceEta(time.timeValue);
-            if (eta) {
-              result.push({ ...time, eta, etaUnit });
-            }
-          });
-          setTimes(result);
+          setTimes(updateServiceTimes(data));
         }, 1000);
       });
     }
@@ -43,15 +38,14 @@ const StopView = (props: StopViewProps) => {
 
   return (
     <>
-      <IconButton onClick={unSelectStop}>
-        <ArrowBack />
-      </IconButton>
-      <div className={styles.stopTitle}>{stop.name}</div>
-      {times?.[0] && (
-        <div>
-          Next bus in {times[0].eta} {times[0].etaUnit}
-        </div>
-      )}
+      <div className={styles.header}>
+        <IconButton className={styles.floatLeft} onClick={unSelectStop}>
+          <ArrowBack />
+        </IconButton>
+        <div className={styles.stopTitle}>{stop.name}</div>
+      </div>
+      {times?.[0] && <NextTimeCard time={times[0]} />}
+      <StopInfoCard />
     </>
   );
 };

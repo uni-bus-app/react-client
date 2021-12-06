@@ -1,6 +1,6 @@
 import dayjs, { Dayjs } from 'dayjs';
 import { Stop } from '../models/stop';
-import { Time } from '../models/time';
+import { Eta, Time } from '../models/time';
 import idbService from './LocalDB';
 
 const apiURL = 'https://20210404t132447-dot-unibus-app.nw.r.appspot.com';
@@ -54,45 +54,69 @@ export const getTimes: (stopID: string) => Promise<Time[]> = async (
 
 const parseTimes: (data: any[]) => Time[] = (data: any[]) => {
   const result: Time[] = [];
-  data.forEach((item) => {
-    const timeValue = dayjs()
-      .set('hour', Number(item.scheduled.substring(0, 2)))
-      .set('minute', item.scheduled.substring(2, 4))
-      .set('second', 0);
-    const res = updateServiceEta(timeValue);
-    const time: Time = {
-      destination: 'University Library',
-      service: 'U1',
-      time: timeValue.format('HH:mm'),
-      eta: res.eta,
-      etaUnit: res.etaUnit,
-      timeValue,
-      routeNumber: item.routeNumber,
-    };
-    if (res.eta > 0) {
-      result.push(time);
+  data.forEach((element) => {
+    if (element) {
+      const newServiceTime: Time | any = {};
+      newServiceTime.destination = 'University Library';
+      newServiceTime.service = 'U1';
+      newServiceTime.routeNumber = element.routeNumber;
+      newServiceTime.timeValue = dayjs()
+        .set('hour', parseInt(element.scheduled.substring(0, 2)))
+        .set('minute', element.scheduled.substring(2, 4))
+        .set('second', 0);
+      if (
+        newServiceTime.timeValue.isBefore(
+          dayjs().set('hour', 1).set('minute', 0)
+        )
+      ) {
+        newServiceTime.timeValue = newServiceTime.timeValue.add(1, 'day');
+        newServiceTime.destination = 'Fratton Bridge';
+      }
+      newServiceTime.time = newServiceTime.timeValue.format('HH:mm');
+      newServiceTime.eta = updateServiceEta(newServiceTime);
+      if (newServiceTime.eta) {
+        result.push(newServiceTime);
+      }
     }
   });
   return result;
 };
 
-export const updateServiceEta: (timeValue: Dayjs) => any = (
-  timeValue: Dayjs
-) => {
-  const etaValue = timeValue.diff(dayjs());
-  let eta: string;
-  let etaUnit: string = '';
-  if (etaValue > 3600000) {
-    eta = (etaValue / 3600000).toFixed(1);
-    if (eta === '1.0') {
-      eta = '1';
-    }
-    etaUnit = 'hours';
-  } else if (etaValue > 120000) {
-    eta = (etaValue / 60000).toFixed(0);
-    etaUnit = 'min';
-  } else {
-    eta = 'Now';
+export const updateServiceTimes = (times: Time[]) => {
+  const updatedTimes = times.map((element) => {
+    const res = { ...element };
+    res.eta = updateServiceEta(element);
+    return res;
+  });
+  if (!updatedTimes[0]?.eta) {
+    updatedTimes.shift();
   }
-  return { eta, etaUnit };
+  return updatedTimes;
+};
+
+/**
+ * Calculates the eta of the service time and returns it
+ * @param {BusTime} serviceTime
+ */
+const updateServiceEta = (serviceTime: Time): Eta | undefined => {
+  const eta = serviceTime.timeValue.diff(dayjs());
+  let value: string = '';
+  let unit: string = '';
+  let arrivalTime: string = '';
+  if (eta < 60000) {
+    unit = 'Now';
+    value = 'Now';
+  } else if (eta < 3600000) {
+    value = Math.ceil(eta / 60000).toString();
+    unit = 'mins';
+  } else if (eta > 7200000) {
+    arrivalTime = dayjs(serviceTime.timeValue).format('HH:mm');
+  } else if (eta > 3600000) {
+    value = (eta / 3600000).toFixed(1).toString();
+    unit = 'hours';
+  }
+  if (isNaN(eta) || eta < 0) {
+    return;
+  }
+  return { value, unit, arrivalTime };
 };
