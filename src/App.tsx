@@ -62,7 +62,7 @@ function App() {
   );
   const navigate = useNavigate();
   const onMarkerSelect = (stop: Stop) => {
-    navigate('stopview');
+    navigate('/stopview');
     setCurrentStop(stop);
   };
   const [nextBusTime, setNextBusTime] = useState<Time>();
@@ -84,7 +84,6 @@ function App() {
     <>
       <ThemeProvider theme={theme}>
         <Map
-          position={{ lat: 50.794236, lng: -1.075 }}
           stopMarkersEnabled={true}
           routeOverlayEnabled={true}
           darkModeEnabled={prefersDarkMode}

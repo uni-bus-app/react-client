@@ -1,7 +1,6 @@
 import { Marker } from '@react-google-maps/api';
 import purpleStopMarker from '../../../../assets/stop-marker-icon-purple.svg';
 import blueStopMarker from '../../../../assets/stop-marker-icon-blue.svg';
-import { getBounds } from '../../Utils';
 import { Stop } from '../../../../models';
 
 interface StopMarkersProps {
@@ -9,21 +8,12 @@ interface StopMarkersProps {
   stops?: Stop[];
   darkModeEnabled?: boolean;
   selectedStop?: Stop;
-  setSelectedStop: any;
-  map: any;
-  onMarkerSelect: any;
+  onMarkerSelect?: (stop: Stop) => void;
 }
 
 const StopMarkers = (props: StopMarkersProps) => {
-  const {
-    enabled,
-    stops,
-    darkModeEnabled,
-    selectedStop,
-    setSelectedStop,
-    map,
-    onMarkerSelect,
-  } = props;
+  const { enabled, stops, darkModeEnabled, selectedStop, onMarkerSelect } =
+    props;
   if (!enabled) return <></>;
   return (
     <>
@@ -45,16 +35,7 @@ const StopMarkers = (props: StopMarkersProps) => {
               },
             }}
             onClick={() => {
-              setSelectedStop(stop);
-              const bounds = getBounds(
-                {
-                  lat: stop.location.lat,
-                  lng: stop.location.lng,
-                },
-                0.05
-              );
-              map?.fitBounds(bounds);
-              onMarkerSelect && onMarkerSelect(stop);
+              onMarkerSelect?.(stop);
             }}
           />
         );

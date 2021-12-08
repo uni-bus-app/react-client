@@ -1,17 +1,13 @@
 export const getBounds = (
-  value: google.maps.LatLngLiteral,
-  r: number
+  value: google.maps.LatLng
 ): google.maps.LatLngBounds => {
-  const dY = (360 * r) / 6371;
-  const dX = dY * Math.cos(value.lng);
-  const lat1 = value.lat - dX;
-  const lng1 = value.lng - dY;
-  const lat2 = value.lat + dX;
-  const lng2 = value.lng + dY;
-  return new google.maps.LatLngBounds(
-    { lat: lat1, lng: lng1 },
-    { lat: lat2, lng: lng2 }
+  const swBounds = google.maps.geometry.spherical.computeOffset(
+    value,
+    300,
+    225
   );
+  const neBounds = google.maps.geometry.spherical.computeOffset(value, 300, 45);
+  return new google.maps.LatLngBounds(swBounds, neBounds);
 };
 
 export const moveLogo = (map: any, logoContainer: any) => {

@@ -3,7 +3,6 @@ import { mapStylesLight, mapStylesDark } from './styles';
 import { RefObject, useEffect, useState } from 'react';
 import { getRoutePath, getStops } from '../../api/APIUtils';
 import { LatLng, Stop } from '../../models';
-import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import config from '../../config';
 import StopMarkers from './components/StopMarkers';
 import { getBounds, moveLogo } from './Utils';
@@ -14,11 +13,10 @@ const mapOptions: google.maps.MapOptions = {
   gestureHandling: 'greedy',
   clickableIcons: false,
   zoom: 13,
+  center: { lat: 50.794236, lng: -1.075 },
 };
 
 interface MapProps {
-  style?: CSSProperties;
-  position: google.maps.LatLngLiteral;
   darkModeEnabled?: boolean;
   routeOverlayEnabled?: boolean;
   stopMarkersEnabled?: boolean;
@@ -29,8 +27,6 @@ interface MapProps {
 
 export const Map = (props: MapProps) => {
   const {
-    position,
-    style,
     darkModeEnabled,
     routeOverlayEnabled,
     stopMarkersEnabled,
@@ -42,7 +38,6 @@ export const Map = (props: MapProps) => {
   const [map, setMap] = useState<google.maps.Map>();
   const [routeOverlay, setRouteOverlay] = useState<LatLng[]>();
   const [stops, setStops] = useState<Stop[]>();
-  const [selectedStop, setSelectedStop] = useState<Stop>();
 
   useEffect(() => {
     const getData = async () => {
@@ -53,20 +48,12 @@ export const Map = (props: MapProps) => {
   }, []);
 
   useEffect(() => {
-    if (map) {
-      const bounds = getBounds(position, 0.5);
-      map.fitBounds(bounds);
-    }
-  }, [position]);
-
-  useEffect(() => {
-    setSelectedStop(currentStop);
     if (map && currentStop) {
-      const bounds = getBounds(
-        { lat: currentStop.location.lat, lng: currentStop.location.lng },
-        0.05
+      const pos = new google.maps.LatLng(
+        currentStop.location.lat,
+        currentStop.location.lng
       );
-      map.fitBounds(bounds);
+      map.fitBounds(getBounds(pos), 0);
     }
   }, [currentStop]);
 
@@ -77,8 +64,6 @@ export const Map = (props: MapProps) => {
   const renderMap = () => {
     const onLoad = (mapInstance: google.maps.Map) => {
       setMap(mapInstance);
-      const bounds = getBounds(position, 0.5);
-      mapInstance.fitBounds(bounds);
       moveLogo(mapInstance, logoContainer);
     };
 
@@ -110,9 +95,7 @@ export const Map = (props: MapProps) => {
             enabled={stopMarkersEnabled}
             stops={stops}
             darkModeEnabled={darkModeEnabled}
-            selectedStop={selectedStop}
-            setSelectedStop={setSelectedStop}
-            map={map}
+            selectedStop={currentStop}
             onMarkerSelect={onMarkerSelect}
           />
         </GoogleMap>

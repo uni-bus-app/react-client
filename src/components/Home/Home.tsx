@@ -18,7 +18,7 @@ const Home = (props: HomeProps) => {
   const { stops, currentStop, setCurrentStop } = props;
   const navigate = useNavigate();
   const selectStop = (event: SelectChangeEvent<Stop>) => {
-    navigate('stopview');
+    navigate('/stopview');
     setCurrentStop(event.target.value as Stop);
   };
   return (
