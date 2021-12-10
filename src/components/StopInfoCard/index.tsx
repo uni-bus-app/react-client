@@ -12,15 +12,21 @@ const StopInfoCard = () => {
       <div className={styles.details}>
         <div className={styles.item}>
           <Badge className={styles.icon} />
-          <p>You are required to show your student ID</p>
+          <p className={styles.bodyText}>
+            You are required to show your student ID
+          </p>
         </div>
         <div className={styles.item}>
           <Masks className={styles.icon} />
-          <p>You are required by law to wear a face covering (unless exempt)</p>
+          <p className={styles.bodyText}>
+            You are required by law to wear a face covering (unless exempt)
+          </p>
         </div>
         <div className={styles.item}>
           <NoTransfer className={styles.icon} />
-          <p>This service does not run on the weekend and bank holidays</p>
+          <p className={styles.bodyText}>
+            This service does not run on the weekend and bank holidays
+          </p>
         </div>
       </div>
     </Card>

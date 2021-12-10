@@ -5,11 +5,11 @@ import { DirectionsBus, NavigateNext } from '@mui/icons-material';
 
 interface NextTimeCardProps {
   time: Time;
+  darkMode: boolean;
 }
 
 const NextTimeCard = (props: NextTimeCardProps) => {
-  const { time } = props;
-  const darkModeEnabled = false;
+  const { time, darkMode } = props;
   return (
     <Card className={styles.card} sx={{ boxShadow: 7 }}>
       <div className={styles.details}>
@@ -17,7 +17,7 @@ const NextTimeCard = (props: NextTimeCardProps) => {
           <DirectionsBus />
           <div
             className={`${styles.u1ServiceIcon} ${
-              darkModeEnabled ? styles.darkServiceIcon : styles.lightServiceIcon
+              darkMode ? styles.darkServiceIcon : styles.lightServiceIcon
             }`}
           >
             U1

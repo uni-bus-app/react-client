@@ -30,12 +30,12 @@ const InfoCards = () => {
   return (
     <>
       {messages.map(({ title, body, icon }) => (
-        <Card className={styles.infoCard}>
+        <Card className={styles.infoCard} sx={{ boxShadow: 7 }}>
           <div className={styles.header}>
             <DynamicIcon iconName={icon} />
             <Typography>{title}</Typography>
           </div>
-          <p>{body}</p>
+          <p className={styles.bodyText}>{body}</p>
         </Card>
       ))}
     </>

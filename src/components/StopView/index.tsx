@@ -9,12 +9,12 @@ import StopInfoCard from '../StopInfoCard';
 
 interface StopViewProps {
   stop: Stop;
-  nextTime: Time | undefined;
   unSelectStop: () => void;
+  darkMode: boolean;
 }
 
 const StopView = (props: StopViewProps) => {
-  const { stop, unSelectStop } = props;
+  const { stop, unSelectStop, darkMode } = props;
 
   const [times, setTimes] = useState<Time[]>();
 
@@ -43,7 +43,7 @@ const StopView = (props: StopViewProps) => {
         </IconButton>
         <div className={styles.stopTitle}>{stop.name}</div>
       </div>
-      {times?.[0] && <NextTimeCard time={times[0]} />}
+      {times?.[0] && <NextTimeCard time={times[0]} darkMode={darkMode} />}
       <StopInfoCard />
     </>
   );

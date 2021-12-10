@@ -1,47 +1,24 @@
-import React, {
-  useState,
-  ChangeEvent,
-  useMemo,
-  useEffect,
-  useRef,
-} from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import styles from './App.module.css';
 import { Map } from './components/Map';
 import Home from './components/Home';
-import { Stop, Time } from './models';
+import { Stop } from './models';
 import StopView from './components/StopView';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { ThemeProvider, createTheme } from '@material-ui/core/styles';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 import { getStops } from './api/APIUtils';
 import idbService from './api/LocalDB';
-import { Card } from '@material-ui/core';
+import Card from '@mui/material/Card';
+import { PaletteMode } from '@mui/material';
+import { grey } from '@mui/material/colors';
 
 function App() {
   const [currentStop, setCurrentStop] = useState<Stop>();
   const [stops, setStops] = useState([]);
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  const [systemTheme, setSystemTheme] = useState<boolean>(true);
-  const [darkModeOverride, setDarkModeOverride] = useState<boolean>(false);
-  const [darkMode, setDarkMode] = useState<boolean>(
-    prefersDarkMode || darkModeOverride
-  );
+  const darkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const logoContainer = useRef() as any;
-
-  const handleAutoDarkModeChange = (
-    event: ChangeEvent<HTMLInputElement>,
-    checked: boolean
-  ) => {
-    setSystemTheme(checked);
-    setDarkMode(checked || darkModeOverride);
-  };
-  const handleDarkModeChange = (
-    event: ChangeEvent<HTMLInputElement>,
-    checked: boolean
-  ) => {
-    setDarkModeOverride(checked);
-    setDarkMode(checked || systemTheme);
-  };
 
   useEffect(() => {
     const getData = async () => {
@@ -51,13 +28,22 @@ function App() {
     getData();
   }, []);
 
+  const getDesignTokens = (mode: PaletteMode) => ({
+    palette: {
+      mode,
+      ...(mode === 'light'
+        ? {}
+        : {
+            background: {
+              default: grey[800],
+              paper: grey[800],
+            },
+          }),
+    },
+  });
+
   const theme = useMemo(
-    () =>
-      createTheme({
-        palette: {
-          type: darkMode ? 'dark' : 'light',
-        },
-      }),
+    () => createTheme(getDesignTokens(darkMode ? 'dark' : 'light')),
     [darkMode]
   );
   const navigate = useNavigate();
@@ -65,15 +51,10 @@ function App() {
     navigate('/stopview');
     setCurrentStop(stop);
   };
-  const [nextBusTime, setNextBusTime] = useState<Time>();
 
   const unSelectStop = () => {
     setCurrentStop(undefined);
     navigate('home');
-  };
-
-  const handleNextTimeChange = (nextTime: Time) => {
-    setNextBusTime(nextTime);
   };
 
   useEffect(() => {
@@ -83,23 +64,17 @@ function App() {
   return (
     <>
       <ThemeProvider theme={theme}>
+        <CssBaseline />
         <Map
           stopMarkersEnabled={true}
           routeOverlayEnabled={true}
-          darkModeEnabled={prefersDarkMode}
+          darkModeEnabled={darkMode}
           currentStop={currentStop}
           onMarkerSelect={onMarkerSelect}
           logoContainer={logoContainer}
         />
         <div className={styles.logoContainer} ref={logoContainer} />
-        <Card
-          style={{
-            width: '100%',
-            height: '62.5%',
-            top: '37.5%',
-            position: 'absolute',
-          }}
-        >
+        <Card className={styles.mainCard}>
           <Routes>
             <Route path="/">
               <Navigate to="/home" />
@@ -115,8 +90,8 @@ function App() {
               {currentStop && (
                 <StopView
                   stop={currentStop}
-                  nextTime={nextBusTime}
                   unSelectStop={unSelectStop}
+                  darkMode={darkMode}
                 />
               )}
             </Route>
