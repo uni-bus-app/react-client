@@ -3,7 +3,7 @@ import { KeyboardBackspace } from '@mui/icons-material';
 import { useEffect, useState } from 'react';
 import { getTimes, updateServiceTimes } from '../../api/APIUtils';
 import { Stop, Time } from '../../models';
-import styles from './StopView.module.css';
+import styles from './styles.module.css';
 import NextTimeCard from '../NextTimeCard';
 import StopInfoCard from '../StopInfoCard';
 

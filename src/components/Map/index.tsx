@@ -5,7 +5,7 @@ import { getRoutePath, getStops } from '../../api/APIUtils';
 import { LatLng, Stop } from '../../models';
 import config from '../../config';
 import StopMarkers from './components/StopMarkers';
-import { getBounds, moveLogo } from './Utils';
+import { getBounds, moveLogo } from './utils';
 import RoutePath from './components/RoutePath';
 
 const mapOptions: google.maps.MapOptions = {

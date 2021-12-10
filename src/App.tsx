@@ -7,10 +7,10 @@ import React, {
 } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import styles from './App.module.css';
-import { Map } from './components/Map/Map';
-import Home from './components/Home/Home';
+import { Map } from './components/Map';
+import Home from './components/Home';
 import { Stop, Time } from './models';
-import StopView from './components/StopView/StopView';
+import StopView from './components/StopView';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { ThemeProvider, createTheme } from '@material-ui/core/styles';
 import { getStops } from './api/APIUtils';
