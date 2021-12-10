@@ -76,25 +76,29 @@ function App() {
         <div className={styles.logoContainer} ref={logoContainer} />
         <Card className={styles.mainCard}>
           <Routes>
-            <Route path="/">
-              <Navigate to="/home" />
-            </Route>
-            <Route path="/home">
-              <Home
-                stops={stops}
-                setCurrentStop={setCurrentStop}
-                currentStop={currentStop}
-              />
-            </Route>
-            <Route path="/stopview">
-              {currentStop && (
-                <StopView
-                  stop={currentStop}
-                  unSelectStop={unSelectStop}
-                  darkMode={darkMode}
+            <Route path="/" element={<Navigate to="/home" />} />
+            <Route
+              path="/home"
+              element={
+                <Home
+                  stops={stops}
+                  setCurrentStop={setCurrentStop}
+                  currentStop={currentStop}
                 />
-              )}
-            </Route>
+              }
+            />
+            <Route
+              path="/stopview"
+              element={
+                currentStop && (
+                  <StopView
+                    stop={currentStop}
+                    unSelectStop={unSelectStop}
+                    darkMode={darkMode}
+                  />
+                )
+              }
+            />
           </Routes>
         </Card>
       </ThemeProvider>
