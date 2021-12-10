@@ -1,8 +1,14 @@
 .stopSelector {
-  margin: 1em !important;
   width: calc(100% - 2em);
-  height: 5em;
+  margin-left: 1em !important;
+  margin-right: 1em !important;
+  margin-bottom: 1em !important;
 }
+
+.stopSelector label {
+  margin-top: 0.5em;
+}
+
 .stopSelectorSelect {
   height: 3em;
 }
