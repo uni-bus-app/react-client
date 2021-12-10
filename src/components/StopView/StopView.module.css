@@ -9,8 +9,8 @@
   left: 0 !important;
 }
 
-.floatLeft {
-  position: absolute;
+.backButton {
+  position: absolute !important;
 }
 
 .stopTitle {

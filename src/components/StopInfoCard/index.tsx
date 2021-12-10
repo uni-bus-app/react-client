@@ -4,7 +4,7 @@ import { Hail, Badge, Masks, NoTransfer } from '@mui/icons-material';
 
 const StopInfoCard = () => {
   return (
-    <Card className={styles.card}>
+    <Card className={styles.card} sx={{ boxShadow: 7 }}>
       <div className={styles.header}>
         <Hail fontSize="large" />
         Stop Info

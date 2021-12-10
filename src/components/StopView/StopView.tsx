@@ -1,5 +1,5 @@
 import { IconButton } from '@mui/material';
-import { ArrowBack } from '@mui/icons-material';
+import { KeyboardBackspace } from '@mui/icons-material';
 import { useEffect, useState } from 'react';
 import { getTimes, updateServiceTimes } from '../../api/APIUtils';
 import { Stop, Time } from '../../models';
@@ -38,8 +38,8 @@ const StopView = (props: StopViewProps) => {
   return (
     <>
       <div className={styles.header}>
-        <IconButton className={styles.floatLeft} onClick={unSelectStop}>
-          <ArrowBack />
+        <IconButton className={styles.backButton} onClick={unSelectStop}>
+          <KeyboardBackspace />
         </IconButton>
         <div className={styles.stopTitle}>{stop.name}</div>
       </div>
