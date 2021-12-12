@@ -43,8 +43,10 @@ const StopView = (props: StopViewProps) => {
         </IconButton>
         <div className={styles.stopTitle}>{stop.name}</div>
       </div>
-      {times?.[0] && <NextTimeCard time={times[0]} darkMode={darkMode} />}
-      <StopInfoCard />
+      <div>
+        {times?.[0] && <NextTimeCard time={times[0]} darkMode={darkMode} />}
+        <StopInfoCard />
+      </div>
     </>
   );
 };

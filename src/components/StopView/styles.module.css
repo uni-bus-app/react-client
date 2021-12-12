@@ -7,6 +7,8 @@
   padding: 16px;
   box-sizing: border-box;
   left: 0 !important;
+  top: 0;
+  background-color: inherit;
 }
 
 .backButton {

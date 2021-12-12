@@ -24,19 +24,21 @@ const Home = (props: HomeProps) => {
   };
   return (
     <>
-      <FormControl variant="standard" className={styles.stopSelector}>
-        <InputLabel>Select a stop</InputLabel>
-        <Select
-          className={styles.stopSelectorSelect}
-          value={currentStop}
-          onChange={selectStop}
-          label="Select a stop"
-        >
-          {stops.map((stop: Stop) => {
-            return <MenuItem value={stop as any}>{stop.name}</MenuItem>;
-          })}
-        </Select>
-      </FormControl>
+      <div className={styles.container}>
+        <FormControl variant="standard" className={styles.stopSelector}>
+          <InputLabel>Select a stop</InputLabel>
+          <Select
+            className={styles.stopSelectorSelect}
+            value={currentStop}
+            onChange={selectStop}
+            label="Select a stop"
+          >
+            {stops.map((stop: Stop) => {
+              return <MenuItem value={stop as any}>{stop.name}</MenuItem>;
+            })}
+          </Select>
+        </FormControl>
+      </div>
       <InfoCards messages={messages} />
     </>
   );
