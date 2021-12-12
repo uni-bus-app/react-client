@@ -18,15 +18,12 @@ const DynamicIcon = (props: { iconName: string }) => {
   return <IconComponent />;
 };
 
-const InfoCards = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
-  useEffect(() => {
-    fetch(`${config.apiUrl}/messages`)
-      .then((res) => res.json())
-      .then((data) => {
-        setMessages(data);
-      });
-  }, []);
+interface InfoCardsProps {
+  messages: Message[];
+}
+
+const InfoCards = (props: InfoCardsProps) => {
+  const { messages } = props;
   return (
     <>
       {messages.map(({ title, body, icon }) => (

@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
 import styles from './styles.module.css';
-import { Stop } from '../../models';
+import { Message, Stop } from '../../models';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
@@ -12,10 +12,11 @@ export interface HomeProps {
   stops: Stop[];
   currentStop: Stop | undefined;
   setCurrentStop: Dispatch<SetStateAction<Stop | undefined>>;
+  messages: Message[];
 }
 
 const Home = (props: HomeProps) => {
-  const { stops, currentStop, setCurrentStop } = props;
+  const { stops, currentStop, setCurrentStop, messages } = props;
   const navigate = useNavigate();
   const selectStop = (event: SelectChangeEvent<Stop>) => {
     navigate('/stopview');
@@ -36,7 +37,7 @@ const Home = (props: HomeProps) => {
           })}
         </Select>
       </FormControl>
-      <InfoCards />
+      <InfoCards messages={messages} />
     </>
   );
 };

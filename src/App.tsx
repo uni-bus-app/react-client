@@ -3,7 +3,7 @@ import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import styles from './App.module.css';
 import { Map } from './components/Map';
 import Home from './components/Home';
-import { Stop } from './models';
+import { Message, Stop } from './models';
 import StopView from './components/StopView';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
@@ -13,9 +13,11 @@ import idbService from './api/LocalDB';
 import Card from '@mui/material/Card';
 import { PaletteMode } from '@mui/material';
 import { grey } from '@mui/material/colors';
+import config from './config';
 
 function App() {
   const [currentStop, setCurrentStop] = useState<Stop>();
+  const [messages, setMessages] = useState<Message[]>([]);
   const [stops, setStops] = useState([]);
   const darkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const logoContainer = useRef() as any;
@@ -61,6 +63,14 @@ function App() {
     idbService.sync();
   }, []);
 
+  useEffect(() => {
+    fetch(`${config.apiUrl}/messages`)
+      .then((res) => res.json())
+      .then((data) => {
+        setMessages(data);
+      });
+  }, []);
+
   return (
     <>
       <ThemeProvider theme={theme}>
@@ -84,6 +94,7 @@ function App() {
                   stops={stops}
                   setCurrentStop={setCurrentStop}
                   currentStop={currentStop}
+                  messages={messages}
                 />
               }
             />
