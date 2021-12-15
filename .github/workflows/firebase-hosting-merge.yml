@@ -9,6 +9,9 @@ name: Deploy to Firebase Hosting on merge
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
+    env:
+      # This should be set to enabled when deploying to production
+      ANALYTICS: disabled
     steps:
       - uses: actions/checkout@v2
       - name: Set up Node.js 16
@@ -18,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Build
-        run: CI='' npm run build
+        run: CI='' npm run build-prod
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'

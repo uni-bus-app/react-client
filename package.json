@@ -18,6 +18,7 @@
     "@types/react": "^16.14.2",
     "@types/react-dom": "^16.9.8",
     "dayjs": "^1.10.7",
+    "firebase": "^9.6.1",
     "history": "^5.1.0",
     "idb-keyval": "^6.0.3",
     "object-hash": "^2.2.0",
@@ -49,7 +50,8 @@
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public",
-    "deploy": "yarn build && firebase deploy"
+    "deploy": "yarn build && firebase deploy",
+    "build-prod": "node ./buildScript.js && react-scripts build"
   },
   "eslintConfig": {
     "extends": [
@@ -68,5 +70,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "replace-in-file": "^6.3.2"
   }
 }

@@ -17,7 +17,7 @@ class IdbService {
   sync(): Promise<boolean> {
     return new Promise((resolve) => {
       this.generateChecksums().then((checksums) => {
-        fetch(`${config.apiUrl}/sync`, {
+        fetch(`${config.apiURL}/sync`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(checksums),
