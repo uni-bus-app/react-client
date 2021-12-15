@@ -3,7 +3,7 @@ import { Stop, Eta, Time, LatLng, Message } from '../models';
 import idbService from './LocalDB';
 import config from '../config';
 
-const apiURL = config.apiUrl;
+const apiURL = config.apiURL;
 
 export const getRoutePath = async (): Promise<LatLng[]> => {
   const res = await fetch(`${apiURL}/u1routepath`);
