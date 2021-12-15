@@ -1,0 +1,97 @@
+.card {
+  width: 93.5%;
+  padding: 8px;
+  box-sizing: border-box;
+  border-radius: 10px !important;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: auto;
+  margin-bottom: 15px;
+  margin-top: 15px;
+}
+
+.iconContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  text-align: center;
+}
+
+.u1icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border-radius: 25%;
+  font-size: 0.8em;
+  color: white;
+  padding: 5px;
+  margin: 5px;
+  background-color: #621360;
+}
+
+.destination {
+  padding: 8px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.etaContainer {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 0.5;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.time {
+  font-size: 1.5em;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  display: flex;
+}
+
+.unit {
+  font-size: 0.8em;
+}
+
+.topInfo {
+  display: flex;
+  flex-direction: row;
+}
+
+.busInfoContainer {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+}
+
+.scheduledDeparture {
+  font-size: 0.8em;
+}
+
+.title {
+  font-size: 25px;
+  font-weight: lighter;
+  text-align: left;
+}
+.header {
+  padding: 8px;
+  box-sizing: border-box;
+  text-align: left;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.timesList {
+  overflow: scroll !important;
+  max-height: 600px;
+}
