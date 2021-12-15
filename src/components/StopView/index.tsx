@@ -1,4 +1,4 @@
-import { Button, IconButton, SwipeableDrawer } from '@mui/material';
+import { IconButton, SwipeableDrawer } from '@mui/material';
 import { KeyboardBackspace } from '@mui/icons-material';
 import { useEffect, useState } from 'react';
 import { getTimes, updateServiceTimes } from '../../api/APIUtils';
@@ -78,7 +78,7 @@ const StopView = (props: StopViewProps) => {
               <p className={styles.title}>Upcoming Departures</p>
               <CloseIcon onClick={toggleDrawer(anchor, false)} />
             </div>
-            {times?.[0] && <TimesList times={times} />};
+            {times?.[0] && <TimesList times={times} />}
           </SwipeableDrawer>
         </div>
       </div>

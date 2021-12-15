@@ -1,9 +1,10 @@
 import { Card, Typography } from '@mui/material';
 import DepartureBoard from '@mui/icons-material/DepartureBoard';
 import styles from './styles.module.css';
+import { Time } from '../../models';
 
 interface TimesListProps {
-  times: Array<any>;
+  times: Array<Time>;
 }
 
 const TimesList = (props: TimesListProps) => {
@@ -11,15 +12,15 @@ const TimesList = (props: TimesListProps) => {
 
   return (
     <div className={styles.timesList}>
-      {times.map((time) => {
-        return <TimeItem time={time} />;
-      })}
+      {times.map((time) => (
+        <TimeItem time={time} />
+      ))}
     </div>
   );
 };
 
 interface TimesItemProps {
-  time: any;
+  time: Time;
 }
 
 const TimeItem = (props: TimesItemProps) => {
@@ -44,7 +45,7 @@ const TimeItem = (props: TimesItemProps) => {
           </div>
         </div>
         <div className={styles.etaContainer}>
-          {time.eta.value !== '' && time.eta.value !== 'Now' ? (
+          {time.eta?.value !== '' && time.eta?.value !== 'Now' ? (
             <>
               <div className={styles.time}>{time.eta && time.eta.value}</div>
               <div className={styles.unit}>{time.eta && time.eta.unit}</div>
