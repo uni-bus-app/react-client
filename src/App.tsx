@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import styles from './App.module.css';
 import { Map } from './components/Map';
 import Home from './components/Home';
@@ -11,16 +12,31 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { getStops } from './api/APIUtils';
 import idbService from './api/LocalDB';
 import Card from '@mui/material/Card';
-import { PaletteMode } from '@mui/material';
+import { Button, PaletteMode, Snackbar } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import config from './config';
 
 function App() {
   const [currentStop, setCurrentStop] = useState<Stop>();
   const [messages, setMessages] = useState<Message[]>([]);
+  const [updateSnackBarVisible, setUpdateSnackbarVisible] =
+    useState<boolean>(false);
   const [stops, setStops] = useState([]);
   const darkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const logoContainer = useRef() as any;
+
+  const onUpdate = (registration: ServiceWorkerRegistration) => {
+    navigator.serviceWorker.addEventListener('message', (event) => {
+      if (event.data?.type === 'update_installed') {
+        setUpdateSnackbarVisible(true);
+      }
+    });
+    registration?.waiting?.postMessage({ type: 'SKIP_WAITING' });
+  };
+
+  useEffect(() => {
+    serviceWorkerRegistration.register({ onUpdate });
+  }, []);
 
   useEffect(() => {
     const getData = async () => {
@@ -75,6 +91,14 @@ function App() {
     <>
       <ThemeProvider theme={theme}>
         <CssBaseline />
+        <Snackbar
+          open={updateSnackBarVisible}
+          message="Update available"
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          action={
+            <Button onClick={() => window.location.reload()}>reload</Button>
+          }
+        />
         <Map
           stopMarkersEnabled={true}
           routeOverlayEnabled={true}

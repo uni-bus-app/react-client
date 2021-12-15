@@ -74,7 +74,15 @@ registerRoute(
 // registration.waiting.postMessage({type: 'SKIP_WAITING'})
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
+    self.skipWaiting().then(() => {
+      self.clients.matchAll().then((clients) => {
+        if (clients && clients.length) {
+          clients.forEach((client) => {
+            client.postMessage({ type: 'update_installed' });
+          });
+        }
+      });
+    });
   }
 });
 
