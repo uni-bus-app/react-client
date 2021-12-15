@@ -9,43 +9,22 @@ import StopView from './components/StopView';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { getStops } from './api/APIUtils';
+import { getMessages, getStops } from './api/APIUtils';
 import idbService from './api/LocalDB';
 import Card from '@mui/material/Card';
 import { Button, PaletteMode, Snackbar } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import config from './config';
 
 function App() {
+  const navigate = useNavigate();
+  const [stops, setStops] = useState([]);
   const [currentStop, setCurrentStop] = useState<Stop>();
   const [messages, setMessages] = useState<Message[]>([]);
   const [updateSnackBarVisible, setUpdateSnackbarVisible] =
     useState<boolean>(false);
-  const [stops, setStops] = useState([]);
-  const darkMode = useMediaQuery('(prefers-color-scheme: dark)');
+
   const logoContainer = useRef() as any;
-
-  const onUpdate = (registration: ServiceWorkerRegistration) => {
-    navigator.serviceWorker.addEventListener('message', (event) => {
-      if (event.data?.type === 'update_installed') {
-        setUpdateSnackbarVisible(true);
-      }
-    });
-    registration?.waiting?.postMessage({ type: 'SKIP_WAITING' });
-  };
-
-  useEffect(() => {
-    serviceWorkerRegistration.register({ onUpdate });
-  }, []);
-
-  useEffect(() => {
-    const getData = async () => {
-      const res = await getStops();
-      setStops(res);
-    };
-    getData();
-  }, []);
-
+  const darkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const getDesignTokens = (mode: PaletteMode) => ({
     palette: {
       mode,
@@ -59,32 +38,37 @@ function App() {
           }),
     },
   });
-
   const theme = useMemo(
     () => createTheme(getDesignTokens(darkMode ? 'dark' : 'light')),
     [darkMode]
   );
-  const navigate = useNavigate();
+
   const onMarkerSelect = (stop: Stop) => {
     navigate('/stopview');
     setCurrentStop(stop);
   };
-
   const unSelectStop = () => {
     setCurrentStop(undefined);
     navigate('home');
   };
 
-  useEffect(() => {
-    idbService.sync();
-  }, []);
+  const onUpdate = (registration: ServiceWorkerRegistration) => {
+    navigator.serviceWorker.addEventListener('message', (event) => {
+      if (event.data?.type === 'update_installed') {
+        setUpdateSnackbarVisible(true);
+      }
+    });
+    registration?.waiting?.postMessage({ type: 'SKIP_WAITING' });
+  };
 
   useEffect(() => {
-    fetch(`${config.apiUrl}/messages`)
-      .then((res) => res.json())
-      .then((data) => {
-        setMessages(data);
-      });
+    serviceWorkerRegistration.register({ onUpdate });
+
+    getStops().then(setStops);
+
+    getMessages().then(setMessages);
+
+    idbService.sync();
   }, []);
 
   return (

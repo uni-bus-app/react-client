@@ -1,15 +1,21 @@
 import dayjs from 'dayjs';
-import { Stop, Eta, Time, LatLng } from '../models';
+import { Stop, Eta, Time, LatLng, Message } from '../models';
 import idbService from './LocalDB';
+import config from '../config';
 
-const apiURL = 'https://20210404t132447-dot-unibus-app.nw.r.appspot.com';
+const apiURL = config.apiUrl;
 
-export const getRoutePath: () => Promise<LatLng[]> = async () => {
+export const getRoutePath = async (): Promise<LatLng[]> => {
   const res = await fetch(`${apiURL}/u1routepath`);
   return await res.json();
 };
 
-export const getStops: () => Promise<any> = async () => {
+export const getMessages = async (): Promise<Message[]> => {
+  const res = await fetch(`${apiURL}/messages`);
+  return await res.json();
+};
+
+export const getStops = async (): Promise<any> => {
   try {
     const stops = await idbService.getStops();
     if (stops && stops?.length > 0) {
@@ -23,7 +29,7 @@ export const getStops: () => Promise<any> = async () => {
   }
 };
 
-const parseStops: (data: any[]) => Stop[] = (data: any[]) => {
+const parseStops = (data: any[]): Stop[] => {
   const result: Stop[] = [];
   data.forEach((item) => {
     result.push({
@@ -36,9 +42,7 @@ const parseStops: (data: any[]) => Stop[] = (data: any[]) => {
   return result;
 };
 
-export const getTimes: (stopID: string) => Promise<Time[]> = async (
-  stopID: string
-) => {
+export const getTimes = async (stopID: string): Promise<Time[]> => {
   const localTimes = await idbService.getTimes(stopID);
   if (localTimes?.times?.length) {
     return parseTimes(localTimes.times);
@@ -48,7 +52,7 @@ export const getTimes: (stopID: string) => Promise<Time[]> = async (
   }
 };
 
-const parseTimes: (data: any[]) => Time[] = (data: any[]) => {
+const parseTimes = (data: any[]): Time[] => {
   const result: Time[] = [];
   data.forEach((element) => {
     if (element) {
