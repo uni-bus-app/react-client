@@ -12,6 +12,8 @@ jobs:
     env:
       # This should be set to enabled when deploying to production
       ANALYTICS: disabled
+      PROD_FIREBASE_CONFIG: ${{ secrets.PROD_FIREBASE_CONFIG }}
+      DEV_FIREBASE_CONFIG: ${{ secrets.DEV_FIREBASE_CONFIG }}
     steps:
       - uses: actions/checkout@v2
       - name: Set up Node.js 16
