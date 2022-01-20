@@ -6,8 +6,6 @@ const mapsAPIKey = process.env.MAPS_API_KEY;
 const prodFirebaseConfig = process.env.PROD_FIREBASE_CONFIG;
 const devFirebaseConfig = process.env.DEV_FIREBASE_CONFIG;
 
-console.log(prodFirebaseConfig);
-
 const options = {
   files: './src/config.ts',
   from: [
