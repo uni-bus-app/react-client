@@ -124,6 +124,7 @@ class LocalDB {
     if (data.updates) {
       set('stopsVersion', data.versions.stopsVersion);
       set('timesVersion', data.versions.timesVersion);
+      await this.db.clear('times');
       data.stops.forEach((item: any) => {
         this.db.put('stops', item);
       });
