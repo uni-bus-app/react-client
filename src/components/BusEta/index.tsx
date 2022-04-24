@@ -2,9 +2,20 @@ import { Skeleton } from '@mui/material';
 import { Eta } from '../../types';
 import styles from './styles.module.css';
 
-const BusEta = ({ eta, index }: { eta?: Eta; index: number }) => {
+const BusEta = ({
+  eta,
+  index,
+  flexGrow = true,
+}: {
+  eta?: Eta;
+  index: number;
+  flexGrow?: boolean;
+}) => {
   return (
-    <div className={styles.container}>
+    <div
+      className={styles.container}
+      style={{ flexGrow: flexGrow ? 0.5 : undefined }}
+    >
       {eta ? (
         <>
           {eta?.value !== '' && eta?.value !== 'Now' ? (

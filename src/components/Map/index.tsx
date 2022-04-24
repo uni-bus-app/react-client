@@ -63,8 +63,6 @@ const Map = (props: MapProps) => {
   }, []);
 
   useEffect(() => {
-    // alert(getComputedStyle(document.documentElement).getPropertyValue('--sat'));
-    // console.log(currentStop);
     if (map && currentStop) {
       const pos = new google.maps.LatLng(
         currentStop.location.lat,

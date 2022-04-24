@@ -88,7 +88,10 @@ const TimesList = (props: TimesListProps) => {
           <Divider className={styles.divider} />
         </>
       ))}
-      <div className={styles.row} style={{ paddingLeft: '32px' }}>
+      <div
+        className={styles.row}
+        style={{ paddingLeft: '32px', paddingRight: '28px' }}
+      >
         <div className={styles.busInfoContainer}>
           <div className={styles.topInfo}>
             <div className={styles.iconContainer}>
@@ -128,7 +131,7 @@ const TimesList = (props: TimesListProps) => {
             borderRadius: '0.5em',
             margin: '0.5em',
             marginLeft: 0,
-            marginRight: '0.75em',
+            marginRight: 0,
           }}
         />
       </div>
@@ -160,7 +163,7 @@ const TimeItem = (props: TimesItemProps) => {
           </div>
         )}
       </div>
-      <BusEta eta={time.eta} index={index} />
+      <BusEta eta={time.eta} index={index} flexGrow={false} />
     </div>
   );
 };
