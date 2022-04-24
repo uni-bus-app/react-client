@@ -45,9 +45,7 @@ const App = () => {
   const [stops, setStops] = useState([]);
   const [loadingStop, setLoadingStop] = useState<Promise<Time[]>>();
   const [currentStop, setCurrentStop] = useState<Stop>();
-  // const { noServiceInfo, messages } = useServiceUpdates();
   const [messages, setMessages] = useState<Message[]>([]);
-  console.log(7);
   const [markerSelect, setMarkerSelect] = useState<boolean>(false);
 
   const logoContainer = useRef() as any;

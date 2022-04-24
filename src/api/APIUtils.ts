@@ -26,7 +26,6 @@ export const getStops = async (): Promise<any> => {
     if (process.env.NODE_ENV === 'development') {
       const stops = await db.getStops();
       if (stops && stops?.length > 0) {
-        // console.log(stops);
         return parseStops(stops);
       } else {
         const res = await fetch(`${apiURL}/stops`);
@@ -58,7 +57,6 @@ export const getTimes = async (
   stopID: string,
   date?: string
 ): Promise<Time[]> => {
-  // console.log(date);
   if (process.env.NODE_ENV === 'development') {
     const localTimes = await db.getTimes(stopID, date);
     if (localTimes?.length) {
@@ -84,7 +82,6 @@ const parseTimes = (data: any[]): Time[] => {
       newServiceTime.service = 'U1';
       newServiceTime.routeNumber = element.routeNumber;
       newServiceTime.timeValue = dayjs(element.scheduledDeparture);
-      // console.log(newServiceTime);
       // newServiceTime.timeValue = dayjs()
       //   .set('hour', parseInt(element.scheduled.substring(0, 2)))
       //   .set('minute', element.scheduled.substring(2, 4))

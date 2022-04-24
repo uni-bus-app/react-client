@@ -14,7 +14,6 @@ interface StopMarkersProps {
 const StopMarkers = (props: StopMarkersProps) => {
   const { enabled, stops, darkModeEnabled, selectedStop, onMarkerSelect } =
     props;
-  console.log(selectedStop);
   if (!enabled) return <></>;
   return (
     <>

@@ -74,9 +74,7 @@ const registerValidSW = async (swUrl: string, config?: Config) => {
       }
       installingWorker.onstatechange = (ev) => {
         if (installingWorker.state === 'installed') {
-          console.log('update installed', Date.now() - start);
           if (navigator.serviceWorker.controller) {
-            console.log(ev);
             // At this point, the updated precached content has been fetched,
             // but the previous service worker will still serve the older
             // content until all client tabs are closed.
@@ -86,7 +84,6 @@ const registerValidSW = async (swUrl: string, config?: Config) => {
             );
 
             const prevSW = navigator.serviceWorker.controller.scriptURL;
-            console.log(prevSW);
             if (prevSW.includes('ngsw-worker.js')) {
               registration.waiting?.postMessage({
                 type: SWBroadcastMessage.SkipWaiting,
@@ -111,7 +108,7 @@ const registerValidSW = async (swUrl: string, config?: Config) => {
     };
     config?.onSuccess?.(registration);
   } catch (error) {
-    console.log((error as any).message);
+    // console.log((error as any).message);
     console.error('Error during service worker registration:', error);
   }
 };

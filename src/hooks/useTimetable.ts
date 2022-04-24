@@ -29,7 +29,6 @@ const useTimetable = (stop?: Stop) => {
         stop?.id,
         times[times.length - 1].timeValue.toISOString()
       );
-      console.log(res);
       setTimes((value: any) => [...value, ...res]);
     }
   };

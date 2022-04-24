@@ -115,7 +115,6 @@ const Map = (props: MapProps) => {
             styles: darkModeEnabled ? mapStylesDark : mapStylesLight,
           }}
           onLoad={onLoad}
-          onBoundsChanged={() => console.log('loa77d2')}
           onUnmount={onUnmount}
         >
           <RoutePath

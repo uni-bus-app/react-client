@@ -109,13 +109,8 @@ self.addEventListener('fetch', (ev) => {
           if (url.includes('times')) {
             const stopID = url.split('stops/')?.pop()?.split('/')?.[0];
             const date = new URLSearchParams(url.split('?').pop()).get('date');
-            console.log(
-              date,
-              new URLSearchParams(url.split('?').pop()).get('date')
-            );
             if (stopID) {
               const times = await db.getTimes(stopID, date);
-              console.log(times);
               return new Response(JSON.stringify(times));
             } else {
               return fetch(ev.request);

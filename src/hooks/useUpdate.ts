@@ -26,10 +26,6 @@ const useUpdate = () => {
   };
   const visibilityChange = async () => {
     if (document.hidden) {
-      console.log(
-        updateAvailableTimeout.current,
-        updateAvailableTimeout1.current
-      );
       if (updateAvailableTimeout.current && !updateAvailableTimeout1.current) {
         window.removeEventListener('visibilitychange', visibilityChange);
         restart();
@@ -40,7 +36,6 @@ const useUpdate = () => {
   };
   const updateFound = (ev: any) => {
     const target = ev.target as ServiceWorkerRegistration;
-    console.log('update found', ev, 44);
     if (!target.installing) {
       return false;
     }

@@ -9,11 +9,9 @@ import ServiceWorkerProvider from './components/ServiceWorkerProvider';
 import config from './config';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
 const app = initializeApp(config.firebase);
 const analytics = getAnalytics(app);
-console.log(version);
 setUserProperties(analytics, { app_version: version });
 
 ReactDOM.render(
@@ -27,8 +25,6 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
-// serviceWorkerRegistration.register();
-// console.log(1);
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
