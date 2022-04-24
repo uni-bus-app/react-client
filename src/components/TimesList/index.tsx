@@ -1,14 +1,12 @@
 import DepartureBoard from '@mui/icons-material/DepartureBoard';
-import { Box, CircularProgress, Skeleton } from '@mui/material';
-import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
+import Skeleton from '@mui/material/Skeleton';
 import { useTheme } from '@mui/material/styles';
 import dayjs, { Dayjs } from 'dayjs';
 import { useState } from 'react';
 import { Time } from '../../types';
 import BusEta from '../BusEta';
 import ServiceIcon from '../ServiceIcon';
-import { FixedSizeList } from 'react-window';
 import styles from './styles.module.css';
 
 const getDay = (value: Dayjs) => {

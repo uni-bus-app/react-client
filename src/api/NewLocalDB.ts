@@ -35,6 +35,7 @@ const isBankHoliday = async (date: Dayjs) => {
 };
 
 const getNextWorkingDay = async (date: Dayjs) => {
+  date = date.startOf('day');
   const res = date.weekday(1);
   const result = res.isAfter(date) ? res : date.weekday(8);
   if (await isBankHoliday(result)) {
@@ -147,8 +148,10 @@ class LocalDB {
   ): Promise<any[]> {
     let res = await this.db.getAllFromIndex('times', 'stopID', stopID);
     const result: any = [];
-    if (rollover) {
+    if (rollover === true) {
       res = res?.filter((item) => item.rollover);
+    } else if (rollover === false) {
+      res = res?.filter((item) => !item.rollover);
     }
     if (day !== undefined) {
       res = res?.filter((item) => item.days.includes(day));
@@ -172,8 +175,9 @@ class LocalDB {
   }
 
   async getTimes2(stopID: string, currentTime: Dayjs): Promise<Time[]> {
+    const value = await isBankHoliday(currentTime);
     const times = formatTimes(
-      await this.queryTimes(stopID, currentTime.day()),
+      await this.queryTimes(stopID, currentTime.day(), value),
       currentTime
     ).filter((item) => dayjs(item.scheduledDeparture).isAfter(currentTime));
     const rolloverTimes = (
@@ -185,10 +189,7 @@ class LocalDB {
   async getTimes(stopID: string, date?: string | null): Promise<Time[]> {
     const currentTime = date ? dayjs(date) : dayjs();
     let times: any;
-    if (await isBankHoliday(currentTime)) {
-    } else {
-      times = await this.getTimes2(stopID, currentTime);
-    }
+    times = await this.getTimes2(stopID, currentTime);
     if (!times?.length) {
       let thing = await getNextWorkingDay(currentTime);
       const res = await this.getTimes2(stopID, thing);

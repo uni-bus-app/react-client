@@ -6,6 +6,7 @@ import { grey } from '@mui/material/colors';
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { getAnalytics, logEvent } from 'firebase/analytics';
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import lazy from 'react-lazy-with-preload';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
@@ -91,6 +92,15 @@ const App = () => {
   }, []);
 
   const update = useUpdate();
+
+  useEffect(() => {
+    if (currentStop) {
+      logEvent(getAnalytics(), 'stop_view', {
+        stop_id: currentStop.id,
+        stop_name: currentStop.name,
+      });
+    }
+  }, [currentStop]);
 
   return (
     <>
