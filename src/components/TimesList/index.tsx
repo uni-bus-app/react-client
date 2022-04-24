@@ -75,7 +75,9 @@ const TimesList = (props: TimesListProps) => {
           !timesLoading
         ) {
           setTimesLoading(true);
-          loadMoreTimes().then(() => setTimesLoading(false));
+          window.setTimeout(() => {
+            loadMoreTimes().then(() => setTimesLoading(false));
+          }, 1500);
         }
       }}
     >
