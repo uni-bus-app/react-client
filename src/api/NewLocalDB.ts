@@ -167,6 +167,9 @@ class LocalDB {
   }
 
   async getRolloverTimes(stopID: string, currentTime: Dayjs): Promise<any[]> {
+    if (await isBankHoliday(currentTime)) {
+      return [];
+    }
     const res = await this.queryTimes(
       stopID,
       currentTime.add(1, 'day').day(),
