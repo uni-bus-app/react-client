@@ -1,0 +1,202 @@
+import dayjs, { Dayjs } from 'dayjs';
+import weekday from 'dayjs/plugin/weekday';
+import { DBSchema, IDBPDatabase, openDB } from 'idb';
+import { get, set } from 'idb-keyval';
+import config from '../config';
+import { Time } from '../types';
+dayjs.extend(weekday);
+
+const getServiceTime = (scheduled: string, currentTime: Dayjs): string => {
+  return currentTime
+    .startOf('day')
+    .set('hour', Number(scheduled.substring(0, 2)))
+    .set('minute', Number(scheduled.substring(2, 4)))
+    .toISOString();
+};
+
+const formatTimes = (times: any[], currentTime: Dayjs): Time[] => {
+  const result: Time[] = [];
+  times.forEach((item) => {
+    if (item.scheduled === '....') {
+      return;
+    }
+    const scheduledDeparture = getServiceTime(item.scheduled, currentTime);
+    result.push({ ...item, scheduledDeparture });
+  });
+  return result;
+};
+
+const isBankHoliday = async (date: Dayjs) => {
+  const res = await fetch('https://www.gov.uk/bank-holidays.json');
+  const data = await res.json();
+  return data['england-and-wales'].events.some(
+    (item: any) => item.date === date.format('YYYY-MM-DD')
+  );
+};
+
+const getNextWorkingDay = async (date: Dayjs) => {
+  const res = date.weekday(1);
+  const result = res.isAfter(date) ? res : date.weekday(8);
+  if (await isBankHoliday(result)) {
+    return result.add(1, 'day');
+  } else {
+    return result;
+  }
+};
+
+interface UniBusDB extends DBSchema {
+  times: {
+    value: {
+      id: string;
+      stopID: string;
+      rollover: boolean;
+      days: number[];
+      service: string;
+      times: { scheduled: string; routeNumber: number }[];
+    };
+    key: string;
+    indexes: { stopID: string };
+  };
+  stops: {
+    value: {
+      id: string;
+      name: string;
+    };
+    key: string;
+    indexes: { routeOrder: number };
+  };
+}
+
+class LocalDB {
+  private _db?: IDBPDatabase<UniBusDB>;
+
+  private get db(): IDBPDatabase<UniBusDB> {
+    if (this._db) {
+      return this._db;
+    }
+    throw new Error();
+  }
+  private set db(value: IDBPDatabase<UniBusDB>) {
+    this._db = value;
+  }
+
+  constructor() {}
+
+  async init() {
+    if (this._db) {
+      return;
+    }
+    this.db = await openDB<UniBusDB>('unibus-db', 3, {
+      upgrade(db, oldVersion, newVersion, trasaction) {
+        if (oldVersion && oldVersion < 3) {
+          [...(db.objectStoreNames as any)].forEach((item) => {
+            db.deleteObjectStore(item);
+          });
+        }
+        const stopsStore = db.createObjectStore('stops', { keyPath: 'id' });
+        stopsStore.createIndex('routeOrder', 'routeOrder');
+        const timesStore = db.createObjectStore('times', { keyPath: 'id' });
+        timesStore.createIndex('stopID', 'stopID');
+      },
+    });
+    await this.sync();
+  }
+
+  async generateChecksums() {
+    // const stops = await this.getStops();
+    // const times = stops ? await this.getAllTimes() : {};
+    // const stopsVersion = hash(stops || {}, { respectType: false });
+    // const timesVersion = hash(times, { unorderedArrays: true });
+    const timesVersion = get('timesVersion');
+    const stopsVersion = get('stopsVersions');
+    return { stopsVersion, timesVersion };
+  }
+
+  async sync() {
+    const checksums = await this.generateChecksums();
+    const res = await fetch(`${config.apiURL}/sync?new_format=true`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(checksums),
+    });
+    const data = await res.json();
+    if (data.updates) {
+      set('stopsVersion', data.versions.stopsVersion);
+      set('timesVersion', data.versions.timesVersion);
+      data.stops.forEach((item: any) => {
+        this.db.put('stops', item);
+      });
+      data.times.forEach((item: any) => {
+        this.db.put('times', item);
+      });
+    }
+  }
+
+  async getStops() {
+    return await this.db.getAllFromIndex('stops', 'routeOrder');
+  }
+
+  async getAllTimes() {
+    return await this.db.getAll('times');
+  }
+
+  async queryTimes(
+    stopID: string,
+    day?: number,
+    rollover?: boolean
+  ): Promise<any[]> {
+    let res = await this.db.getAllFromIndex('times', 'stopID', stopID);
+    const result: any = [];
+    if (rollover) {
+      res = res?.filter((item) => item.rollover);
+    }
+    if (day !== undefined) {
+      res = res?.filter((item) => item.days.includes(day));
+    }
+    res = res?.sort((a, b) => {
+      return Number(b.rollover) - Number(a.rollover);
+    });
+    res?.forEach((item) => {
+      result.push(...item.times);
+    });
+    return result;
+  }
+
+  async getRolloverTimes(stopID: string, currentTime: Dayjs): Promise<any[]> {
+    const res = await this.queryTimes(
+      stopID,
+      currentTime.add(1, 'day').day(),
+      true
+    );
+    return formatTimes(res, currentTime.add(1, 'day'));
+  }
+
+  async getTimes2(stopID: string, currentTime: Dayjs): Promise<Time[]> {
+    const times = formatTimes(
+      await this.queryTimes(stopID, currentTime.day()),
+      currentTime
+    ).filter((item) => dayjs(item.scheduledDeparture).isAfter(currentTime));
+    const rolloverTimes = (
+      await this.getRolloverTimes(stopID, currentTime)
+    ).filter((item) => dayjs(item.scheduledDeparture).isAfter(currentTime));
+    return [...times, ...rolloverTimes];
+  }
+
+  async getTimes(stopID: string, date?: string | null): Promise<Time[]> {
+    const currentTime = date ? dayjs(date) : dayjs();
+    let times: any;
+    if (await isBankHoliday(currentTime)) {
+    } else {
+      times = await this.getTimes2(stopID, currentTime);
+    }
+    if (!times?.length) {
+      let thing = await getNextWorkingDay(currentTime);
+      const res = await this.getTimes2(stopID, thing);
+      return res;
+    } else {
+      return times;
+    }
+  }
+}
+
+export default LocalDB;

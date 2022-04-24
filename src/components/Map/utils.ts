@@ -34,6 +34,9 @@ export const moveLogo = (map: any, logoContainer: any) => {
         } else if (!tc2 && mutation.target !== tc1) {
           tc2 = mutation.target;
         } else {
+          if (mutation.target.textContent === 'Keyboard shortcuts') {
+            (mutation.target as any).remove();
+          }
           onFinished();
         }
       } else if ((mutation.target as any).getAttribute('rel')) {
@@ -52,13 +55,14 @@ export const moveLogo = (map: any, logoContainer: any) => {
   });
 };
 
-export const getLocation: () => Promise<google.maps.LatLngLiteral> = () => {
+export const getLocation: () => Promise<google.maps.LatLng> = () => {
   return new Promise((resolve) => {
     navigator.geolocation.getCurrentPosition((pos) => {
-      const position: google.maps.LatLngLiteral = {
+      const position1: google.maps.LatLngLiteral = {
         lat: pos.coords.latitude,
         lng: pos.coords.longitude,
       };
+      const position = new google.maps.LatLng(position1);
       resolve(position);
     });
   });

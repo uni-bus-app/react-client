@@ -1,5 +1,5 @@
 .infoCard {
-  border-radius: 16px !important;
+  border-radius: 12px !important;
   padding: 16px;
   margin: 16px 16px 0 16px;
 }
@@ -11,6 +11,10 @@
   text-align: center;
 }
 
+/* .header > p {
+  font-family: GoogleSans;
+} */
+
 p.bodyText {
   font-size: 0.8em;
   width: 100%;
@@ -20,4 +24,5 @@ p.bodyText {
   text-rendering: optimizeLegibility;
   text-shadow: rgba(0, 0, 0, 0.01) 0 0 1px;
   color: gray;
+  /* font-family: GoogleSans; */
 }

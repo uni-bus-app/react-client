@@ -1,7 +1,7 @@
 import { Marker } from '@react-google-maps/api';
 import purpleStopMarker from '../../../../assets/stop-marker-icon-purple.svg';
 import blueStopMarker from '../../../../assets/stop-marker-icon-blue.svg';
-import { Stop } from '../../../../models';
+import { Stop } from '../../../../types';
 
 interface StopMarkersProps {
   enabled?: boolean;
@@ -14,6 +14,7 @@ interface StopMarkersProps {
 const StopMarkers = (props: StopMarkersProps) => {
   const { enabled, stops, darkModeEnabled, selectedStop, onMarkerSelect } =
     props;
+  console.log(selectedStop);
   if (!enabled) return <></>;
   return (
     <>

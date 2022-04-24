@@ -20,6 +20,12 @@ export interface Time {
   eta?: Eta;
   timeValue: Dayjs;
   routeNumber: number;
+  scheduledDeparture: string;
+}
+
+interface MessageAction {
+  label: string;
+  url: string;
 }
 
 export interface Message {
@@ -28,9 +34,16 @@ export interface Message {
   date?: any;
   icon: string;
   id: string;
+  actions?: MessageAction[];
 }
 
 export interface LatLng {
   lat: number;
   lng: number;
+}
+
+export enum SWBroadcastMessage {
+  UpdateAvailable = 'UPDATE_AVAILABLE',
+  UpdateActivated = 'b',
+  SkipWaiting = 'SKIP_WAITING',
 }

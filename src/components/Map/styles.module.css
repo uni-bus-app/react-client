@@ -1,0 +1,54 @@
+.statusBarContainer {
+  height: env(safe-area-inset-top);
+}
+
+.statusBar {
+  /* position: relative; */
+  /* background-color: white; */
+  height: 100%;
+  background-color: #bdbdbd;
+  /* height: env(safe-area-inset-top); */
+  opacity: 0.9;
+  width: 100%;
+  backdrop-filter: blur(10px);
+
+  /* border-bottom: 122px solid; */
+  /* border-width: 3px;
+  border-style: solid;
+  border-image: linear-gradient(to bottom, red, rgba(0, 0, 0, 0)) 1 100%; */
+}
+
+.statusBarBlur {
+  /* position: absolute; */
+  /* content: '/'; */
+  /* top: 0.5em; */
+  background-color: grey;
+  height: 0%;
+  width: 100%;
+  /* right: 0; */
+  -webkit-mask-image: -webkit-gradient(
+    linear,
+    left top,
+    left bottom,
+    from(grey),
+    to(rgba(0, 0, 0, 0))
+  );
+  /* -webkit-mask-size: 100% 50%; */
+}
+
+/* .statusBar:after {
+  position: absolute;
+  right: 0;
+  content: '';
+  height: 100%;
+  width: 3px;
+  background: linear-gradient(to top, black, transparent);
+} */
+
+.mapContainer {
+  height: 43%;
+}
+
+.locationButton {
+  bottom: 62%;
+}

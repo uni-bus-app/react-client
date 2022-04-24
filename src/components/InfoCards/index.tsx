@@ -1,10 +1,11 @@
+import NoTransfer from '@mui/icons-material/NoTransfer';
+import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
+import { Message } from '../../types';
 import styles from './styles.module.css';
-import * as icons from '@mui/icons-material';
-import { useEffect, useState } from 'react';
-import { Message } from '../../models';
-import config from '../../config';
+
+const icons = { NoTransfer };
 
 const upperFirst = (value: string): string => {
   return value.slice(0, 1).toUpperCase() + value.slice(1, value.length);
@@ -26,13 +27,18 @@ const InfoCards = (props: InfoCardsProps) => {
   const { messages } = props;
   return (
     <>
-      {messages.map(({ title, body, icon }) => (
+      {messages.map(({ title, body, icon, actions }) => (
         <Card className={styles.infoCard} sx={{ boxShadow: 7 }}>
           <div className={styles.header}>
             <DynamicIcon iconName={icon} />
             <Typography>{title}</Typography>
           </div>
           <p className={styles.bodyText}>{body}</p>
+          {actions?.map(({ label, url }) => (
+            <Link href={url} target="_blank">
+              {label}
+            </Link>
+          ))}
         </Card>
       ))}
     </>

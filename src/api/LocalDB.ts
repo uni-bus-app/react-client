@@ -1,7 +1,6 @@
-import hash from 'object-hash';
 import { get, set } from 'idb-keyval';
 import config from '../config';
-import { Stop } from '../models';
+import { Stop } from '../types';
 
 class IdbService {
   constructor() {}
@@ -9,8 +8,8 @@ class IdbService {
   async generateChecksums() {
     const stops = await this.getStops();
     const times = stops ? await this.getAllTimes(stops) : {};
-    const stopsVersion = hash(stops || {}, { respectType: false });
-    const timesVersion = hash(times, { unorderedArrays: true });
+    const stopsVersion = 'hash(stops || {}, { respectType: false });';
+    const timesVersion = 'hash(times, { unorderedArrays: true });';
     return { stopsVersion, timesVersion };
   }
 

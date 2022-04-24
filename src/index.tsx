@@ -1,25 +1,34 @@
+import { getAnalytics, setUserProperties } from 'firebase/analytics';
+import { initializeApp } from 'firebase/app';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { initializeApp } from 'firebase/app';
-import { getAnalytics } from 'firebase/analytics';
+import { version } from '../package.json';
+import App from './App';
+import ServiceWorkerProvider from './components/ServiceWorkerProvider';
 import config from './config';
+import './index.css';
+import reportWebVitals from './reportWebVitals';
+import * as serviceWorkerRegistration from './serviceWorkerRegistration';
+
+const app = initializeApp(config.firebase);
+const analytics = getAnalytics(app);
+console.log(version);
+setUserProperties(analytics, { app_version: version });
 
 ReactDOM.render(
   <React.StrictMode>
-    <Router>
-      <App />
-    </Router>
+    <ServiceWorkerProvider>
+      <Router>
+        <App />
+      </Router>
+    </ServiceWorkerProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );
 
-const app = initializeApp(config.firebase);
-const analytics = getAnalytics(app);
-
+// serviceWorkerRegistration.register();
+// console.log(1);
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals

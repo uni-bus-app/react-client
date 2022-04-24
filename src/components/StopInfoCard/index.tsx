@@ -1,6 +1,8 @@
-import styles from './styles.module.css';
+import Badge from '@mui/icons-material/Badge';
+import Hail from '@mui/icons-material/Hail';
+import NoTransfer from '@mui/icons-material/NoTransfer';
 import Card from '@mui/material/Card';
-import { Hail, Badge, Masks, NoTransfer } from '@mui/icons-material';
+import styles from './styles.module.css';
 
 const StopInfoCard = () => {
   return (
@@ -14,12 +16,6 @@ const StopInfoCard = () => {
           <Badge className={styles.icon} />
           <p className={styles.bodyText}>
             You are required to show your student ID
-          </p>
-        </div>
-        <div className={styles.item}>
-          <Masks className={styles.icon} />
-          <p className={styles.bodyText}>
-            You are required by law to wear a face covering (unless exempt)
           </p>
         </div>
         <div className={styles.item}>

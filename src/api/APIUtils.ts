@@ -1,7 +1,13 @@
 import dayjs from 'dayjs';
-import { Stop, Eta, Time, LatLng, Message } from '../models';
-import idbService from './LocalDB';
+import { Stop, Eta, Time, LatLng, Message } from '../types';
+// import idbService from './LocalDB';
+import LocalDB from './NewLocalDB';
 import config from '../config';
+
+const db = new LocalDB();
+if (process.env.NODE_ENV === 'development') {
+  db.init();
+}
 
 const apiURL = config.apiURL;
 
@@ -17,9 +23,15 @@ export const getMessages = async (): Promise<Message[]> => {
 
 export const getStops = async (): Promise<any> => {
   try {
-    const stops = await idbService.getStops();
-    if (stops && stops?.length > 0) {
-      return parseStops(stops);
+    if (process.env.NODE_ENV === 'development') {
+      const stops = await db.getStops();
+      if (stops && stops?.length > 0) {
+        // console.log(stops);
+        return parseStops(stops);
+      } else {
+        const res = await fetch(`${apiURL}/stops`);
+        return parseStops(await res.json());
+      }
     } else {
       const res = await fetch(`${apiURL}/stops`);
       return parseStops(await res.json());
@@ -42,12 +54,23 @@ const parseStops = (data: any[]): Stop[] => {
   return result;
 };
 
-export const getTimes = async (stopID: string): Promise<Time[]> => {
-  const localTimes = await idbService.getTimes(stopID);
-  if (localTimes?.times?.length) {
-    return parseTimes(localTimes.times);
+export const getTimes = async (
+  stopID: string,
+  date?: string
+): Promise<Time[]> => {
+  // console.log(date);
+  if (process.env.NODE_ENV === 'development') {
+    const localTimes = await db.getTimes(stopID, date);
+    if (localTimes?.length) {
+      return parseTimes(localTimes);
+    } else {
+      date = date ? `?date=${date}` : '';
+      const res = await fetch(`${apiURL}/stops/${stopID}/times${date}`);
+      return parseTimes(await res.json());
+    }
   } else {
-    const res = await fetch(`${apiURL}/stops/${stopID}/times`);
+    date = date ? `?date=${date}` : '';
+    const res = await fetch(`${apiURL}/stops/${stopID}/times${date}`);
     return parseTimes(await res.json());
   }
 };
@@ -57,21 +80,23 @@ const parseTimes = (data: any[]): Time[] => {
   data.forEach((element) => {
     if (element) {
       const newServiceTime: Time | any = {};
-      newServiceTime.destination = 'University Library';
+      newServiceTime.destination = element.destination;
       newServiceTime.service = 'U1';
       newServiceTime.routeNumber = element.routeNumber;
-      newServiceTime.timeValue = dayjs()
-        .set('hour', parseInt(element.scheduled.substring(0, 2)))
-        .set('minute', element.scheduled.substring(2, 4))
-        .set('second', 0);
-      if (
-        newServiceTime.timeValue.isBefore(
-          dayjs().set('hour', 1).set('minute', 0)
-        )
-      ) {
-        newServiceTime.timeValue = newServiceTime.timeValue.add(1, 'day');
-        newServiceTime.destination = 'Fratton Bridge';
-      }
+      newServiceTime.timeValue = dayjs(element.scheduledDeparture);
+      // console.log(newServiceTime);
+      // newServiceTime.timeValue = dayjs()
+      //   .set('hour', parseInt(element.scheduled.substring(0, 2)))
+      //   .set('minute', element.scheduled.substring(2, 4))
+      //   .set('second', 0);+
+      // if (
+      //   newServiceTime.timeValue.isBefore(
+      //     dayjs().set('hour', 1).set('minute', 0)
+      //   )
+      // ) {
+      //   newServiceTime.timeValue = newServiceTime.timeValue.add(1, 'day');
+      //   newServiceTime.destination = 'Fratton Bridge';
+      // }
       newServiceTime.time = newServiceTime.timeValue.format('HH:mm');
       newServiceTime.eta = updateServiceEta(newServiceTime);
       if (newServiceTime.eta) {
@@ -110,11 +135,14 @@ const updateServiceEta = (serviceTime: Time): Eta | undefined => {
     value = Math.ceil(eta / 60000).toString();
     unit = 'mins';
   } else if (eta > 7200000) {
+    // value = (eta / 3600000).toFixed(1).toString();
+    // unit = 'hours';
     arrivalTime = dayjs(serviceTime.timeValue).format('HH:mm');
   } else if (eta > 3600000) {
     value = (eta / 3600000).toFixed(1).toString();
     unit = 'hours';
   }
+  arrivalTime = dayjs(serviceTime.timeValue).format('HH:mm');
   if (isNaN(eta) || eta < 0) {
     return;
   }

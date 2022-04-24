@@ -1,42 +1,84 @@
-import styles from './styles.module.css';
-import { Time } from '../../models';
+import DirectionsBus from '@mui/icons-material/DirectionsBus';
+import NavigateNext from '@mui/icons-material/NavigateNext';
+import NoTransfer from '@mui/icons-material/NoTransfer';
 import Card from '@mui/material/Card';
-import { DirectionsBus, NavigateNext } from '@mui/icons-material';
+import Skeleton from '@mui/material/Skeleton';
+import Typography from '@mui/material/Typography';
+import dayjs from 'dayjs';
+import { MouseEventHandler } from 'react';
+import { Time } from '../../types';
+import BusEta from '../BusEta';
+import ServiceIcon from '../ServiceIcon';
+import styles from './styles.module.css';
+
+const NoServiceCard = ({
+  onClick,
+}: {
+  onClick: MouseEventHandler<HTMLDivElement>;
+}) => {
+  return (
+    <Card
+      className={styles.card}
+      style={{ flexDirection: 'column', alignItems: 'center' }}
+      sx={{ boxShadow: 7 }}
+      onClick={onClick}
+    >
+      <NoTransfer />
+      <Typography style={{ paddingTop: '0.25em' }}>
+        No services today
+      </Typography>
+      <Typography>Click to see later departures</Typography>
+    </Card>
+  );
+};
 
 interface NextTimeCardProps {
-  time: Time;
+  time?: Time;
   darkMode: boolean;
+  onClick: MouseEventHandler<HTMLDivElement>;
 }
 
 const NextTimeCard = (props: NextTimeCardProps) => {
-  const { time, darkMode } = props;
-  return (
-    <Card className={styles.card} sx={{ boxShadow: 7 }}>
+  let { time, darkMode, onClick } = props;
+  return (time?.timeValue?.diff(dayjs(), 'minutes') || 0) < 60 ||
+    time?.timeValue?.day() === dayjs().day() ? (
+    <Card className={styles.card} sx={{ boxShadow: 7 }} onClick={onClick}>
       <div className={styles.details}>
         <div className={styles.icons}>
-          <DirectionsBus />
-          <div
-            className={`${styles.u1ServiceIcon} ${
-              darkMode ? styles.darkServiceIcon : styles.lightServiceIcon
-            }`}
-          >
-            U1
-          </div>
+          {time ? (
+            <DirectionsBus />
+          ) : (
+            <Skeleton
+              width={24}
+              height={24}
+              variant="rectangular"
+              style={{ borderRadius: '0.25em' }}
+            />
+          )}
+          {time ? (
+            <ServiceIcon darkTheme={darkMode} />
+          ) : (
+            <Skeleton
+              width={26}
+              height={26}
+              variant="rectangular"
+              style={{ borderRadius: '0.25em', margin: '5px' }}
+            />
+          )}
         </div>
-        <div className={styles.destination}>{time.destination}</div>
+        {time ? (
+          <div className={styles.destination}>{time?.destination}</div>
+        ) : (
+          <Skeleton variant="text" width={133} style={{ marginLeft: '6px' }} />
+        )}
       </div>
       <div className={styles.endContainer}>
-        <div className={styles.time}>
-          <div className={styles.eta}>
-            {time.eta?.unit ? time.eta.value : time.time}
-          </div>
-          <div className={styles.etaUnit}>
-            {time.eta?.unit !== 'Now' ? time.eta?.unit : ''}
-          </div>
-        </div>
-        <NavigateNext />
+        <BusEta eta={time?.eta} index={0} />
+        {time ? <NavigateNext /> : <Skeleton width={24} height={24} />}
       </div>
     </Card>
+  ) : (
+    <NoServiceCard onClick={onClick} />
   );
 };
 

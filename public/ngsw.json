@@ -1,0 +1,149 @@
+{
+  "configVersion": 1,
+  "timestamp": 1649955313495,
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/1-es2015.7f68e9db6708c473f4df.js",
+        "/1-es5.7f68e9db6708c473f4df.js",
+        "/10-es2015.96603884e73e3a1ce05f.js",
+        "/10-es5.96603884e73e3a1ce05f.js",
+        "/6-es2015.612bbf655f6f82280dc3.js",
+        "/6-es5.612bbf655f6f82280dc3.js",
+        "/7-es2015.1191ad14968cda254927.js",
+        "/7-es5.1191ad14968cda254927.js",
+        "/8-es2015.a23ef6aeb97a3d4a1a66.js",
+        "/8-es5.a23ef6aeb97a3d4a1a66.js",
+        "/9-es2015.b9160b2cfe43bef108e1.js",
+        "/9-es5.b9160b2cfe43bef108e1.js",
+        "/favicon.ico",
+        "/index.html",
+        "/main-es2015.8d4141f1ec6a57fc48b0.js",
+        "/main-es5.8d4141f1ec6a57fc48b0.js",
+        "/polyfills-es2015.fb00db37ff0376f28060.js",
+        "/polyfills-es5.fc879bbbcd1c8b1c6d98.js",
+        "/runtime-es2015.c943c3907e6d99795da4.js",
+        "/runtime-es5.c943c3907e6d99795da4.js",
+        "/styles.929b4876a21f14fff890.css"
+      ],
+      "patterns": []
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/assets/appdemo.png",
+        "/assets/baseline_gps_fixed_black_18dp.png",
+        "/assets/bus-circle.svg",
+        "/assets/fonts/roboto-v20-latin-regular.eot",
+        "/assets/fonts/roboto-v20-latin-regular.svg",
+        "/assets/fonts/roboto-v20-latin-regular.ttf",
+        "/assets/fonts/roboto-v20-latin-regular.woff",
+        "/assets/fonts/roboto-v20-latin-regular.woff2",
+        "/assets/icons/app-icon-192px.png",
+        "/assets/icons/app-icon-384px.png",
+        "/assets/icons/app-icon-576px.png",
+        "/assets/icons/app-icon-768px.png",
+        "/assets/icons/apple-touch-icon.png",
+        "/assets/icons/closest_stop.svg",
+        "/assets/location-marker-icon.png",
+        "/assets/location-marker-icon.svg",
+        "/assets/location-marker-with-logo.svg",
+        "/assets/splashscreens/iphone5_splash.png",
+        "/assets/splashscreens/iphone6_splash.png",
+        "/assets/splashscreens/iphoneplus_splash.png",
+        "/assets/splashscreens/iphonex_splash.png",
+        "/assets/splashscreens/iphonexr_splash.png",
+        "/assets/splashscreens/iphonexsmax_splash.png",
+        "/assets/stop-marker-icon-blue.svg",
+        "/assets/stop-marker-icon-blue1.svg",
+        "/assets/stop-marker-icon-purple.svg",
+        "/assets/stop-marker-icon-purple1.svg",
+        "/assets/stop-marker-icon-purple2.svg"
+      ],
+      "patterns": []
+    }
+  ],
+  "dataGroups": [],
+  "hashTable": {
+    "/1-es2015.7f68e9db6708c473f4df.js": "27b0bbaefd158366e9deb2a1e84a5b7692e32f3e",
+    "/1-es5.7f68e9db6708c473f4df.js": "27b0bbaefd158366e9deb2a1e84a5b7692e32f3e",
+    "/10-es2015.96603884e73e3a1ce05f.js": "f3d4d3e16111231674ebb4d3fa107d207cbac0bb",
+    "/10-es5.96603884e73e3a1ce05f.js": "a20a0e3241016c59b3ebfbb11d3ac038506e3545",
+    "/6-es2015.612bbf655f6f82280dc3.js": "83eba22b9be65f1656417281e4ef0d4b01086606",
+    "/6-es5.612bbf655f6f82280dc3.js": "0be3981bfa8f5435eed345d6e0ba72ea990dc408",
+    "/7-es2015.1191ad14968cda254927.js": "9f6d5771a6f0a8e8482cd03fe307d4788a0df7ef",
+    "/7-es5.1191ad14968cda254927.js": "5b7afad22d3cecd7c602d5229ce2497f33ac9ff3",
+    "/8-es2015.a23ef6aeb97a3d4a1a66.js": "1927ee48b72aa12facd5a20a8f7b7200e76886cb",
+    "/8-es5.a23ef6aeb97a3d4a1a66.js": "1927ee48b72aa12facd5a20a8f7b7200e76886cb",
+    "/9-es2015.b9160b2cfe43bef108e1.js": "582b8cad560b7a0b84c1df5fb264f1f618222112",
+    "/9-es5.b9160b2cfe43bef108e1.js": "190daadd33a1759a50cc8ace915d477a8aeb5e2f",
+    "/assets/appdemo.png": "b22a2a1a1be6dbaa75c7609bafce1699f32d5c24",
+    "/assets/baseline_gps_fixed_black_18dp.png": "5a1ec354a80aae87fdd53ce7cb6cefc77d1c3c61",
+    "/assets/bus-circle.svg": "dfbd071205b1294b50d79a780b9ee3555c9e94d4",
+    "/assets/fonts/roboto-v20-latin-regular.eot": "70dd177f96584df1740ce193446c80d294ffc1ad",
+    "/assets/fonts/roboto-v20-latin-regular.svg": "70b06164ae297288686e1c74ac15f412f91f3043",
+    "/assets/fonts/roboto-v20-latin-regular.ttf": "b5b8b148f5c7641083b66b2e5444e494fae9796c",
+    "/assets/fonts/roboto-v20-latin-regular.woff": "42c8ae79841c592a26633f10ee9a26c75bcf9273",
+    "/assets/fonts/roboto-v20-latin-regular.woff2": "81c796737cbe44d4a719777f0aff14b73a3efb1e",
+    "/assets/icons/app-icon-192px.png": "f7836658e31d02e071de44db0282f581ac4c2e9e",
+    "/assets/icons/app-icon-384px.png": "d1980e2d25521a4c5ff039a27a308f40af9d4155",
+    "/assets/icons/app-icon-576px.png": "4f8006ca420257b9c1589dafb150a64b1751eaf1",
+    "/assets/icons/app-icon-768px.png": "f352d14e84e643efce947ecefa69306427a08e49",
+    "/assets/icons/apple-touch-icon.png": "f7836658e31d02e071de44db0282f581ac4c2e9e",
+    "/assets/icons/closest_stop.svg": "beb593483cd09275c294849aa2ec20d3db4d04c1",
+    "/assets/location-marker-icon.png": "7802124a6c49f0e060ef4b0f9365f82d4dfb538d",
+    "/assets/location-marker-icon.svg": "8842cc033484c44f8d8e9291b2c3c1363d6a5bee",
+    "/assets/location-marker-with-logo.svg": "412364bb3e3c9e2944d31af8d653fab9c0abb758",
+    "/assets/splashscreens/iphone5_splash.png": "2601f6300f2177fa34b1796dee107bd6e70ee894",
+    "/assets/splashscreens/iphone6_splash.png": "7179b5678ca7dea866a87d14d998f1d8ca8875eb",
+    "/assets/splashscreens/iphoneplus_splash.png": "07a23286e380061c60f68e61bff323d9aa155c51",
+    "/assets/splashscreens/iphonex_splash.png": "48dabaa0d2b4979f36149362e8efdc58b2b44a17",
+    "/assets/splashscreens/iphonexr_splash.png": "32ffe62ef99b37b0ec71a08aa7d9a414f9a312fb",
+    "/assets/splashscreens/iphonexsmax_splash.png": "cd3d9ca4f2b60467270a8e3d458c19f6273b492d",
+    "/assets/stop-marker-icon-blue.svg": "491ac59ba43e7e89fcf0de9efd82723b8f7a1c3c",
+    "/assets/stop-marker-icon-blue1.svg": "57506c1e751167ad77d613d91c28152f4c1067e2",
+    "/assets/stop-marker-icon-purple.svg": "ebdb03ddde3b591832135d926a37a7f848655a43",
+    "/assets/stop-marker-icon-purple1.svg": "85a011bcd403297ab8330c78481d8cd0d597fbe5",
+    "/assets/stop-marker-icon-purple2.svg": "b7e4d50ea0374d67ee31a215c0f5c474c0686981",
+    "/favicon.ico": "a106fab3040801c983a9741656efa0a0543b3b8f",
+    "/index.html": "bef68737db226e651578e345a8038f2f05810782",
+    "/main-es2015.8d4141f1ec6a57fc48b0.js": "7eabcc34c1b09feba7efa87f9db7ea421c3d9c56",
+    "/main-es5.8d4141f1ec6a57fc48b0.js": "b487a55de9b927a299a3cb285f3e32944e6cd11e",
+    "/polyfills-es2015.fb00db37ff0376f28060.js": "8b5492f9f1d8672c6b454e51e08903b8f82f9485",
+    "/polyfills-es5.fc879bbbcd1c8b1c6d98.js": "2cb919bcb760febce2a31431b2b098faa41e3af5",
+    "/runtime-es2015.c943c3907e6d99795da4.js": "1856fc0e5d9a8615bd44dc259e145191d4ea0499",
+    "/runtime-es5.c943c3907e6d99795da4.js": "b59913e55aa7901dcdc25c852153b362a248d6b8",
+    "/styles.929b4876a21f14fff890.css": "846e5e60a4d6a24c4b71b9e271a80ecaa8f0187f"
+  },
+  "navigationUrls": [
+    {
+      "positive": true,
+      "regex": "^\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*\\.[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$"
+    }
+  ],
+  "navigationRequestStrategy": "performance"
+}

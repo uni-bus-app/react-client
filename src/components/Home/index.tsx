@@ -1,44 +1,35 @@
-import { Dispatch, SetStateAction } from 'react';
-import styles from './styles.module.css';
-import { Message, Stop } from '../../models';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
+import Button from '@mui/material/Button';
+import { Dispatch, SetStateAction, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Message, Stop, Time } from '../../types';
 import InfoCards from '../InfoCards';
+import StopSelect from '../StopSelect';
 
 export interface HomeProps {
   stops: Stop[];
   currentStop: Stop | undefined;
   setCurrentStop: Dispatch<SetStateAction<Stop | undefined>>;
+  loadingTimes: Promise<Time[]> | undefined;
+  setLoadingTimes: Dispatch<SetStateAction<Promise<Time[]> | undefined>>;
   messages: Message[];
+  onLoad: () => void;
+  checkForUpdates: any;
 }
 
 const Home = (props: HomeProps) => {
-  const { stops, currentStop, setCurrentStop, messages } = props;
+  const { stops, currentStop, setCurrentStop, messages, onLoad } = props;
   const navigate = useNavigate();
-  const selectStop = (event: SelectChangeEvent<Stop>) => {
+  const selectStop = (stop: Stop) => {
+    setCurrentStop(stop);
     navigate('/stopview');
-    setCurrentStop(event.target.value as Stop);
   };
+  useEffect(() => {
+    setCurrentStop(undefined);
+    onLoad();
+  }, []);
   return (
     <>
-      <div className={styles.container}>
-        <FormControl variant="standard" className={styles.stopSelector}>
-          <InputLabel>Select a stop</InputLabel>
-          <Select
-            className={styles.stopSelectorSelect}
-            value={currentStop}
-            onChange={selectStop}
-            label="Select a stop"
-          >
-            {stops.map((stop: Stop) => {
-              return <MenuItem value={stop as any}>{stop.name}</MenuItem>;
-            })}
-          </Select>
-        </FormControl>
-      </div>
+      <StopSelect stops={stops} value={currentStop} onChange={selectStop} />
       <InfoCards messages={messages} />
     </>
   );

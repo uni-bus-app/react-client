@@ -1,27 +1,53 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-import * as serviceWorkerRegistration from './serviceWorkerRegistration';
-import styles from './App.module.css';
-import { Map } from './components/Map';
-import Home from './components/Home';
-import { Message, Stop } from './models';
-import StopView from './components/StopView';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { Button, PaletteMode, Snackbar } from '@mui/material';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CircularProgress from '@mui/material/CircularProgress';
+import { grey } from '@mui/material/colors';
 import CssBaseline from '@mui/material/CssBaseline';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import lazy from 'react-lazy-with-preload';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import { getMessages, getStops } from './api/APIUtils';
 import idbService from './api/LocalDB';
-import Card from '@mui/material/Card';
-import { Button, PaletteMode, Snackbar } from '@mui/material';
-import { grey } from '@mui/material/colors';
+import styles from './App.module.css';
+import Home from './components/Home';
+import { useUpdate } from './hooks';
+import { Message, Stop, Time } from './types';
 
-function App() {
+const Map = lazy(() => import('./components/Map'));
+const StopView = lazy(() => import('./components/StopView'));
+
+const UpdateSnackBar = ({ updateAvailable, restarting, restart }: any) => {
+  return (
+    <Snackbar
+      open={updateAvailable}
+      message={restarting ? 'Update installing' : 'Update available'}
+      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      className={styles.updateSnackBar}
+      action={
+        restarting ? (
+          <Box sx={{ display: 'flex', paddingRight: '0.75em' }}>
+            <CircularProgress size={23} />
+          </Box>
+        ) : (
+          <Button onClick={restart}>reload</Button>
+        )
+      }
+    />
+  );
+};
+
+const App = () => {
   const navigate = useNavigate();
   const [stops, setStops] = useState([]);
+  const [loadingStop, setLoadingStop] = useState<Promise<Time[]>>();
   const [currentStop, setCurrentStop] = useState<Stop>();
+  // const { noServiceInfo, messages } = useServiceUpdates();
   const [messages, setMessages] = useState<Message[]>([]);
-  const [updateSnackBarVisible, setUpdateSnackbarVisible] =
-    useState<boolean>(false);
+  console.log(7);
+  const [markerSelect, setMarkerSelect] = useState<boolean>(false);
 
   const logoContainer = useRef() as any;
   const darkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -44,26 +70,19 @@ function App() {
   );
 
   const onMarkerSelect = (stop: Stop) => {
+    setMarkerSelect(true);
     navigate('/stopview');
     setCurrentStop(stop);
+    // window.setTimeout(() => {
+    //   navigate('/stopview', { state: { currentStop: stop } });
+    // }, 1000);
   };
   const unSelectStop = () => {
     setCurrentStop(undefined);
     navigate('home');
   };
 
-  const onUpdate = (registration: ServiceWorkerRegistration) => {
-    navigator.serviceWorker.addEventListener('message', (event) => {
-      if (event.data?.type === 'update_installed') {
-        setUpdateSnackbarVisible(true);
-      }
-    });
-    registration?.waiting?.postMessage({ type: 'SKIP_WAITING' });
-  };
-
   useEffect(() => {
-    serviceWorkerRegistration.register({ onUpdate });
-
     getStops().then(setStops);
 
     getMessages().then(setMessages);
@@ -71,28 +90,29 @@ function App() {
     idbService.sync();
   }, []);
 
+  const update = useUpdate();
+
   return (
     <>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Snackbar
-          open={updateSnackBarVisible}
-          message="Update available"
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-          action={
-            <Button onClick={() => window.location.reload()}>reload</Button>
-          }
+        <UpdateSnackBar
+          updateAvailable={update.updateAvailable}
+          restarting={update.restarting}
+          restart={update.restart}
         />
-        <Map
-          stopMarkersEnabled={true}
-          routeOverlayEnabled={true}
-          darkModeEnabled={darkMode}
-          currentStop={currentStop}
-          onMarkerSelect={onMarkerSelect}
-          logoContainer={logoContainer}
-        />
+        <Suspense fallback={<div>Loading...</div>}>
+          <Map
+            stopMarkersEnabled={true}
+            routeOverlayEnabled={true}
+            darkModeEnabled={darkMode}
+            currentStop={currentStop}
+            onMarkerSelect={onMarkerSelect}
+            logoContainer={logoContainer}
+          />
+        </Suspense>
         <div className={styles.logoContainer} ref={logoContainer} />
-        <Card className={styles.mainCard}>
+        <Card className={styles.mainCard} elevation={24}>
           <Routes>
             <Route path="/" element={<Navigate to="/home" />} />
             <Route
@@ -102,19 +122,27 @@ function App() {
                   stops={stops}
                   setCurrentStop={setCurrentStop}
                   currentStop={currentStop}
+                  loadingTimes={loadingStop}
+                  setLoadingTimes={setLoadingStop}
                   messages={messages}
+                  onLoad={() => StopView.preload()}
+                  checkForUpdates={update.checkForUpdates}
                 />
               }
             />
             <Route
               path="/stopview"
               element={
-                currentStop && (
-                  <StopView
-                    stop={currentStop}
-                    unSelectStop={unSelectStop}
-                    darkMode={darkMode}
-                  />
+                currentStop || markerSelect ? (
+                  <Suspense fallback={<div>Loading...</div>}>
+                    <StopView
+                      stop={currentStop}
+                      unSelectStop={unSelectStop}
+                      darkMode={darkMode}
+                    />
+                  </Suspense>
+                ) : (
+                  <Navigate to="/home" />
                 )
               }
             />
@@ -123,6 +151,6 @@ function App() {
       </ThemeProvider>
     </>
   );
-}
+};
 
 export default App;

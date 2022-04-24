@@ -1,6 +1,8 @@
 // This optional code is used to register a service worker.
 // register() is not called by default.
 
+import { SWBroadcastMessage } from './types';
+
 // This lets the app load faster on subsequent visits in production, and gives
 // it offline capabilities. However, it also means that developers (and users)
 // will only see deployed updates on subsequent visits to a page, after all the
@@ -59,49 +61,60 @@ export function register(config?: Config) {
   }
 }
 
-function registerValidSW(swUrl: string, config?: Config) {
-  navigator.serviceWorker
-    .register(swUrl)
-    .then((registration) => {
-      registration.onupdatefound = () => {
-        const installingWorker = registration.installing;
-        if (installingWorker == null) {
-          return;
-        }
-        installingWorker.onstatechange = () => {
-          if (installingWorker.state === 'installed') {
-            if (navigator.serviceWorker.controller) {
-              // At this point, the updated precached content has been fetched,
-              // but the previous service worker will still serve the older
-              // content until all client tabs are closed.
-              console.log(
-                'New content is available and will be used when all ' +
-                  'tabs for this page are closed. See https://cra.link/PWA.'
-              );
+const registerValidSW = async (swUrl: string, config?: Config) => {
+  try {
+    const registration = await window.navigator.serviceWorker.register(swUrl, {
+      scope: '/',
+    });
+    registration.onupdatefound = () => {
+      const start = Date.now();
+      const installingWorker = registration.installing;
+      if (installingWorker == null) {
+        return;
+      }
+      installingWorker.onstatechange = (ev) => {
+        if (installingWorker.state === 'installed') {
+          console.log('update installed', Date.now() - start);
+          if (navigator.serviceWorker.controller) {
+            console.log(ev);
+            // At this point, the updated precached content has been fetched,
+            // but the previous service worker will still serve the older
+            // content until all client tabs are closed.
+            console.log(
+              'New content is available and will be used when all ' +
+                'tabs for this page are closed. See https://cra.link/PWA.'
+            );
 
+            const prevSW = navigator.serviceWorker.controller.scriptURL;
+            console.log(prevSW);
+            if (prevSW.includes('ngsw-worker.js')) {
+              registration.waiting?.postMessage({
+                type: SWBroadcastMessage.SkipWaiting,
+              });
+            } else if (config && config.onUpdate) {
               // Execute callback
-              if (config && config.onUpdate) {
-                config.onUpdate(registration);
-              }
-            } else {
-              // At this point, everything has been precached.
-              // It's the perfect time to display a
-              // "Content is cached for offline use." message.
-              console.log('Content is cached for offline use.');
+              config.onUpdate(registration);
+            }
+          } else {
+            // At this point, everything has been precached.
+            // It's the perfect time to display a
+            // "Content is cached for offline use." message.
+            console.log('Content is cached for offline use.');
 
-              // Execute callback
-              if (config && config.onSuccess) {
-                config.onSuccess(registration);
-              }
+            // Execute callback
+            if (config && config.onSuccess) {
+              config.onSuccess(registration);
             }
           }
-        };
+        }
       };
-    })
-    .catch((error) => {
-      console.error('Error during service worker registration:', error);
-    });
-}
+    };
+    config?.onSuccess?.(registration);
+  } catch (error) {
+    console.log((error as any).message);
+    console.error('Error during service worker registration:', error);
+  }
+};
 
 function checkValidServiceWorker(swUrl: string, config?: Config) {
   // Check if the service worker can be found. If it can't reload the page.
@@ -145,12 +158,24 @@ export function unregister() {
   }
 }
 
-export function update() {
-  return new Promise((resolve) => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.ready.then((registration) => {
-        registration.update().then(resolve);
-      });
-    }
-  });
-}
+export const update = () => {};
+
+// export function update() {
+//   return new Promise((resolve) => {
+//     if ('serviceWorker' in navigator) {
+//       navigator.serviceWorker.ready.then((registration) => {
+//         registration.update().then(resolve);
+//       });
+//     }
+//   });
+// }
+
+// export const checkForUpdate = async () => {
+//   if ('serviceWorker' in navigator) {
+//     const reg = await navigator.serviceWorker.getRegistration();
+//     reg.addEventListener('updatefound', () => {
+//       const newWorker = reg.installing;
+//       newWorker.addEventListener('statechange', () => {});
+//     });
+//   }
+// };

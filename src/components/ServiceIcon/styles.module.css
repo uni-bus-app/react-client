@@ -1,0 +1,18 @@
+.u1ServiceIcon {
+  display: flex;
+  align-items: center;
+  width: 1rem;
+  height: 1rem;
+  padding: 0.3125rem;
+  margin: 0.3125rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: 25%;
+  color: white;
+  background-color: #621360;
+  box-sizing: unset;
+}
+
+.darkServiceIcon {
+  background-color: #00a0ff;
+}

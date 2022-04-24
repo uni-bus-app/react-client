@@ -10,9 +10,11 @@
 
 import { clientsClaim } from 'workbox-core';
 import { ExpirationPlugin } from 'workbox-expiration';
-import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
+import { createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate } from 'workbox-strategies';
+import LocalDB from './api/NewLocalDB';
+import config from './config';
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -70,20 +72,62 @@ registerRoute(
   })
 );
 
-// This allows the web app to trigger skipWaiting via
-// registration.waiting.postMessage({type: 'SKIP_WAITING'})
+const db = new LocalDB();
+db.init();
+
+const cacheBus = async () => {
+  const cache = await caches.open('bus');
+  const response = await fetch(`${config.apiURL}/sync`, { method: 'POST' });
+  const data = await response.json();
+  cache.put(`${config.apiURL}/stops`, new Response(JSON.stringify(data.stops)));
+  const response1 = await fetch(`${config.apiURL}/u1routepath`);
+  cache.put(`${config.apiURL}/u1routepath`, response1);
+  data.times.forEach((item: any) => {
+    cache.put(
+      `${config.apiURL}/stops/${item.stopID}/times`,
+      new Response(JSON.stringify(item.times))
+    );
+  });
+};
+cacheBus();
+
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting().then(() => {
-      self.clients.matchAll().then((clients) => {
-        if (clients && clients.length) {
-          clients.forEach((client) => {
-            client.postMessage({ type: 'update_installed' });
-          });
-        }
-      });
-    });
+    self.skipWaiting();
   }
 });
 
-// Any other custom service worker logic can go here.
+self.addEventListener('fetch', (ev) => {
+  const { url } = ev.request;
+  if (
+    url.includes('dot-unibus-app.nw.r.appspot.com/') ||
+    url.includes('localhost:8080')
+  ) {
+    ev.respondWith(
+      (async () => {
+        if (url.includes('stops')) {
+          if (url.includes('times')) {
+            const stopID = url.split('stops/')?.pop()?.split('/')?.[0];
+            const date = new URLSearchParams(url.split('?').pop()).get('date');
+            console.log(
+              date,
+              new URLSearchParams(url.split('?').pop()).get('date')
+            );
+            if (stopID) {
+              const times = await db.getTimes(stopID, date);
+              console.log(times);
+              return new Response(JSON.stringify(times));
+            } else {
+              return fetch(ev.request);
+            }
+          } else {
+            const stops = await db.getStops();
+            return new Response(JSON.stringify(stops));
+          }
+        } else {
+          return fetch(ev.request);
+        }
+      })()
+    );
+  }
+});

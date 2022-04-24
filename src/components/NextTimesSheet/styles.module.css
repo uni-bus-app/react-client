@@ -1,0 +1,24 @@
+.container {
+  max-height: 42.1875em;
+  background-color: inherit;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.625em 1em 0.4375em 1em;
+  z-index: 1;
+}
+
+.title {
+  font-size: 1.5625rem;
+  font-weight: lighter;
+  color: grey;
+  text-align: left;
+  margin: 0;
+  font-family: Roboto, sans-serif;
+  letter-spacing: normal;
+}

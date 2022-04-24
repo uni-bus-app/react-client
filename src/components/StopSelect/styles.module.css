@@ -1,0 +1,33 @@
+.container {
+  background-color: inherit;
+  position: sticky !important;
+  top: 0;
+  padding: 0.125em 0.5em 0.4375em 0.5em;
+  display: flex;
+  transform-style: preserve-3d;
+}
+
+.container * {
+  transform-style: preserve-3d;
+}
+
+.stopSelector {
+  flex-grow: 1;
+}
+
+label {
+  font-family: 'Open Sans', sans-serif !important;
+  letter-spacing: normal;
+  font-stretch: 100% !important;
+  line-height: 18px !important;
+  letter-spacing: normal !important;
+  margin-top: 3px;
+}
+
+.thing {
+  transform-style: preserve-3d;
+}
+
+.thing * {
+  transform-style: preserve-3d;
+}
