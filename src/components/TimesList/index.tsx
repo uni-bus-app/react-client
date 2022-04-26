@@ -3,7 +3,7 @@ import Divider from '@mui/material/Divider';
 import Skeleton from '@mui/material/Skeleton';
 import { useTheme } from '@mui/material/styles';
 import dayjs, { Dayjs } from 'dayjs';
-import { useState } from 'react';
+import { createRef, useEffect, useState } from 'react';
 import { Time } from '../../types';
 import BusEta from '../BusEta';
 import ServiceIcon from '../ServiceIcon';
@@ -65,9 +65,19 @@ const TimesList = (props: TimesListProps) => {
   const [timesLoading, setTimesLoading] = useState<boolean>(false);
   const theme = useTheme();
   const darkTheme = theme.palette.mode === 'dark';
+  const ref = createRef<HTMLDivElement>();
+  useEffect(() => {
+    if (ref.current?.scrollHeight === ref.current?.clientHeight) {
+      setTimesLoading(true);
+      window.setTimeout(() => {
+        loadMoreTimes().then(() => setTimesLoading(false));
+      }, 1500);
+    }
+  }, []);
   return (
     <div
       className={styles.timesList}
+      ref={ref}
       onScroll={(e) => {
         if (
           (e.target as any).scrollHeight - 60 <
