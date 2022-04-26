@@ -67,7 +67,7 @@ const TimesList = (props: TimesListProps) => {
   const darkTheme = theme.palette.mode === 'dark';
   const ref = createRef<HTMLDivElement>();
   useEffect(() => {
-    if (ref.current?.scrollHeight === ref.current?.clientHeight) {
+    if (ref.current?.scrollHeight ?? ref.current?.clientHeight) {
       setTimesLoading(true);
       window.setTimeout(() => {
         loadMoreTimes().then(() => setTimesLoading(false));
