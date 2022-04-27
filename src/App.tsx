@@ -10,6 +10,7 @@ import { getAnalytics, logEvent } from 'firebase/analytics';
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import lazy from 'react-lazy-with-preload';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import { version } from '../package.json';
 import { getMessages, getStops } from './api/APIUtils';
 import idbService from './api/LocalDB';
 import styles from './App.module.css';
@@ -96,6 +97,8 @@ const App = () => {
       logEvent(getAnalytics(), 'stop_view', {
         stop_id: currentStop.id,
         stop_name: currentStop.name,
+        app_version: version,
+        app_name: 'UniBus Web App',
       });
     }
   }, [currentStop]);
