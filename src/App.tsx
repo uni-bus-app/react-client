@@ -114,7 +114,12 @@ const App = () => {
     const screen = location.pathname.replace('/', '');
     if (screen) {
       setCurrentScreen(getAnalytics(), screen);
-      logEvent(getAnalytics(), 'screen_view');
+      logEvent(getAnalytics(), 'screen_view', {
+        firebase_screen: screen,
+        firebase_screen_class: screen,
+        app_version: version,
+        app_name: 'UniBus Web App',
+      });
     }
   }, [location.pathname]);
 
