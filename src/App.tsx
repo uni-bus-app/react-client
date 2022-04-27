@@ -16,13 +16,16 @@ import {
   useLocation,
   useNavigate,
 } from 'react-router-dom';
-import { version } from '../package.json';
+import packageInfo from '../package.json';
 import { getMessages, getStops } from './api/APIUtils';
 import idbService from './api/LocalDB';
 import styles from './App.module.css';
 import Home from './components/Home';
 import { useUpdate } from './hooks';
 import { Message, Stop, Time } from './types';
+
+const { version: app_version } = packageInfo;
+const app_name = 'UniBus Web App';
 
 const Map = lazy(() => import('./components/Map'));
 const StopView = lazy(() => import('./components/StopView'));
@@ -104,8 +107,8 @@ const App = () => {
       logEvent(getAnalytics(), 'stop_view', {
         stop_id: currentStop.id,
         stop_name: currentStop.name,
-        app_version: version,
-        app_name: 'UniBus Web App',
+        app_version,
+        app_name,
       });
     }
   }, [currentStop]);
@@ -117,8 +120,8 @@ const App = () => {
       logEvent(getAnalytics(), 'screen_view', {
         firebase_screen: screen,
         firebase_screen_class: screen,
-        app_version: version,
-        app_name: 'UniBus Web App',
+        app_version,
+        app_name,
       });
     }
   }, [location.pathname]);

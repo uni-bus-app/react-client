@@ -1,6 +1,7 @@
 import NearMeOutlined from '@mui/icons-material/NearMeOutlined';
 import Fab from '@mui/material/Fab';
-import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
+import { useTheme } from '@mui/material/styles';
+import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
 import { RefObject, useEffect, useState } from 'react';
 import { getRoutePath, getStops } from '../../api/APIUtils';
 import config from '../../config';
@@ -8,10 +9,8 @@ import { LatLng, Stop } from '../../types';
 import RoutePath from './components/RoutePath';
 import StopMarkers from './components/StopMarkers';
 import { mapStylesDark, mapStylesLight } from './styles';
-import { getBounds, getLocation, moveLogo } from './utils';
-import { useTheme } from '@mui/material/styles';
-import locationMarkerIcon from '../../assets/location-marker-icon.svg';
 import styles from './styles.module.css';
+import { getBounds, getLocation, moveLogo } from './utils';
 
 const mapOptions: google.maps.MapOptions = {
   disableDefaultUI: true,

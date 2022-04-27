@@ -1,6 +1,6 @@
-import { Marker } from '@react-google-maps/api';
-import purpleStopMarker from '../../../../assets/stop-marker-icon-purple.svg';
+import { MarkerF } from '@react-google-maps/api';
 import blueStopMarker from '../../../../assets/stop-marker-icon-blue.svg';
+import purpleStopMarker from '../../../../assets/stop-marker-icon-purple.svg';
 import { Stop } from '../../../../types';
 
 interface StopMarkersProps {
@@ -19,7 +19,7 @@ const StopMarkers = (props: StopMarkersProps) => {
     <>
       {stops?.map((stop, index) => {
         return (
-          <Marker
+          <MarkerF
             key={index}
             position={stop.location}
             options={{
