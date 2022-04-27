@@ -1,5 +1,4 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import * as serviceWorkerRegistration from '../../serviceWorkerRegistration';
 
 type ContextState = {
   registration?: ServiceWorkerRegistration;
@@ -9,19 +8,16 @@ const ServiceWorkerContext = createContext<ContextState | undefined>(undefined);
 
 interface ServiceworkerProviderProps {
   children: JSX.Element;
+  res: any;
 }
 
 const ServiceWorkerProvider = (props: ServiceworkerProviderProps) => {
-  const { children } = props;
+  const { children, res } = props;
   const [registration, setRegistration] = useState<ServiceWorkerRegistration>();
+  const swReg = res.read();
   useEffect(() => {
-    serviceWorkerRegistration.register({
-      onSuccess(registration) {
-        setRegistration(registration);
-      },
-      onUpdate(registration) {},
-    });
-  }, []);
+    setRegistration(swReg);
+  }, [swReg]);
   const value = { registration };
   return (
     <ServiceWorkerContext.Provider value={value}>

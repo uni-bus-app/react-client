@@ -1,9 +1,11 @@
-import { Button, PaletteMode, Snackbar } from '@mui/material';
+import { PaletteMode } from '@mui/material';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CircularProgress from '@mui/material/CircularProgress';
 import { grey } from '@mui/material/colors';
 import CssBaseline from '@mui/material/CssBaseline';
+import Snackbar from '@mui/material/Snackbar';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { getAnalytics, logEvent, setCurrentScreen } from 'firebase/analytics';
@@ -51,8 +53,9 @@ const UpdateSnackBar = ({ updateAvailable, restarting, restart }: any) => {
 };
 
 const App = () => {
-  const navigate = useNavigate();
   const location = useLocation();
+  const navigate = useNavigate();
+  const update = useUpdate();
   const [stops, setStops] = useState([]);
   const [loadingStop, setLoadingStop] = useState<Promise<Time[]>>();
   const [currentStop, setCurrentStop] = useState<Stop>();
@@ -99,8 +102,6 @@ const App = () => {
 
     idbService.sync();
   }, []);
-
-  const update = useUpdate();
 
   useEffect(() => {
     if (currentStop) {
