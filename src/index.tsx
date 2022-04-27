@@ -12,10 +12,7 @@ import reportWebVitals from './reportWebVitals';
 
 const app = initializeApp(config.firebase);
 const analytics = getAnalytics(app);
-setUserProperties(analytics, {
-  app_version: version,
-  app_name: 'UniBus Web App',
-});
+setUserProperties(analytics, { app_version: version });
 
 ReactDOM.render(
   <React.StrictMode>

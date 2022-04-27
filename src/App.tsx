@@ -6,17 +6,10 @@ import { grey } from '@mui/material/colors';
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { getAnalytics, logEvent, setCurrentScreen } from 'firebase/analytics';
+import { getAnalytics, logEvent } from 'firebase/analytics';
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import lazy from 'react-lazy-with-preload';
-import {
-  Navigate,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-} from 'react-router-dom';
-import { version } from '../package.json';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import { getMessages, getStops } from './api/APIUtils';
 import idbService from './api/LocalDB';
 import styles from './App.module.css';
@@ -49,7 +42,6 @@ const UpdateSnackBar = ({ updateAvailable, restarting, restart }: any) => {
 
 const App = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const [stops, setStops] = useState([]);
   const [loadingStop, setLoadingStop] = useState<Promise<Time[]>>();
   const [currentStop, setCurrentStop] = useState<Stop>();
@@ -104,19 +96,9 @@ const App = () => {
       logEvent(getAnalytics(), 'stop_view', {
         stop_id: currentStop.id,
         stop_name: currentStop.name,
-        app_version: version,
-        app_name: 'UniBus Web App',
       });
     }
   }, [currentStop]);
-
-  useEffect(() => {
-    const screen = location.pathname.replace('/', '');
-    if (screen) {
-      setCurrentScreen(getAnalytics(), screen);
-      logEvent(getAnalytics(), 'screen_view');
-    }
-  }, [location.pathname]);
 
   return (
     <>
