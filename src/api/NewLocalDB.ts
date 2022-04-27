@@ -1,10 +1,8 @@
 import dayjs, { Dayjs } from 'dayjs';
-import weekday from 'dayjs/plugin/weekday';
 import { DBSchema, IDBPDatabase, openDB } from 'idb';
 import { get, set } from 'idb-keyval';
 import config from '../config';
 import { Time } from '../types';
-dayjs.extend(weekday);
 
 const getServiceTime = (scheduled: string, currentTime: Dayjs): string => {
   return currentTime
@@ -34,15 +32,20 @@ const isBankHoliday = async (date: Dayjs) => {
   );
 };
 
-const getNextWorkingDay = async (date: Dayjs) => {
-  date = date.startOf('day');
-  const res = date.weekday(1);
-  const result = res.isAfter(date) ? res : date.weekday(8);
-  if (await isBankHoliday(result)) {
-    return result.add(1, 'day');
+const nextWorkingDay = async (date: Dayjs): Promise<Dayjs> => {
+  const day = date.day();
+  if (day === 6 || day === 0) {
+    return await nextWorkingDay(date.add(1, 'day'));
+  } else if (await isBankHoliday(date)) {
+    return await nextWorkingDay(date.add(1, 'day'));
   } else {
-    return result;
+    return date;
   }
+};
+
+const getNextWorkingDay = async (date: Dayjs): Promise<Dayjs> => {
+  date = date.startOf('day');
+  return await nextWorkingDay(date.add(1, 'day'));
 };
 
 interface UniBusDB extends DBSchema {
