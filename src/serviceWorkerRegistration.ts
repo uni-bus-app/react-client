@@ -23,6 +23,7 @@ const isLocalhost = Boolean(
 );
 
 type Config = {
+  onRegistered?: (registration: ServiceWorkerRegistration) => void;
   onSuccess?: (registration: ServiceWorkerRegistration) => void;
   onUpdate?: (registration: ServiceWorkerRegistration) => void;
 };
@@ -66,6 +67,7 @@ const registerValidSW = async (swUrl: string, config?: Config) => {
     const registration = await window.navigator.serviceWorker.register(swUrl, {
       scope: '/',
     });
+    config?.onRegistered?.(registration);
     registration.onupdatefound = () => {
       const start = Date.now();
       const installingWorker = registration.installing;
@@ -106,7 +108,6 @@ const registerValidSW = async (swUrl: string, config?: Config) => {
         }
       };
     };
-    config?.onSuccess?.(registration);
   } catch (error) {
     // console.log((error as any).message);
     console.error('Error during service worker registration:', error);

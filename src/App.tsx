@@ -1,9 +1,11 @@
-import { Button, PaletteMode, Snackbar } from '@mui/material';
+import { PaletteMode } from '@mui/material';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CircularProgress from '@mui/material/CircularProgress';
 import { grey } from '@mui/material/colors';
 import CssBaseline from '@mui/material/CssBaseline';
+import Snackbar from '@mui/material/Snackbar';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { getAnalytics, logEvent, setCurrentScreen } from 'firebase/analytics';
@@ -16,13 +18,16 @@ import {
   useLocation,
   useNavigate,
 } from 'react-router-dom';
-import { version } from '../package.json';
+import packageInfo from '../package.json';
 import { getMessages, getStops } from './api/APIUtils';
 import idbService from './api/LocalDB';
 import styles from './App.module.css';
 import Home from './components/Home';
 import { useUpdate } from './hooks';
 import { Message, Stop, Time } from './types';
+
+const { version: app_version } = packageInfo;
+const app_name = 'UniBus Web App';
 
 const Map = lazy(() => import('./components/Map'));
 const StopView = lazy(() => import('./components/StopView'));
@@ -48,8 +53,9 @@ const UpdateSnackBar = ({ updateAvailable, restarting, restart }: any) => {
 };
 
 const App = () => {
-  const navigate = useNavigate();
   const location = useLocation();
+  const navigate = useNavigate();
+  const update = useUpdate();
   const [stops, setStops] = useState([]);
   const [loadingStop, setLoadingStop] = useState<Promise<Time[]>>();
   const [currentStop, setCurrentStop] = useState<Stop>();
@@ -97,15 +103,13 @@ const App = () => {
     idbService.sync();
   }, []);
 
-  const update = useUpdate();
-
   useEffect(() => {
     if (currentStop) {
       logEvent(getAnalytics(), 'stop_view', {
         stop_id: currentStop.id,
         stop_name: currentStop.name,
-        app_version: version,
-        app_name: 'UniBus Web App',
+        app_version,
+        app_name,
       });
     }
   }, [currentStop]);
@@ -117,8 +121,8 @@ const App = () => {
       logEvent(getAnalytics(), 'screen_view', {
         firebase_screen: screen,
         firebase_screen_class: screen,
-        app_version: version,
-        app_name: 'UniBus Web App',
+        app_version,
+        app_name,
       });
     }
   }, [location.pathname]);

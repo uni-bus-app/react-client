@@ -1,4 +1,4 @@
-import { Polyline } from '@react-google-maps/api';
+import { PolylineF } from '@react-google-maps/api';
 
 interface RoutePathProps {
   enabled?: boolean;
@@ -10,7 +10,7 @@ const RoutePath = (props: RoutePathProps) => {
   const { enabled, path, darkModeEnabled } = props;
   if (!enabled) return <></>;
   return (
-    <Polyline
+    <PolylineF
       path={path}
       options={{
         strokeColor: darkModeEnabled ? '#03A9F4' : '#7B1FA2',
