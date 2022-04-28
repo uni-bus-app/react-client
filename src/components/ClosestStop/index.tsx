@@ -1,4 +1,5 @@
 import DirectionsWalk from '@mui/icons-material/DirectionsWalk';
+import NavigateNext from '@mui/icons-material/NavigateNext';
 import NearMe from '@mui/icons-material/NearMe';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -41,15 +42,18 @@ const ClosestStop = (props: ClosestStopProps) => {
         onClick={() => onSelect(value.stop)}
       >
         <CardContent className={styles.content}>
-          <NearMe className={styles.icon} />
-          <div className={styles.info}>
-            <div>{value.stop.name}</div>
-            <div className={styles.distance}>
-              {value.distance.distance.text}
-              <DirectionsWalk />
-              {value.distance.duration.text}
+          <div className={styles.infoContainer}>
+            <NearMe className={styles.icon} />
+            <div className={styles.info}>
+              <div>{value.stop.name}</div>
+              <div className={styles.distance}>
+                {value.distance.distance.text}
+                <DirectionsWalk />
+                {value.distance.duration.text}
+              </div>
             </div>
           </div>
+          <NavigateNext />
         </CardContent>
       </Card>
     )
