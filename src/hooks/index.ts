@@ -1,4 +1,5 @@
+import useScreenTracking from './useScreenTracking';
 import useTimetable from './useTimetable';
 import useUpdate from './useUpdate';
 
-export { useTimetable, useUpdate };
+export { useScreenTracking, useTimetable, useUpdate };
