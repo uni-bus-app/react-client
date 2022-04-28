@@ -66,12 +66,15 @@ const TimesList = (props: TimesListProps) => {
   const theme = useTheme();
   const darkTheme = theme.palette.mode === 'dark';
   const ref = createRef<HTMLDivElement>();
+  const load = () => {
+    setTimesLoading(true);
+    window.setTimeout(() => {
+      loadMoreTimes().then(() => setTimesLoading(false));
+    }, 1500);
+  };
   useEffect(() => {
     if (ref.current && ref.current.scrollHeight === ref.current.clientHeight) {
-      setTimesLoading(true);
-      window.setTimeout(() => {
-        loadMoreTimes().then(() => setTimesLoading(false));
-      }, 1500);
+      load();
     }
   }, []);
   return (
@@ -84,10 +87,7 @@ const TimesList = (props: TimesListProps) => {
             (e.target as any).scrollTop + (e.target as any).clientHeight &&
           !timesLoading
         ) {
-          setTimesLoading(true);
-          window.setTimeout(() => {
-            loadMoreTimes().then(() => setTimesLoading(false));
-          }, 1500);
+          load();
         }
       }}
     >
@@ -100,7 +100,7 @@ const TimesList = (props: TimesListProps) => {
       ))}
       <div
         className={styles.row}
-        style={{ paddingLeft: '32px', paddingRight: '28px' }}
+        style={{ paddingLeft: '32px', paddingRight: '32px' }}
       >
         <div className={styles.busInfoContainer}>
           <div className={styles.topInfo}>
@@ -136,7 +136,7 @@ const TimesList = (props: TimesListProps) => {
         <Skeleton
           variant="rectangular"
           height={24}
-          width={50}
+          width={55}
           style={{
             borderRadius: '0.5em',
             margin: '0.5em',
