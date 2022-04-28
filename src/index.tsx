@@ -9,7 +9,7 @@ import ServiceWorkerProvider from './components/ServiceWorkerProvider';
 import config from './config';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import * as serviceWorkerRegistration from './serviceWorkerRegistration';
+import { Workbox } from 'workbox-window';
 
 export const wrapPromise = (
   promise: Promise<any>
@@ -41,15 +41,12 @@ export const wrapPromise = (
   };
 };
 
-const initSW = () => {
-  return new Promise((resolve) => {
-    serviceWorkerRegistration.register({
-      onRegistered(registration) {
-        resolve(registration);
-      },
-      onUpdate(registration) {},
-    });
-  });
+const initSW = async (): Promise<Workbox | undefined> => {
+  if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
+    const wb = new Workbox('/service-worker.js');
+    await wb.register();
+    return wb;
+  }
 };
 
 const res = wrapPromise(initSW());

@@ -1,7 +1,8 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { Workbox } from 'workbox-window';
 
 type ContextState = {
-  registration?: ServiceWorkerRegistration;
+  registration?: Workbox;
 };
 
 const ServiceWorkerContext = createContext<ContextState | undefined>(undefined);
@@ -13,11 +14,11 @@ interface ServiceworkerProviderProps {
 
 const ServiceWorkerProvider = (props: ServiceworkerProviderProps) => {
   const { children, res } = props;
-  const [registration, setRegistration] = useState<ServiceWorkerRegistration>();
+  const [registration, setRegistration] = useState<Workbox>();
   const swReg = res.read();
   useEffect(() => {
     setRegistration(swReg);
-  }, [swReg]);
+  }, []);
   const value = { registration };
   return (
     <ServiceWorkerContext.Provider value={value}>

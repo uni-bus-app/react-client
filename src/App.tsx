@@ -76,9 +76,6 @@ const App = () => {
     setMarkerSelect(true);
     navigate('/stopview');
     setCurrentStop(stop);
-    // window.setTimeout(() => {
-    //   navigate('/stopview', { state: { currentStop: stop } });
-    // }, 1000);
   };
   const unSelectStop = () => {
     setCurrentStop(undefined);
