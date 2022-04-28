@@ -8,7 +8,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Snackbar from '@mui/material/Snackbar';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { getAnalytics, logEvent, setCurrentScreen } from 'firebase/analytics';
+import { getAnalytics, logEvent } from 'firebase/analytics';
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import lazy from 'react-lazy-with-preload';
 import {
@@ -18,16 +18,12 @@ import {
   useLocation,
   useNavigate,
 } from 'react-router-dom';
-import packageInfo from '../package.json';
 import { getMessages, getStops } from './api/APIUtils';
 import idbService from './api/LocalDB';
 import styles from './App.module.css';
 import Home from './components/Home';
 import { useUpdate } from './hooks';
 import { Message, Stop, Time } from './types';
-
-const { version: app_version } = packageInfo;
-const app_name = 'UniBus Web App';
 
 const Map = lazy(() => import('./components/Map'));
 const StopView = lazy(() => import('./components/StopView'));
@@ -53,9 +49,11 @@ const UpdateSnackBar = ({ updateAvailable, restarting, restart }: any) => {
 };
 
 const App = () => {
-  const location = useLocation();
+  const { pathname } = useLocation();
   const navigate = useNavigate();
   const update = useUpdate();
+  const path = useRef<string>('');
+  const currentScreen = useRef<string>('');
   const [stops, setStops] = useState([]);
   const [loadingStop, setLoadingStop] = useState<Promise<Time[]>>();
   const [currentStop, setCurrentStop] = useState<Stop>();
@@ -105,27 +103,43 @@ const App = () => {
 
   useEffect(() => {
     if (currentStop) {
-      logEvent(getAnalytics(), 'stop_view', {
-        stop_id: currentStop.id,
-        stop_name: currentStop.name,
-        app_version,
-        app_name,
-      });
+      window.setTimeout(() => {
+        logEvent(getAnalytics(), 'stop_view', {
+          stop_id: currentStop.id,
+          stop_name: currentStop.name,
+        });
+      }, 500);
     }
   }, [currentStop]);
 
   useEffect(() => {
-    const screen = location.pathname.replace('/', '');
-    if (screen) {
-      setCurrentScreen(getAnalytics(), screen);
+    const screen = pathname.replace('/', '');
+    if (screen && screen !== currentScreen.current) {
+      console.log(screen);
       logEvent(getAnalytics(), 'screen_view', {
         firebase_screen: screen,
-        firebase_screen_class: screen,
-        app_version,
-        app_name,
+        firebase_screen_class: 'app-' + screen,
+        firebase_event_origin: 'auto',
+        screen_name: screen,
+        screen_class: 'app-' + screen,
+        firebase_screen_id: screen === 'home' ? 123 : 1234,
+        outlet: 'primary',
+        page_path: pathname,
+        page_title: document.title,
+        firebase_previous_class: path.current
+          ? 'app-' + path.current
+          : undefined,
+        firebase_previous_screen: path.current,
+        firebase_previous_id: path.current
+          ? path.current === 'home'
+            ? 123
+            : 1234
+          : undefined,
       });
+      path.current = screen;
+      currentScreen.current = screen;
     }
-  }, [location.pathname]);
+  }, [pathname]);
 
   return (
     <>
