@@ -23,8 +23,7 @@ const devFirebaseConfig = {
 
 export default {
   mapsApiKey,
-  // apiURL: 'https://20210404t132447-dot-unibus-app.nw.r.appspot.com',
-  // apiURL: 'http://localhost:8080',
   apiURL: 'https://20220427t182541-dot-unibus-app.nw.r.appspot.com',
+  // apiURL: 'http://localhost:8080',
   firebase: isProd ? prodFirebaseConfig : devFirebaseConfig,
 };

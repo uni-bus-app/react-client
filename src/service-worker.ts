@@ -8,6 +8,7 @@
 // You can also remove this file if you'd prefer not to use a
 // service worker, and the Workbox build step will be skipped.
 
+import { get, set } from 'idb-keyval';
 import { clientsClaim } from 'workbox-core';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching';
@@ -15,6 +16,7 @@ import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate } from 'workbox-strategies';
 import LocalDB from './api/NewLocalDB';
 import config from './config';
+import { LatLng } from './types';
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -97,6 +99,31 @@ self.addEventListener('message', (event) => {
   }
 });
 
+function getDistance(
+  { lat: lat1, lng: lon1 }: LatLng,
+  { lat: lat2, lng: lon2 }: LatLng
+) {
+  if (lat1 == lat2 && lon1 == lon2) {
+    return 0;
+  } else {
+    const radlat1 = (Math.PI * lat1) / 180;
+    const radlat2 = (Math.PI * lat2) / 180;
+    const theta = lon1 - lon2;
+    const radtheta = (Math.PI * theta) / 180;
+    let dist =
+      Math.sin(radlat1) * Math.sin(radlat2) +
+      Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+    if (dist > 1) {
+      dist = 1;
+    }
+    dist = Math.acos(dist);
+    dist = (dist * 180) / Math.PI;
+    dist = dist * 60 * 1.1515;
+    dist = dist * 1.609344;
+    return dist;
+  }
+}
+
 self.addEventListener('fetch', (ev) => {
   const { url } = ev.request;
   if (
@@ -116,8 +143,28 @@ self.addEventListener('fetch', (ev) => {
               return fetch(ev.request);
             }
           } else {
-            const stops = await db.getStops();
-            return new Response(JSON.stringify(stops));
+            const query = new URLSearchParams(url.split('?').pop());
+            const lat = Number(query.get('lat'));
+            const lng = Number(query.get('lng'));
+            const position = { lat, lng };
+            if (lat && lng) {
+              const cachedClosestStop = await get('closestStop');
+              if (
+                cachedClosestStop &&
+                getDistance(cachedClosestStop.position, position) < 0.1
+              ) {
+                return new Response(JSON.stringify(cachedClosestStop));
+              } else {
+                const res = await fetch(ev.request);
+                const data = await res.json();
+                set('closestStop', { position, ...data });
+                set('matrixRequests', ((await get('matrixRequests')) || 0) + 1);
+                return new Response(JSON.stringify(data));
+              }
+            } else {
+              const stops = await db.getStops();
+              return new Response(JSON.stringify(stops));
+            }
           }
         } else {
           return fetch(ev.request);

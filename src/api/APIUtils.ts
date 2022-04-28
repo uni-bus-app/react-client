@@ -40,6 +40,13 @@ export const getStops = async (): Promise<any> => {
   }
 };
 
+export const getClosestStop = async (position: any): Promise<Stop> => {
+  const res = await fetch(
+    `${apiURL}/stops?lat=${position.latitude}&lng=${position.longitude}`
+  );
+  return res.json();
+};
+
 const parseStops = (data: any[]): Stop[] => {
   const result: Stop[] = [];
   data.forEach((item) => {

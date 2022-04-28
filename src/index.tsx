@@ -1,5 +1,6 @@
 import { initializeAnalytics, setUserProperties } from 'firebase/analytics';
 import { initializeApp } from 'firebase/app';
+import { getRemoteConfig } from 'firebase/remote-config';
 import { StrictMode, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router } from 'react-router-dom';
