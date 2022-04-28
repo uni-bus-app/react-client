@@ -1,74 +1,64 @@
 import { useEffect, useRef, useState } from 'react';
 import { useServiceWorker } from '../components/ServiceWorkerProvider';
-import { SWBroadcastMessage } from '../types';
+import { WorkboxLifecycleEvent } from 'workbox-window';
 
 const useUpdate = () => {
-  const { registration } = useServiceWorker();
+  const { registration: wb } = useServiceWorker();
   const [updateAvailable, setUpdateAvailable] = useState<boolean>(false);
   const [restarting, setRestarting] = useState<boolean>(false);
-  const updateAvailableTimeout = useRef<boolean>(false);
-  const updateAvailableTimeout1 = useRef<boolean>(false);
-  const restartingTimeout = useRef<number>(0);
-  const checkForUpdates = async () => {
-    registration?.update();
-  };
+  const restartTimeoutID = useRef<number>(0);
+  const updateAvailableRef = useRef<boolean>(false);
+  const isRestartingRef = useRef<boolean>(false);
+  const checkForUpdates = async () => await wb?.update();
   const restart = async () => {
     setRestarting(true);
-    registration?.waiting?.addEventListener('statechange', (event) => {
-      const { state } = event.target as ServiceWorker;
-      if (state === 'activated') {
-        window.location.reload();
-      }
+    window.removeEventListener('visibilitychange', visibilityChange);
+    wb?.addEventListener('controlling', () => {
+      window.location.reload();
     });
-    registration?.waiting?.postMessage({
-      type: SWBroadcastMessage.SkipWaiting,
-    });
+    wb?.messageSkipWaiting();
   };
   const visibilityChange = async () => {
+    console.log('visibilit change', document.hidden);
     if (document.hidden) {
-      if (updateAvailableTimeout.current && !updateAvailableTimeout1.current) {
-        window.removeEventListener('visibilitychange', visibilityChange);
-        restart();
+      if (updateAvailableRef.current && !isRestartingRef.current) {
+        restartTimeoutID.current = window.setTimeout(() => {
+          restart();
+        }, 1000);
       }
     } else {
+      if (restartTimeoutID.current) {
+        window.clearTimeout(restartTimeoutID.current);
+        restartTimeoutID.current = 0;
+      }
       await checkForUpdates();
     }
   };
-  const updateFound = (ev: any) => {
-    const target = ev.target as ServiceWorkerRegistration;
-    if (!target.installing) {
-      return false;
+  const updateFound = (ev: WorkboxLifecycleEvent) => {
+    if (
+      window.navigator.userAgent.match(/iPad/i) ||
+      window.navigator.userAgent.match(/iPhone/i)
+    ) {
+      updateAvailableRef.current = true;
+    } else {
+      setUpdateAvailable(true);
     }
-    target.installing.addEventListener('statechange', (event) => {
-      const { state } = event.target as ServiceWorker;
-      if (
-        navigator.serviceWorker.controller?.scriptURL.includes('ngsw-worker.js')
-      ) {
-        return;
-      }
-      if (state === 'installed') {
-        setUpdateAvailable(true);
-      }
-      //  else if (state === 'activated') {
-      //   window.location.reload();
-      // }
-    });
   };
   useEffect(() => {
-    if (registration) {
-      registration.addEventListener('updatefound', updateFound);
+    if (wb) {
+      wb.addEventListener('waiting', updateFound);
       window.addEventListener('visibilitychange', visibilityChange);
       return () => {
-        registration.removeEventListener('updatefound', updateFound);
+        wb.removeEventListener('waiting', updateFound);
         window.removeEventListener('visibilitychange', visibilityChange);
       };
     }
-  }, [registration]);
+  }, [wb]);
   useEffect(() => {
-    updateAvailableTimeout.current = updateAvailable;
+    updateAvailableRef.current = updateAvailable;
   }, [updateAvailable]);
   useEffect(() => {
-    updateAvailableTimeout1.current = restarting;
+    isRestartingRef.current = restarting;
   }, [restarting]);
   return { checkForUpdates, updateAvailable, restart, restarting };
 };
