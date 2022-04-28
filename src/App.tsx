@@ -8,26 +8,16 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Snackbar from '@mui/material/Snackbar';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { getAnalytics, logEvent, setCurrentScreen } from 'firebase/analytics';
+import { getAnalytics, logEvent } from 'firebase/analytics';
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import lazy from 'react-lazy-with-preload';
-import {
-  Navigate,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-} from 'react-router-dom';
-import packageInfo from '../package.json';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import { getMessages, getStops } from './api/APIUtils';
 import idbService from './api/LocalDB';
 import styles from './App.module.css';
 import Home from './components/Home';
-import { useUpdate } from './hooks';
+import { useScreenTracking, useUpdate } from './hooks';
 import { Message, Stop, Time } from './types';
-
-const { version: app_version } = packageInfo;
-const app_name = 'UniBus Web App';
 
 const Map = lazy(() => import('./components/Map'));
 const StopView = lazy(() => import('./components/StopView'));
@@ -53,7 +43,7 @@ const UpdateSnackBar = ({ updateAvailable, restarting, restart }: any) => {
 };
 
 const App = () => {
-  const location = useLocation();
+  useScreenTracking();
   const navigate = useNavigate();
   const update = useUpdate();
   const [stops, setStops] = useState([]);
@@ -105,27 +95,14 @@ const App = () => {
 
   useEffect(() => {
     if (currentStop) {
-      logEvent(getAnalytics(), 'stop_view', {
-        stop_id: currentStop.id,
-        stop_name: currentStop.name,
-        app_version,
-        app_name,
-      });
+      window.setTimeout(() => {
+        logEvent(getAnalytics(), 'stop_view', {
+          stop_id: currentStop.id,
+          stop_name: currentStop.name,
+        });
+      }, 500);
     }
   }, [currentStop]);
-
-  useEffect(() => {
-    const screen = location.pathname.replace('/', '');
-    if (screen) {
-      setCurrentScreen(getAnalytics(), screen);
-      logEvent(getAnalytics(), 'screen_view', {
-        firebase_screen: screen,
-        firebase_screen_class: screen,
-        app_version,
-        app_name,
-      });
-    }
-  }, [location.pathname]);
 
   return (
     <>
