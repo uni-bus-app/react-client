@@ -4,11 +4,9 @@ import styles from './styles.module.css';
 
 const BusEta = ({
   eta,
-  index,
   flexGrow = true,
 }: {
   eta?: Eta;
-  index: number;
   flexGrow?: boolean;
 }) => {
   return (
@@ -18,15 +16,20 @@ const BusEta = ({
     >
       {eta ? (
         <>
-          {eta?.value !== '' && eta?.value !== 'Now' ? (
-            <>
+          {eta.show ? (
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
               <div className={styles.time}>{eta?.value}</div>
               <div className={styles.unit}>{eta?.unit}</div>
-            </>
+            </div>
           ) : (
             <>
               <div className={`${styles.time} ${styles.arrivalTime}`}>
-                {eta && eta.arrivalTime}
+                {eta && eta?.arrivalTime}
               </div>
             </>
           )}

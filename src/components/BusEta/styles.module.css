@@ -7,7 +7,7 @@
 }
 
 .time {
-  font-size: 1.5em;
+  font-size: 1.375em;
   justify-content: center;
   align-items: center;
   text-align: center;
@@ -16,9 +16,11 @@
 }
 
 .arrivalTime {
-  font-size: 1rem;
+  font-size: 1.3125rem;
 }
 
 .unit {
-  font-size: 0.8em;
+  font-size: 0.75rem;
+  opacity: 0.6;
+  font-weight: 200;
 }

@@ -173,7 +173,7 @@ const TimeItem = (props: TimesItemProps) => {
           </div>
         )}
       </div>
-      <BusEta eta={time.eta} index={index} flexGrow={false} />
+      <BusEta eta={time.eta} flexGrow={false} />
     </div>
   );
 };
