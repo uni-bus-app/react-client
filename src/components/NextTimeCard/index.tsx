@@ -73,7 +73,7 @@ const NextTimeCard = (props: NextTimeCardProps) => {
         )}
       </div>
       <div className={styles.endContainer}>
-        <BusEta eta={time?.eta} index={0} />
+        <BusEta eta={time?.eta} />
         {time ? <NavigateNext /> : <Skeleton width={24} height={24} />}
       </div>
     </Card>

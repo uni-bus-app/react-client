@@ -11,6 +11,7 @@ export interface Eta {
   value: string;
   unit?: string;
   arrivalTime: string;
+  show: boolean;
 }
 
 export interface Time {

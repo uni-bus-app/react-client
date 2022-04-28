@@ -1,4 +1,4 @@
-import { initializeAnalytics } from 'firebase/analytics';
+import { initializeAnalytics, setUserProperties } from 'firebase/analytics';
 import { initializeApp } from 'firebase/app';
 import { StrictMode, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -56,13 +56,15 @@ const res = wrapPromise(initSW());
 
 const app = initializeApp(config.firebase);
 const standalone = window.matchMedia('(display-mode: standalone)').matches;
-initializeAnalytics(app, {
-  config: {
-    app_version: packageInfo.version,
-    app_name: 'UniBus Web App',
-    standalone,
-  },
+const data = {
+  app_version: packageInfo.version,
+  app_name: 'UniBus Web App',
+  standalone,
+};
+const analytics = initializeAnalytics(app, {
+  config: data,
 });
+setUserProperties(analytics, data);
 
 const container = document.getElementById('root');
 if (container) {
