@@ -11,18 +11,12 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { getAnalytics, logEvent } from 'firebase/analytics';
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import lazy from 'react-lazy-with-preload';
-import {
-  Navigate,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-} from 'react-router-dom';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import { getMessages, getStops } from './api/APIUtils';
 import idbService from './api/LocalDB';
 import styles from './App.module.css';
 import Home from './components/Home';
-import { useUpdate } from './hooks';
+import { useScreenTracking, useUpdate } from './hooks';
 import { Message, Stop, Time } from './types';
 
 const Map = lazy(() => import('./components/Map'));
@@ -49,11 +43,9 @@ const UpdateSnackBar = ({ updateAvailable, restarting, restart }: any) => {
 };
 
 const App = () => {
-  const { pathname } = useLocation();
+  useScreenTracking();
   const navigate = useNavigate();
   const update = useUpdate();
-  const path = useRef<string>('');
-  const currentScreen = useRef<string>('');
   const [stops, setStops] = useState([]);
   const [loadingStop, setLoadingStop] = useState<Promise<Time[]>>();
   const [currentStop, setCurrentStop] = useState<Stop>();
@@ -111,35 +103,6 @@ const App = () => {
       }, 500);
     }
   }, [currentStop]);
-
-  useEffect(() => {
-    const screen = pathname.replace('/', '');
-    if (screen && screen !== currentScreen.current) {
-      console.log(screen);
-      logEvent(getAnalytics(), 'screen_view', {
-        firebase_screen: screen,
-        firebase_screen_class: 'app-' + screen,
-        firebase_event_origin: 'auto',
-        screen_name: screen,
-        screen_class: 'app-' + screen,
-        firebase_screen_id: screen === 'home' ? 123 : 1234,
-        outlet: 'primary',
-        page_path: pathname,
-        page_title: document.title,
-        firebase_previous_class: path.current
-          ? 'app-' + path.current
-          : undefined,
-        firebase_previous_screen: path.current,
-        firebase_previous_id: path.current
-          ? path.current === 'home'
-            ? 123
-            : 1234
-          : undefined,
-      });
-      path.current = screen;
-      currentScreen.current = screen;
-    }
-  }, [pathname]);
 
   return (
     <>

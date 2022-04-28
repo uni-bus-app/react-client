@@ -55,10 +55,12 @@ const initSW = () => {
 const res = wrapPromise(initSW());
 
 const app = initializeApp(config.firebase);
+const standalone = window.matchMedia('(display-mode: standalone)').matches;
 initializeAnalytics(app, {
   config: {
     app_version: packageInfo.version,
     app_name: 'UniBus Web App',
+    standalone,
   },
 });
 
