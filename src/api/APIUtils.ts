@@ -124,24 +124,23 @@ const updateServiceEta = (serviceTime: Time): Eta | undefined => {
   const eta = serviceTime.timeValue.diff(dayjs());
   let value: string = '';
   let unit: string = '';
-  let arrivalTime: string = '';
+  let arrivalTime = dayjs(serviceTime.timeValue).format('HH:mm');
+  let show = false;
   if (eta < 60000) {
     unit = 'Now';
     value = 'Now';
+    arrivalTime = 'Now';
+    show = false;
   } else if (eta < 3600000) {
     value = Math.ceil(eta / 60000).toString();
-    unit = 'mins';
-  } else if (eta > 7200000) {
-    // value = (eta / 3600000).toFixed(1).toString();
-    // unit = 'hours';
-    arrivalTime = dayjs(serviceTime.timeValue).format('HH:mm');
-  } else if (eta > 3600000) {
-    value = (eta / 3600000).toFixed(1).toString();
-    unit = 'hours';
+    unit = 'min';
+    show = true;
   }
-  arrivalTime = dayjs(serviceTime.timeValue).format('HH:mm');
+  if (eta > 3600000) {
+    show = false;
+  }
   if (isNaN(eta) || eta < 0) {
     return;
   }
-  return { value, unit, arrivalTime };
+  return { value, unit, arrivalTime, show };
 };
