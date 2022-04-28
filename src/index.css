@@ -25,6 +25,9 @@ body {
   margin: 0;
   overscroll-behavior: contain;
   user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
 }
 
 #root {
