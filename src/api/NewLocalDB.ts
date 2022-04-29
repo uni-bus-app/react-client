@@ -107,12 +107,8 @@ class LocalDB {
   }
 
   async generateChecksums() {
-    // const stops = await this.getStops();
-    // const times = stops ? await this.getAllTimes() : {};
-    // const stopsVersion = hash(stops || {}, { respectType: false });
-    // const timesVersion = hash(times, { unorderedArrays: true });
-    const timesVersion = get('timesVersion');
-    const stopsVersion = get('stopsVersions');
+    const timesVersion = await get('timesVersion');
+    const stopsVersion = await get('stopsVersion');
     return { stopsVersion, timesVersion };
   }
 
@@ -125,8 +121,8 @@ class LocalDB {
     });
     const data = await res.json();
     if (data.updates) {
-      set('stopsVersion', data.versions.stopsVersion);
-      set('timesVersion', data.versions.timesVersion);
+      await set('stopsVersion', data.versions.stopsVersion);
+      await set('timesVersion', data.versions.timesVersion);
       await this.db.clear('times');
       data.stops.forEach((item: any) => {
         this.db.put('stops', item);
