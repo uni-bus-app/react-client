@@ -1,13 +1,15 @@
 import NearMeOutlined from '@mui/icons-material/NearMeOutlined';
+import { CircularProgress } from '@mui/material';
 import Fab from '@mui/material/Fab';
 import { useTheme } from '@mui/material/styles';
 import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
 import { RefObject, useEffect, useState } from 'react';
-import { getRoutePath, getStops } from '../../api/APIUtils';
+import { getRoutePath } from '../../api/APIUtils';
 import config from '../../config';
 import { LatLng, Stop } from '../../types';
 import RoutePath from './components/RoutePath';
 import StopMarkers from './components/StopMarkers';
+import StaticMap from './static';
 import { mapStylesDark, mapStylesLight } from './styles';
 import styles from './styles.module.css';
 import { getBounds, getLocation, moveLogo } from './utils';
@@ -25,6 +27,7 @@ interface MapProps {
   routeOverlayEnabled?: boolean;
   stopMarkersEnabled?: boolean;
   onMarkerSelect?: (stop: Stop) => void;
+  stops: Stop[];
   currentStop?: Stop;
   logoContainer: RefObject<HTMLDivElement>;
 }
@@ -35,13 +38,13 @@ const Map = (props: MapProps) => {
     routeOverlayEnabled,
     stopMarkersEnabled,
     onMarkerSelect,
+    stops,
     currentStop,
     logoContainer,
   } = props;
 
   const [map, setMap] = useState<google.maps.Map>();
   const [routeOverlay, setRouteOverlay] = useState<LatLng[]>();
-  const [stops, setStops] = useState<Stop[]>();
 
   const [thing, setThing] = useState<any>();
 
@@ -56,7 +59,6 @@ const Map = (props: MapProps) => {
   useEffect(() => {
     const getData = async () => {
       setRouteOverlay(await getRoutePath());
-      setStops(await getStops());
     };
     getData();
   }, []);
@@ -90,6 +92,8 @@ const Map = (props: MapProps) => {
     mapIds: ['63b6f095713871bd'],
   });
   const theme = useTheme();
+  const [tilesLoaded, setTilesLoaded] = useState<boolean>(false);
+  const [mapVisbile, setMapVisible] = useState<boolean>(false);
   const renderMap = () => {
     const onLoad = (mapInstance: google.maps.Map) => {
       setMap(mapInstance);
@@ -100,20 +104,26 @@ const Map = (props: MapProps) => {
       setMap(undefined);
     };
 
+    const onTilesLoaded = () => {
+      setTilesLoaded(true);
+      window.setTimeout(() => setMapVisible(true), 400);
+    };
+
     return (
       <>
+        {!mapVisbile && (
+          <StaticMap visible={!tilesLoaded}>
+            <CircularProgress />
+          </StaticMap>
+        )}
         <GoogleMap
-          mapContainerStyle={{
-            width: '100vw',
-            // height: 'calc(40vh + env(safe-area-inset-top))',
-            position: 'absolute',
-          }}
           mapContainerClassName={styles.mapContainer}
           options={{
             ...mapOptions,
             styles: darkModeEnabled ? mapStylesDark : mapStylesLight,
           }}
           onLoad={onLoad}
+          onTilesLoaded={onTilesLoaded}
           onUnmount={onUnmount}
         >
           <RoutePath
@@ -186,7 +196,13 @@ const Map = (props: MapProps) => {
     return <div>Map cannot be loaded :(</div>;
   }
 
-  return isLoaded ? renderMap() : <div>loading...</div>;
+  return isLoaded ? (
+    renderMap()
+  ) : (
+    <StaticMap visible={true}>
+      <CircularProgress />
+    </StaticMap>
+  );
 };
 
 export default Map;

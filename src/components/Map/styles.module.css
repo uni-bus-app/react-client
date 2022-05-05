@@ -46,7 +46,9 @@
 } */
 
 .mapContainer {
+  position: absolute;
   height: 43%;
+  width: 100%;
 }
 
 .locationButton {

@@ -1,79 +1,40 @@
-import { initializeAnalytics, setUserProperties } from 'firebase/analytics';
-import { initializeApp } from 'firebase/app';
-import { StrictMode, Suspense } from 'react';
+import { lazy, StrictMode, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter as Router } from 'react-router-dom';
-import packageInfo from '../package.json';
-import App from './App';
-import ServiceWorkerProvider from './components/ServiceWorkerProvider';
-import config from './config';
+import StaticMap from './components/Map/static';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import { Workbox } from 'workbox-window';
 
-export const wrapPromise = (
-  promise: Promise<any>
-): {
-  read: () => any;
-} => {
-  let status = 'pending';
-  let result: any;
-  const suspender = promise.then(
-    (r: any) => {
-      status = 'success';
-      result = r;
-    },
-    (e: any) => {
-      status = 'error';
-      result = e;
-    }
+const AppLayout = lazy(() => import('./AppLayout'));
+
+const AppShell = () => {
+  const { matches } = window.matchMedia('(prefers-color-scheme: dark)');
+  return (
+    <>
+      <StaticMap visible={true} />
+      <div
+        style={
+          matches
+            ? {
+                backgroundColor: 'rgb(66, 66, 66)',
+                position: 'absolute',
+                bottom: 0,
+                width: '100%',
+                height: '57%',
+              }
+            : undefined
+        }
+      />
+    </>
   );
-  return {
-    read() {
-      if (status === 'pending') {
-        throw suspender;
-      } else if (status === 'error') {
-        throw result;
-      } else if (status === 'success') {
-        return result;
-      }
-    },
-  };
 };
-
-const initSW = async (): Promise<Workbox | undefined> => {
-  if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
-    const wb = new Workbox('/service-worker.js');
-    await wb.register();
-    return wb;
-  }
-};
-
-const res = wrapPromise(initSW());
-
-const app = initializeApp(config.firebase);
-const standalone = window.matchMedia('(display-mode: standalone)').matches;
-const data = {
-  app_version: packageInfo.version,
-  app_name: 'UniBus Web App',
-  standalone,
-};
-const analytics = initializeAnalytics(app, {
-  config: data,
-});
-setUserProperties(analytics, data);
 
 const container = document.getElementById('root');
 if (container) {
   const root = createRoot(container);
   root.render(
     <StrictMode>
-      <Suspense fallback={<div>Loading...</div>}>
-        <ServiceWorkerProvider res={res}>
-          <Router>
-            <App />
-          </Router>
-        </ServiceWorkerProvider>
+      <Suspense fallback={<AppShell />}>
+        <AppLayout />
       </Suspense>
     </StrictMode>
   );

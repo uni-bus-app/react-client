@@ -16,6 +16,7 @@ import { getMessages, getStops } from './api/APIUtils';
 import idbService from './api/LocalDB';
 import styles from './App.module.css';
 import Home from './components/Home';
+import StaticMap from './components/Map/static';
 import { useScreenTracking, useUpdate } from './hooks';
 import { Message, Stop, Time } from './types';
 
@@ -110,11 +111,18 @@ const App = () => {
           restarting={update.restarting}
           restart={update.restart}
         />
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense
+          fallback={
+            <StaticMap visible={true}>
+              <CircularProgress />
+            </StaticMap>
+          }
+        >
           <Map
             stopMarkersEnabled={true}
             routeOverlayEnabled={true}
             darkModeEnabled={darkMode}
+            stops={stops}
             currentStop={currentStop}
             onMarkerSelect={onMarkerSelect}
             logoContainer={logoContainer}
