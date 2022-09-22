@@ -131,9 +131,14 @@ class LocalDB {
         this.db.put('times', item);
       });
     }
+    const lastChecked = await get('lastChecked');
+    if (data.updates || !lastChecked) {
+      await set('lastChecked', Date.now());
+    }
   }
 
   async getStops() {
+    await this.init();
     return await this.db.getAllFromIndex('stops', 'routeOrder');
   }
 
@@ -187,6 +192,7 @@ class LocalDB {
   }
 
   async getTimes(stopID: string, date?: string | null): Promise<Time[]> {
+    await this.init();
     const currentTime = date ? dayjs(date) : dayjs();
     let times: any;
     times = await this.getTimes2(stopID, currentTime);

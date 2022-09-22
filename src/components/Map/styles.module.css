@@ -46,9 +46,17 @@
 } */
 
 .mapContainer {
-  height: 43%;
+  height: 100%;
 }
 
-.locationButton {
-  bottom: 62%;
+.fabContainer {
+  position: absolute;
+  right: 1em;
+  bottom: 28%;
+  display: flex;
+  flex-direction: column;
+}
+
+.fabButton {
+  margin: 0.5em;
 }

@@ -10,6 +10,7 @@
 html {
   min-height: calc(100% + env(safe-area-inset-top));
   height: calc(100% + env(safe-area-inset-top));
+  -webkit-font-smoothing: antialiased;
 }
 
 body {

@@ -8,14 +8,22 @@
 // You can also remove this file if you'd prefer not to use a
 // service worker, and the Workbox build step will be skipped.
 
+import dayjs, { Dayjs } from 'dayjs';
+import { get, set } from 'idb-keyval';
 import { clientsClaim } from 'workbox-core';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { initialize } from 'workbox-google-analytics';
-import { createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching';
+import {
+  createHandlerBoundToURL,
+  precache,
+  precacheAndRoute,
+} from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
-import { StaleWhileRevalidate } from 'workbox-strategies';
+import { CacheFirst, StaleWhileRevalidate } from 'workbox-strategies';
+import { getTimes } from './api/APIUtils';
 import LocalDB from './api/NewLocalDB';
 import config from './config';
+import { Eta, Time } from './types';
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -31,30 +39,26 @@ precacheAndRoute(self.__WB_MANIFEST);
 // are fulfilled with your index.html shell. Learn more at
 // https://developers.google.com/web/fundamentals/architecture/app-shell
 const fileExtensionRegexp = new RegExp('/[^/?]+\\.[^/]+$');
-registerRoute(
-  // Return false to exempt requests from being fulfilled by index.html.
-  ({ request, url }: { request: Request; url: URL }) => {
-    // If this isn't a navigation, skip.
-    if (request.mode !== 'navigate') {
-      return false;
-    }
+registerRoute(({ request, url }: { request: Request; url: URL }) => {
+  // If this isn't a navigation, skip.
+  if (request.mode !== 'navigate') {
+    return false;
+  }
 
-    // If this is a URL that starts with /_, skip.
-    if (url.pathname.startsWith('/_')) {
-      return false;
-    }
+  // If this is a URL that starts with /_, skip.
+  if (url.pathname.startsWith('/_')) {
+    return false;
+  }
 
-    // If this looks like a URL for a resource, because it contains
-    // a file extension, skip.
-    if (url.pathname.match(fileExtensionRegexp)) {
-      return false;
-    }
+  // If this looks like a URL for a resource, because it contains
+  // a file extension, skip.
+  if (url.pathname.match(fileExtensionRegexp)) {
+    return false;
+  }
 
-    // Return true to signal that we want to use the handler.
-    return true;
-  },
-  createHandlerBoundToURL(process.env.PUBLIC_URL + '/index.html')
-);
+  // Return true to signal that we want to use the handler.
+  return true;
+}, createHandlerBoundToURL(process.env.PUBLIC_URL + '/index.html'));
 
 // An example runtime caching route for requests that aren't handled by the
 // precache, in this case same-origin .png requests like those from in public/
@@ -73,44 +77,287 @@ registerRoute(
   })
 );
 
+registerRoute(({ url }) => {
+  if (url.pathname.startsWith('/static/')) {
+    return true;
+  }
+}, new CacheFirst());
+
+// registerRoute(({ url }) => {
+//   if (url.pathname.includes('maps-api') && url.pathname.endsWith('.js')) {
+//     return true;
+//   }
+//   if (url.pathname.includes('__googleMapsCallback')) {
+//     return true;
+//   }
+// }, new CacheFirst({ cacheName: 'offline-maps-scripts' }));
+
 initialize();
 
 const db = new LocalDB();
-db.init();
 
-// const cacheBus = async () => {
-//   const cache = await caches.open('bus');
-//   const response = await fetch(`${config.apiURL}/sync`, { method: 'POST' });
-//   const data = await response.json();
-//   cache.put(`${config.apiURL}/stops`, new Response(JSON.stringify(data.stops)));
-//   const response1 = await fetch(`${config.apiURL}/u1routepath`);
-//   cache.put(`${config.apiURL}/u1routepath`, response1);
-//   data.times.forEach((item: any) => {
-//     cache.put(
-//       `${config.apiURL}/stops/${item.stopID}/times`,
-//       new Response(JSON.stringify(item.times))
-//     );
-//   });
-// };
-// cacheBus();
+const cacheMaps = async () => {
+  const apiLoaderScript =
+    'https://maps.googleapis.com/maps/api/js?callback=__googleMapsCallback&key=AIzaSyDkT81ky0Yn3JYuk6bFCsq4PVmjXawppFI&v=beta';
+  const res = await fetch(`${apiLoaderScript}&${Date.now()}`, {
+    mode: 'no-cors',
+    cache: 'no-store',
+  });
+  const cache = await caches.open('offline-maps-scripts');
+  cache.put(apiLoaderScript, res.clone());
+};
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(Promise.all([cacheMaps(), db.init()]));
+});
+
+const parseTimes = (data: any[]): Time[] => {
+  const result: Time[] = [];
+  data.forEach((element) => {
+    if (element) {
+      const destination = element.destination;
+      const service = 'U1';
+      const routeNumber = element.routeNumber;
+      const timeValue = dayjs(element.scheduledDeparture);
+      const time = timeValue.format('HH:mm');
+      const scheduledDeparture = element.scheduledDeparture;
+      const eta = updateServiceEta(timeValue);
+      const newServiceTime = {
+        destination,
+        service,
+        routeNumber,
+        timeValue,
+        time,
+        eta,
+        scheduledDeparture,
+      };
+      if (newServiceTime.eta) {
+        result.push(newServiceTime);
+      }
+    }
+  });
+  return result;
+};
+
+export const updateServiceTimes = (times: Time[]) => {
+  const updatedTimes = times.map((element) => {
+    const res = { ...element };
+    res.eta = updateServiceEta(element.timeValue);
+    return res;
+  });
+  if (!updatedTimes[0]?.eta) {
+    updatedTimes.shift();
+  }
+  return updatedTimes;
+};
+
+/**
+ * Calculates the eta of the service time and returns it
+ * @param {BusTime} serviceTime
+ */
+const updateServiceEta = (time: Dayjs): Eta | undefined => {
+  const eta = time.diff(dayjs());
+  let value: string = '';
+  let unit: string = '';
+  let arrivalTime = dayjs(time).format('HH:mm');
+  let show = false;
+  if (eta < 60000) {
+    unit = 'Now';
+    value = 'Now';
+    arrivalTime = 'Now';
+    show = false;
+  } else if (eta < 3600000) {
+    value = Math.ceil(eta / 60000).toString();
+    unit = 'min';
+    show = true;
+  }
+  if (eta > 3600000) {
+    show = false;
+  }
+  if (isNaN(eta) || eta < 0) {
+    return;
+  }
+  return { value, unit, arrivalTime, show };
+};
 
 self.addEventListener('message', async (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
+  // console.log(event);
+  const { data, ports } = event;
+  // console.log(data);
+  if (data?.type === 'SKIP_WAITING') {
     self.skipWaiting();
-    const clients = await self.clients.matchAll();
-    console.log(clients);
+  } else if (data?.type === 'GET_TIMES') {
+    const { stopID } = data;
+    const [port] = ports;
+    const res = await getTimes(stopID);
+    const times = parseTimes(res);
+    self.clients.get((event.source as any).id).then((client) => {
+      if (client)
+        self.setInterval(() => {
+          const updatedTimes = updateServiceTimes(times);
+          client.postMessage({ type: 'TIMES', times: updatedTimes });
+        }, 1000);
+    });
+  }
+});
+
+self.addEventListener('periodicsync', (event: any) => {
+  if (event.tag === 'sync-db') {
+    db.sync();
   }
 });
 
 self.addEventListener('fetch', (ev) => {
   const { url } = ev.request;
-  if (
-    url.includes('dot-unibus-app.nw.r.appspot.com/') ||
-    url.includes('localhost:8080')
-  ) {
+  if (url.startsWith(self.location.origin)) {
+    // ev.respondWith(
+    //   caches.match(ev.request).then((response) => response || fetch(ev.request))
+    // );
+    // ev.respondWith(caches.match(url) as any);
+    // ev.respondWith(
+    //   caches.match(ev.request).then((res) => {
+    //     if (res) {
+    //       return res;
+    //     }
+    //     return fetch(ev.request);
+    //   })
+    // );
+    // }
+  } else if (url.includes('https://maps.googleapis.com/maps')) {
+    if (url.includes('__googleMapsCallback')) {
+      const requestProcessor = async () => {
+        const response = await caches.match(ev.request);
+        if (response) {
+          return response;
+        }
+        return await fetch(`${url}&${Date.now()}`, {
+          mode: 'no-cors',
+          cache: 'no-store',
+        }).then((response) => {
+          return caches.open('offline-maps-scripts').then((cache) => {
+            cache.put(ev.request, response.clone());
+            return response;
+          });
+        });
+        // try {
+        //   const res = await caches.match(url);
+        //   console.log(44, res);
+        //   if (res) {
+        //     return res;
+        //   }
+        // } catch {}
+        // const res = await fetch(url, {
+        //   mode: 'no-cors',
+        //   cache: 'no-store',
+        // });
+        // console.log(url, res);
+        // const cache = await caches.open('offline-maps-scripts');
+        // await cache.put(url, res);
+        // return res.clone();
+      };
+      ev.respondWith(requestProcessor());
+      // ev.respondWith(
+      //   caches
+      //     .match(url)
+      //     .catch((error) => {})
+      //     .then((res) => {
+      //       if (res) {
+      //         return res;
+      //       }
+      //       return fetch(url, {
+      //         mode: 'no-cors',
+      //         cache: 'no-store',
+      //       });
+      //     })
+      //   (async () => {
+      //   try {
+      //     const res = await fetch(url, {
+      //       mode: 'no-cors',
+      //       cache: 'no-store',
+      //     });
+      //     const cache = await caches.open('offline-maps');
+      //     await cache.put(url, res);
+      //     return res.clone();
+      //   } catch (error) {
+      //     console.log(error);
+      //     return caches.match(url);
+      //   }
+      // })() as any
+      // );
+    } else if (url.includes('.js')) {
+      const requestProcessor = async () => {
+        const response = await caches.match(ev.request);
+        if (response) {
+          return response;
+        }
+        return await fetch(url, { mode: 'no-cors' }).then((response) => {
+          return caches.open('offline-maps-scripts').then((cache) => {
+            cache.put(ev.request, response.clone());
+            return response;
+          });
+        });
+      };
+      ev.respondWith(requestProcessor());
+    } else if (url.includes('api/mapsjs/mapConfigs')) {
+      ev.respondWith(
+        caches.match(url).then((res) => {
+          console.log(res, ev.request);
+          if (!res) {
+            return fetch(ev.request).then((response) => {
+              return caches.open('offline-maps').then((cache) => {
+                cache.put(ev.request, response.clone());
+                return response;
+              });
+            });
+          }
+          return res;
+        })
+      );
+      // ev.respondWith(
+      //   (async () => {
+      //     try {
+      //       const res = await fetch(ev.request);
+      //       const cache = await caches.open('offline-maps');
+      //       cache.put(ev.request, res.clone());
+      //       return res;
+      //     } catch (error) {
+      //       return caches.match(ev.request);
+      //     }
+      //   })() as any
+      // );
+    } else if (url.includes('https://www.gstatic.com/maps')) {
+      ev.respondWith(
+        caches.open('offline-maps').then((cache) => {
+          return fetch(ev.request).then((response) => {
+            cache.put(ev.request, response.clone());
+            return response;
+          });
+        })
+      );
+    } else {
+      ev.respondWith(
+        (async () => {
+          try {
+            const res = await caches.match(ev.request);
+            if (res) {
+              return res;
+            }
+          } catch {}
+          return fetch(ev.request).then((response) => {
+            const cloned = response.clone();
+            caches.open('offline-maps').then((cache) => {
+              cache.put(ev.request, cloned);
+            });
+            return response;
+          });
+        })() as any
+      );
+    }
+  } else if (url.includes('dot-unibus-app.nw.r.appspot.com/')) {
     ev.respondWith(
       (async () => {
-        if (url.includes('stops')) {
+        if (url.includes('testthing')) {
+        } else if (url.includes('stops')) {
           if (url.includes('times')) {
             const stopID = url.split('stops/')?.pop()?.split('/')?.[0];
             const date = new URLSearchParams(url.split('?').pop()).get('date');
@@ -118,16 +365,33 @@ self.addEventListener('fetch', (ev) => {
               const times = await db.getTimes(stopID, date);
               return new Response(JSON.stringify(times));
             } else {
-              return fetch(ev.request);
+              try {
+                return new Response('[]');
+                return fetch(ev.request);
+              } catch (error) {}
             }
           } else {
             const stops = await db.getStops();
             return new Response(JSON.stringify(stops));
           }
-        } else {
+        } else if (url.includes('sync')) {
           return fetch(ev.request);
+        } else if (url.includes('u1routepath')) {
+          const path = await get('u1RoutePath');
+          if (path) {
+            return new Response(JSON.stringify(path));
+          }
+          return fetch(ev.request).then(async (res) => {
+            await set('u1RoutePath', await res.clone().json());
+            return res;
+          });
+        } else {
+          try {
+            return new Response('[]');
+            return fetch(ev.request);
+          } catch (error) {}
         }
-      })()
+      })() as any
     );
   }
 });

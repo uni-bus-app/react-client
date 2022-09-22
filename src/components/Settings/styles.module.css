@@ -1,0 +1,11 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  padding: 1em;
+}
+
+.settingsItem {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}

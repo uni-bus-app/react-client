@@ -3,13 +3,14 @@ import { initializeApp } from 'firebase/app';
 import { StrictMode, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router } from 'react-router-dom';
+import { Workbox } from 'workbox-window';
 import packageInfo from '../package.json';
 import App from './App';
+import StaticMap from './components/Map/static';
 import ServiceWorkerProvider from './components/ServiceWorkerProvider';
 import config from './config';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import { Workbox } from 'workbox-window';
 
 export const wrapPromise = (
   promise: Promise<any>
@@ -41,11 +42,17 @@ export const wrapPromise = (
   };
 };
 
-const initSW = async (): Promise<Workbox | undefined> => {
+const initSW = async (): Promise<
+  | {
+      wb: Workbox;
+      reg?: ServiceWorkerRegistration;
+    }
+  | undefined
+> => {
   if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
-    const wb = new Workbox('/service-worker.js');
-    await wb.register();
-    return wb;
+    const wb = new Workbox('/service-worker.js', { scope: '/' });
+    const reg = await wb.register({ immediate: true });
+    return { wb, reg };
   }
 };
 
@@ -68,7 +75,7 @@ if (container) {
   const root = createRoot(container);
   root.render(
     <StrictMode>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<StaticMap />}>
         <ServiceWorkerProvider res={res}>
           <Router>
             <App />

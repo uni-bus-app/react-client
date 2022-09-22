@@ -9,13 +9,21 @@ import Snackbar from '@mui/material/Snackbar';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { getAnalytics, logEvent } from 'firebase/analytics';
-import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  createRef,
+  Suspense,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import lazy from 'react-lazy-with-preload';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import { getMessages, getStops } from './api/APIUtils';
-import idbService from './api/LocalDB';
 import styles from './App.module.css';
 import Home from './components/Home';
+import StaticMap from './components/Map/static';
+import Settings from './components/Settings';
 import { useScreenTracking, useUpdate } from './hooks';
 import { Message, Stop, Time } from './types';
 
@@ -42,7 +50,7 @@ const UpdateSnackBar = ({ updateAvailable, restarting, restart }: any) => {
   );
 };
 
-const App = () => {
+const App = (props: any) => {
   useScreenTracking();
   const navigate = useNavigate();
   const update = useUpdate();
@@ -83,11 +91,11 @@ const App = () => {
   };
 
   useEffect(() => {
-    getStops().then(setStops);
-
+    getStops().then((value) => {
+      setStops(value);
+      setCurrentStop(value[0]);
+    });
     getMessages().then(setMessages);
-
-    idbService.sync();
   }, []);
 
   useEffect(() => {
@@ -97,9 +105,32 @@ const App = () => {
           stop_id: currentStop.id,
           stop_name: currentStop.name,
         });
-      }, 500);
+      }, 501);
     }
   }, [currentStop]);
+
+  const start = useRef<number>(0);
+  const cardRef = createRef<HTMLDivElement>();
+  const [style, setStyles] = useState<any>({});
+
+  const pos = useRef<number>(0);
+
+  // useEffect(() => {
+  //   if ((cardRef as any)?.current?.style as any) {
+  //     const thing = () => {
+  //       (cardRef as any).current.style.transform = `translateY(${
+  //         (pos?.current as any) || 0
+  //       }px)`;
+  //       requestAnimationFrame(thing);
+  //     };
+  //     requestAnimationFrame(thing);
+  //   }
+  // }, [cardRef]);
+
+  const [map, setMap] = useState<google.maps.Map>();
+  const [tween, setTween] = useState<any>();
+
+  const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
 
   return (
     <>
@@ -110,18 +141,67 @@ const App = () => {
           restarting={update.restarting}
           restart={update.restart}
         />
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<StaticMap />}>
           <Map
+            map={map}
+            setMap={setMap}
+            setTween={setTween}
             stopMarkersEnabled={true}
             routeOverlayEnabled={true}
             darkModeEnabled={darkMode}
+            stops={stops}
             currentStop={currentStop}
             onMarkerSelect={onMarkerSelect}
             logoContainer={logoContainer}
+            openSettings={() => setSettingsOpen(true)}
           />
         </Suspense>
         <div className={styles.logoContainer} ref={logoContainer} />
-        <Card className={styles.mainCard} elevation={24}>
+        <Suspense fallback={<div>Loading...</div>}>
+          <StopView
+            map={map}
+            tween={tween}
+            stop={currentStop}
+            setStop={setCurrentStop}
+            stops={stops}
+            unSelectStop={unSelectStop}
+            nextStop={() => {
+              if (currentStop) {
+                const stopIndex = stops.findIndex(
+                  (x: any) => x.id === currentStop.id
+                );
+                if (stopIndex < stops.length - 1) {
+                  setCurrentStop(stops[stopIndex + 1]);
+                } else {
+                  setCurrentStop(stops[0]);
+                }
+              }
+            }}
+            darkMode={darkMode}
+          />
+        </Suspense>
+        <Settings open={settingsOpen} setOpen={setSettingsOpen} />
+        {/* <Card
+          ref={cardRef}
+          className={styles.mainCard}
+          elevation={24}
+          // style={style}
+          // onTouchStart={(e) => {
+          //   start.current = e.touches[0].clientY;
+          // }}
+          // onTouchMove={(e) => {
+          //   console.log(e);
+          //   // pos.current = e.touches[0].clientY - start.current;
+          //   cardRef.current?.animate(
+          //     {
+          //       transform: `translateY(${
+          //         e.touches[0].clientY - start.current
+          //       }px)`,
+          //     },
+          //     { duration: 1, fill: 'forwards' }
+          //   );
+          // }}
+        >
           <Routes>
             <Route path="/" element={<Navigate to="/home" />} />
             <Route
@@ -147,6 +227,18 @@ const App = () => {
                     <StopView
                       stop={currentStop}
                       unSelectStop={unSelectStop}
+                      nextStop={() => {
+                        if (currentStop) {
+                          const stopIndex = stops.findIndex(
+                            (x: any) => x.id === currentStop.id
+                          );
+                          if (stopIndex < stops.length - 1) {
+                            setCurrentStop(stops[stopIndex + 1]);
+                          } else {
+                            setCurrentStop(stops[0]);
+                          }
+                        }
+                      }}
                       darkMode={darkMode}
                     />
                   </Suspense>
@@ -156,7 +248,7 @@ const App = () => {
               }
             />
           </Routes>
-        </Card>
+        </Card> */}
       </ThemeProvider>
     </>
   );
