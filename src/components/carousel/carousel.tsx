@@ -36,11 +36,10 @@ export const Carousel = ({ children }: any) => {
           variant="contained"
           size="large"
           onClick={() => {
-            if (activeIndex === 0) {
-              updateIndex(1);
-            } else {
+            if (activeIndex === 1) {
               getLocation();
             }
+            updateIndex(activeIndex + 1);
           }}
         >
           Continue
