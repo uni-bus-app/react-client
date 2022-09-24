@@ -38,15 +38,11 @@ export const LocationPermissionView = () => {
           <div className={styles.pageContainerTextContainer}>
             <p className={styles.pageContainerTitle}>Location Data</p>
             <p className={styles.pageContainerIntroduction}>
-              In order to provide you with the services we have built the app
-              requires your location, but don't worry, the nerds have no access
-              to your data! It is all stored on your device.
+              In order to provide you with all the cool services we have built
+              the app requires your location, but don't worry, the nerds have no
+              access to your data! It is all stored on your device.
             </p>
             <p className={styles.pageContainerIntroduction}></p>
-            <i className={styles.smallText}>
-              It isn't necessary, but not accepting location permissions means
-              some of the cooler features may be limited.
-            </i>
           </div>
         </div>
       </div>
