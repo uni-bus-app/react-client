@@ -1,8 +1,7 @@
 import Close from '@mui/icons-material/Close';
-import { Switch } from '@mui/material';
-import SwipeableDrawer from '@mui/material/SwipeableDrawer';
-import { Dispatch, SetStateAction, useRef, useState } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import { Time } from '../../types';
+import BottomSheet from '../BottomSheet';
 import TimesList from '../TimesList';
 import styles from './styles.module.css';
 
@@ -16,13 +15,7 @@ interface NextTimesSheetProps {
 const NextTimesSheet = (props: NextTimesSheetProps) => {
   const { open, setOpen, times, loadMoreTimes } = props;
   return (
-    <SwipeableDrawer
-      anchor={'bottom'}
-      open={open}
-      onClose={() => setOpen(false)}
-      onOpen={() => setOpen(true)}
-      disableSwipeToOpen
-    >
+    <BottomSheet open={open} setOpen={setOpen}>
       <div className={styles.container}>
         <div className={styles.header}>
           <p className={styles.title}>Upcoming Departures</p>
@@ -30,7 +23,7 @@ const NextTimesSheet = (props: NextTimesSheetProps) => {
         </div>
         <TimesList times={times} loadMoreTimes={loadMoreTimes} />
       </div>
-    </SwipeableDrawer>
+    </BottomSheet>
   );
 };
 
