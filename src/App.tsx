@@ -16,8 +16,13 @@ import { getMessages, getStops } from './api/APIUtils';
 import idbService from './api/LocalDB';
 import styles from './App.module.css';
 import Home from './components/Home';
+
 import { useScreenTracking, useUpdate } from './hooks';
 import { Message, Stop, Time } from './types';
+import Carousel, { CarouselItem } from './components/carousel/carousel';
+import LocationPermissionView, {
+  InitialStartup,
+} from './components/LocationPermissionView';
 
 const Map = lazy(() => import('./components/Map'));
 const StopView = lazy(() => import('./components/StopView'));
@@ -103,7 +108,16 @@ const App = () => {
 
   return (
     <>
-      <ThemeProvider theme={theme}>
+      <Carousel>
+        <CarouselItem>
+          <InitialStartup />
+        </CarouselItem>
+        <CarouselItem>
+          <LocationPermissionView />
+        </CarouselItem>
+      </Carousel>
+
+      {/* <ThemeProvider theme={theme}>
         <CssBaseline />
         <UpdateSnackBar
           updateAvailable={update.updateAvailable}
@@ -157,7 +171,7 @@ const App = () => {
             />
           </Routes>
         </Card>
-      </ThemeProvider>
+      </ThemeProvider> */}
     </>
   );
 };
