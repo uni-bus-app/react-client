@@ -45,10 +45,11 @@
   box-sizing: border-box !important;
   border-radius: 14px !important;
   text-transform: none !important;
+  margin-bottom: 6px !important;
 }
 
 .smallText {
   font-size: 0.8rem;
   white-space: normal;
-  color: grey;
+  color: grey !important;
 }

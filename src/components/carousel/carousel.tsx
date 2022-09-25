@@ -44,7 +44,11 @@ export const Carousel = ({ children }: any) => {
         >
           Continue
         </Button>
-        {activeIndex === 1 && <p className="smallText">No Thanks</p>}
+        {activeIndex === 1 && (
+          <Button variant="text" className="smallText" sx={{ color: 'grey' }}>
+            No Thanks
+          </Button>
+        )}
       </div>
     </div>
   );
