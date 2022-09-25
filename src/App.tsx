@@ -20,8 +20,10 @@ import Home from './components/Home';
 import { useScreenTracking, useUpdate } from './hooks';
 import { Message, Stop, Time } from './types';
 import Carousel, { CarouselItem } from './components/carousel/carousel';
-import LocationPermissionView, {
+import {
   InitialStartup,
+  LocationPermissionView,
+  NotificationPermissionView,
 } from './components/LocationPermissionView';
 
 const Map = lazy(() => import('./components/Map'));
@@ -114,6 +116,9 @@ const App = () => {
         </CarouselItem>
         <CarouselItem>
           <LocationPermissionView />
+        </CarouselItem>
+        <CarouselItem>
+          <NotificationPermissionView />
         </CarouselItem>
       </Carousel>
 
