@@ -1,0 +1,18 @@
+.item {
+  position: absolute;
+  bottom: 0;
+  width: 90%;
+  margin: 1em;
+  border-radius: 1em !important;
+  z-index: 20;
+  display: block;
+  will-change: transform;
+}
+
+.prevCard {
+  transform: translateX(-100vw);
+}
+
+.nextCard {
+  transform: translateX(100vw);
+}

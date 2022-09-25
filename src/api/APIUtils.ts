@@ -1,6 +1,5 @@
 import dayjs from 'dayjs';
 import { Stop, Eta, Time, LatLng, Message } from '../types';
-// import idbService from './LocalDB';
 import LocalDB from './NewLocalDB';
 import config from '../config';
 
@@ -68,8 +67,10 @@ export const getTimes = async (
       return parseTimes(await res.json());
     }
   } else {
+    // const res1 = await fetch(`${apiURL}/testthing`);
     date = date ? `?date=${date}` : '';
     const res = await fetch(`${apiURL}/stops/${stopID}/times${date}`);
+    // console.log(res.body.getReader().);
     return parseTimes(await res.json());
   }
 };
