@@ -11,6 +11,7 @@
 import { get, set } from 'idb-keyval';
 import { clientsClaim } from 'workbox-core';
 import { ExpirationPlugin } from 'workbox-expiration';
+import { initialize } from 'workbox-google-analytics';
 import { createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate } from 'workbox-strategies';
@@ -74,28 +75,32 @@ registerRoute(
   })
 );
 
+initialize();
+
 const db = new LocalDB();
 db.init();
 
-const cacheBus = async () => {
-  const cache = await caches.open('bus');
-  const response = await fetch(`${config.apiURL}/sync`, { method: 'POST' });
-  const data = await response.json();
-  cache.put(`${config.apiURL}/stops`, new Response(JSON.stringify(data.stops)));
-  const response1 = await fetch(`${config.apiURL}/u1routepath`);
-  cache.put(`${config.apiURL}/u1routepath`, response1);
-  data.times.forEach((item: any) => {
-    cache.put(
-      `${config.apiURL}/stops/${item.stopID}/times`,
-      new Response(JSON.stringify(item.times))
-    );
-  });
-};
-cacheBus();
+// const cacheBus = async () => {
+//   const cache = await caches.open('bus');
+//   const response = await fetch(`${config.apiURL}/sync`, { method: 'POST' });
+//   const data = await response.json();
+//   cache.put(`${config.apiURL}/stops`, new Response(JSON.stringify(data.stops)));
+//   const response1 = await fetch(`${config.apiURL}/u1routepath`);
+//   cache.put(`${config.apiURL}/u1routepath`, response1);
+//   data.times.forEach((item: any) => {
+//     cache.put(
+//       `${config.apiURL}/stops/${item.stopID}/times`,
+//       new Response(JSON.stringify(item.times))
+//     );
+//   });
+// };
+// cacheBus();
 
-self.addEventListener('message', (event) => {
+self.addEventListener('message', async (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
+    const clients = await self.clients.matchAll();
+    console.log(clients);
   }
 });
 
