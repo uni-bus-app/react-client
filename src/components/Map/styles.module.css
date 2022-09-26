@@ -49,6 +49,12 @@
   height: 43%;
 }
 
+@media screen and (min-width: 960px) {
+  .mapContainer {
+    height: 100%;
+  }
+}
+
 .locationButton {
   bottom: 62%;
 }
