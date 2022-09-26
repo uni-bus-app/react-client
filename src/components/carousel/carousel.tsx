@@ -21,6 +21,14 @@ export const Carousel = ({ children }: any) => {
 
   return (
     <div className="Carousel">
+      <header>
+        <span
+          className="Carousel-header"
+          onClick={() => updateIndex(React.Children.count(children))}
+        >
+          {activeIndex !== 3 && 'SKIP SETUP'}
+        </span>
+      </header>
       <div
         className="inner"
         style={{ transform: `translateX(-${activeIndex * 100}%)` }}
@@ -42,10 +50,14 @@ export const Carousel = ({ children }: any) => {
             updateIndex(activeIndex + 1);
           }}
         >
-          Continue
+          {activeIndex === 0 || activeIndex === 3 ? 'Continue' : 'Enable'}
         </Button>
-        {activeIndex === 1 && (
-          <Button variant="text" className="smallText" sx={{ color: 'grey' }}>
+        {activeIndex !== 0 && activeIndex !== 3 && (
+          <Button
+            variant="text"
+            className="smallText"
+            sx={{ color: 'grey', fontStyle: 'none' }}
+          >
             No Thanks
           </Button>
         )}

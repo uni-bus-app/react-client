@@ -21,6 +21,7 @@ import { useScreenTracking, useUpdate } from './hooks';
 import { Message, Stop, Time } from './types';
 import Carousel, { CarouselItem } from './components/carousel/carousel';
 import {
+  FinalScreenView,
   InitialStartup,
   LocationPermissionView,
   NotificationPermissionView,
@@ -119,6 +120,9 @@ const App = () => {
         </CarouselItem>
         <CarouselItem>
           <NotificationPermissionView />
+        </CarouselItem>
+        <CarouselItem>
+          <FinalScreenView />
         </CarouselItem>
       </Carousel>
 

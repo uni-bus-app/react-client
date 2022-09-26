@@ -16,7 +16,7 @@ export const InitialStartup = () => {
               Our aim is to simplify the University bus experience, providing
               you easy access to university travel resources.
             </p>
-            <p></p>
+            <br />
             <i className={styles.smallText}>
               This app is and always will be provided completely free of charge,
               feel free to tell your friends about us!
@@ -63,6 +63,28 @@ export const NotificationPermissionView = () => {
               Android users get a cool extra bonus, notifications! You can set a
               bus you like to get and we can remind you when you need to start
               making a move.
+            </p>
+            <p className={styles.pageContainerIntroduction}></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const FinalScreenView = () => {
+  return (
+    <div className={styles.box}>
+      <div className={styles.pageContainer}>
+        <div className={styles.imageTextContainer}>
+          <img src={Notifications} />
+
+          <div className={styles.pageContainerTextContainer}>
+            <p className={styles.pageContainerTitle}>You're all set!</p>
+            <p className={styles.pageContainerIntroduction}>
+              You're ready for the 2022 treatment for catching the bus, we will
+              keep doing the dirty work of keeping up-to-date so you don't have
+              to worry about being caught out in the rain.
             </p>
             <p className={styles.pageContainerIntroduction}></p>
           </div>

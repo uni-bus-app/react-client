@@ -21,6 +21,17 @@
   text-decoration: none;
 }
 
+.Carousel-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+  padding: 12px;
+  box-sizing: border-box;
+  font-size: 0.8rem;
+  white-space: normal;
+  color: grey !important;
+}
+
 .inner {
   top: 0;
   white-space: nowrap;
