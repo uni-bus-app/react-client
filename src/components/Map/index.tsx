@@ -1,11 +1,13 @@
 import NearMeOutlined from '@mui/icons-material/NearMeOutlined';
 import Fab from '@mui/material/Fab';
 import { useTheme } from '@mui/material/styles';
-import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
+import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import { RefObject, useEffect, useState } from 'react';
 import { getRoutePath, getStops } from '../../api/APIUtils';
 import config from '../../config';
 import { LatLng, Stop } from '../../types';
+import BottomSheet from '../BottomSheet';
+import { useSettings } from '../SettingsProvider';
 import RoutePath from './components/RoutePath';
 import StopMarkers from './components/StopMarkers';
 import { mapStylesDark, mapStylesLight } from './styles';
@@ -27,6 +29,8 @@ interface MapProps {
   onMarkerSelect?: (stop: Stop) => void;
   currentStop?: Stop;
   logoContainer: RefObject<HTMLDivElement>;
+  setHelp?: any;
+  setOpenHelp?: any;
 }
 
 const Map = (props: MapProps) => {
@@ -37,19 +41,28 @@ const Map = (props: MapProps) => {
     onMarkerSelect,
     currentStop,
     logoContainer,
+    setHelp,
+    setOpenHelp,
   } = props;
 
   const [map, setMap] = useState<google.maps.Map>();
   const [routeOverlay, setRouteOverlay] = useState<LatLng[]>();
   const [stops, setStops] = useState<Stop[]>();
+  const settings = useSettings();
 
   const [thing, setThing] = useState<any>();
 
   const getCurrentLocation = async () => {
-    const position = await getLocation();
-    setThing(position);
-    if (map) {
-      map?.fitBounds(getBounds(position), 20);
+    if (!settings.useLocation) {
+      console.log(true);
+      const position = await getLocation();
+      setThing(position);
+      if (map) {
+        map?.fitBounds(getBounds(position), 20);
+      }
+    } else {
+      setOpenHelp(true);
+      setHelp('LocationHelp');
     }
   };
 
@@ -133,12 +146,12 @@ const Map = (props: MapProps) => {
           <Marker
             position={map.getCenter()}
             options={{
-              icon: {
-                url: locationMarkerIcon,
-                // scaledSize: new google.maps.Size(35, 50),
-                // origin: new google.maps.Point(0, 0),
-                // anchor: new google.maps.Point(17.5, 50),
-              },
+              // icon: {
+              //   // url: locationMarkerIcon,
+              //   // scaledSize: new google.maps.Size(35, 50),
+              //   // origin: new google.maps.Point(0, 0),
+              //   // anchor: new google.maps.Point(17.5, 50),
+              // },
             }}
           />
         )} */}

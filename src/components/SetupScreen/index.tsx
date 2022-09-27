@@ -81,11 +81,7 @@ export const FinalScreenView = () => {
 
           <div className={styles.pageContainerTextContainer}>
             <p className={styles.pageContainerTitle}>You're all set!</p>
-            <p className={styles.pageContainerIntroduction}>
-              You're ready for the 2022 treatment for catching the bus, we will
-              keep doing the dirty work of keeping up-to-date so you don't have
-              to worry about being caught out in the rain.
-            </p>
+            <p className={styles.pageContainerIntroduction}></p>
             <p className={styles.pageContainerIntroduction}></p>
           </div>
         </div>

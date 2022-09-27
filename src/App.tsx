@@ -24,8 +24,9 @@ import {
   FinalScreenView,
   InitialStartup,
   LocationPermissionView,
-  NotificationPermissionView,
-} from './components/LocationPermissionView';
+} from './components/SetupScreen';
+import SettingsProvider, { useSettings } from './components/SettingsProvider';
+import { CallSheet } from './components/HowToComponents';
 
 const Map = lazy(() => import('./components/Map'));
 const StopView = lazy(() => import('./components/StopView'));
@@ -59,6 +60,11 @@ const App = () => {
   const [currentStop, setCurrentStop] = useState<Stop>();
   const [messages, setMessages] = useState<Message[]>([]);
   const [markerSelect, setMarkerSelect] = useState<boolean>(false);
+
+  const [help, setHelp] = useState('');
+  const [openHelp, setOpenHelp] = useState(false);
+
+  const settings = useSettings();
 
   const logoContainer = useRef() as any;
   const darkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -111,76 +117,79 @@ const App = () => {
 
   return (
     <>
-      <Carousel>
-        <CarouselItem>
-          <InitialStartup />
-        </CarouselItem>
-        <CarouselItem>
-          <LocationPermissionView />
-        </CarouselItem>
-        <CarouselItem>
-          <NotificationPermissionView />
-        </CarouselItem>
-        <CarouselItem>
-          <FinalScreenView />
-        </CarouselItem>
-      </Carousel>
+      <SettingsProvider>
+        {/* <Carousel>
+          <CarouselItem>
+            <InitialStartup />
+          </CarouselItem>
+          <CarouselItem>
+            <LocationPermissionView />
+          </CarouselItem>
 
-      {/* <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <UpdateSnackBar
-          updateAvailable={update.updateAvailable}
-          restarting={update.restarting}
-          restart={update.restart}
-        />
-        <Suspense fallback={<div>Loading...</div>}>
-          <Map
-            stopMarkersEnabled={true}
-            routeOverlayEnabled={true}
-            darkModeEnabled={darkMode}
-            currentStop={currentStop}
-            onMarkerSelect={onMarkerSelect}
-            logoContainer={logoContainer}
+          <CarouselItem>
+            <FinalScreenView />
+          </CarouselItem>
+        </Carousel> */}
+
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <UpdateSnackBar
+            updateAvailable={update.updateAvailable}
+            restarting={update.restarting}
+            restart={update.restart}
           />
-        </Suspense>
-        <div className={styles.logoContainer} ref={logoContainer} />
-        <Card className={styles.mainCard} elevation={24}>
-          <Routes>
-            <Route path="/" element={<Navigate to="/home" />} />
-            <Route
-              path="/home"
-              element={
-                <Home
-                  stops={stops}
-                  setCurrentStop={setCurrentStop}
-                  currentStop={currentStop}
-                  loadingTimes={loadingStop}
-                  setLoadingTimes={setLoadingStop}
-                  messages={messages}
-                  onLoad={() => StopView.preload()}
-                  checkForUpdates={update.checkForUpdates}
-                />
-              }
+          <Suspense fallback={<div>Loading...</div>}>
+            <Map
+              stopMarkersEnabled={true}
+              routeOverlayEnabled={true}
+              darkModeEnabled={darkMode}
+              currentStop={currentStop}
+              onMarkerSelect={onMarkerSelect}
+              logoContainer={logoContainer}
+              setHelp={setHelp}
+              setOpenHelp={setOpenHelp}
             />
-            <Route
-              path="/stopview"
-              element={
-                currentStop || markerSelect ? (
-                  <Suspense fallback={<div>Loading...</div>}>
-                    <StopView
-                      stop={currentStop}
-                      unSelectStop={unSelectStop}
-                      darkMode={darkMode}
-                    />
-                  </Suspense>
-                ) : (
-                  <Navigate to="/home" />
-                )
-              }
-            />
-          </Routes>
-        </Card>
-      </ThemeProvider> */}
+          </Suspense>
+          <div className={styles.logoContainer} ref={logoContainer} />
+          <Card className={styles.mainCard} elevation={24}>
+            <Routes>
+              <Route path="/" element={<Navigate to="/home" />} />
+              <Route
+                path="/home"
+                element={
+                  <Home
+                    stops={stops}
+                    setCurrentStop={setCurrentStop}
+                    currentStop={currentStop}
+                    loadingTimes={loadingStop}
+                    setLoadingTimes={setLoadingStop}
+                    messages={messages}
+                    onLoad={() => StopView.preload()}
+                    checkForUpdates={update.checkForUpdates}
+                  />
+                }
+              />
+              <Route
+                path="/stopview"
+                element={
+                  currentStop || markerSelect ? (
+                    <Suspense fallback={<div>Loading...</div>}>
+                      <StopView
+                        stop={currentStop}
+                        unSelectStop={unSelectStop}
+                        darkMode={darkMode}
+                      />
+                    </Suspense>
+                  ) : (
+                    <Navigate to="/home" />
+                  )
+                }
+              />
+            </Routes>
+          </Card>
+          <CallSheet open={openHelp} setOpen={setOpenHelp} help={help} />
+        </ThemeProvider>
+      </SettingsProvider>
     </>
   );
 };

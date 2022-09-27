@@ -5,6 +5,8 @@ import { SettingsItems } from './types';
 const defaultSettings: SettingsItems = {
   useSystemTheme: true,
   darkModeOverride: false,
+  useLocation: true,
+  useNotifications: false,
 };
 
 interface ContextState extends SettingsItems {

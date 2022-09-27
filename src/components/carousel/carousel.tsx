@@ -1,6 +1,7 @@
 import { Button } from '@mui/material';
 import React, { cloneElement, useEffect, useState } from 'react';
-import { getLocation } from '../Map/utils';
+import { useSettings } from '../SettingsProvider';
+import { SettingsItemsNames } from '../SettingsProvider/types';
 import './styles.css';
 
 export const CarouselItem = ({ children, width }: any) => {
@@ -9,14 +10,40 @@ export const CarouselItem = ({ children, width }: any) => {
 
 export const Carousel = ({ children }: any) => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const settings = useSettings();
+
   const updateIndex = (newIndex: any) => {
     if (newIndex < 0) {
       newIndex = React.Children.count(children) - 1;
     } else if (newIndex >= React.Children.count(children)) {
       newIndex = 0;
     }
-
     setActiveIndex(newIndex);
+  };
+
+  const getLocation = () => {
+    navigator.geolocation.getCurrentPosition(
+      () => {
+        settings.setValue(SettingsItemsNames.UseLocation, true);
+        // updateIndex(activeIndex + 1);
+      },
+      (e) => {
+        settings.setValue(SettingsItemsNames.UseLocation, false);
+        // updateIndex(activeIndex + 1);
+      }
+    );
+  };
+
+  const settingsObjectSetup = (allow: boolean) => {
+    if (activeIndex === 1) {
+      allow === true
+        ? getLocation()
+        : settings.setValue(SettingsItemsNames.UseLocation, false);
+      console.log('fuckin bean');
+    }
+    if (allow === false || activeIndex === 0) {
+      updateIndex(activeIndex + 1);
+    }
   };
 
   return (
@@ -26,7 +53,7 @@ export const Carousel = ({ children }: any) => {
           className="Carousel-header"
           onClick={() => updateIndex(React.Children.count(children))}
         >
-          {activeIndex !== 3 && 'SKIP SETUP'}
+          {activeIndex !== React.Children.count(children) - 1 && 'SKIP SETUP'}
         </span>
       </header>
       <div
@@ -43,24 +70,26 @@ export const Carousel = ({ children }: any) => {
           className="button"
           variant="contained"
           size="large"
-          onClick={() => {
-            if (activeIndex === 1) {
-              getLocation();
-            }
-            updateIndex(activeIndex + 1);
-          }}
+          onClick={() => settingsObjectSetup(true)}
         >
-          {activeIndex === 0 || activeIndex === 3 ? 'Continue' : 'Enable'}
+          {activeIndex === 0 ||
+          activeIndex === React.Children.count(children) - 1
+            ? 'Continue'
+            : 'Enable'}
         </Button>
-        {activeIndex !== 0 && activeIndex !== 3 && (
-          <Button
-            variant="text"
-            className="smallText"
-            sx={{ color: 'grey', fontStyle: 'none' }}
-          >
-            No Thanks
-          </Button>
-        )}
+        {activeIndex !== 0 &&
+          activeIndex !== React.Children.count(children) - 1 && (
+            <Button
+              variant="text"
+              className="smallText"
+              sx={{ color: 'grey', fontStyle: 'none' }}
+              onClick={() => {
+                settingsObjectSetup(false);
+              }}
+            >
+              No Thanks
+            </Button>
+          )}
       </div>
     </div>
   );
