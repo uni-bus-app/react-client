@@ -41,7 +41,7 @@ const Header = (props: HeaderProps) => {
         </IconButton>
         <InputBase
           sx={{ ml: 1, flex: 1, fontSize: '0.9em', color: 'black' }}
-          placeholder="Search "
+          placeholder="Search"
         />
       </div>
 
