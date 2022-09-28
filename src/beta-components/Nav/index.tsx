@@ -8,7 +8,7 @@ import classNames from 'classnames';
 
 import styles from './styles.module.css';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 
 interface NavProps {
   getLocation: () => void;
@@ -18,8 +18,8 @@ interface NavProps {
 const Nav = (props: NavProps) => {
   const { getLocation, showHeader } = props;
   const navigate = useNavigate();
-
-  const [selected, setSelected] = useState('home');
+  const location = useLocation();
+  const [selected, setSelected] = useState(location.pathname.split('/')[1]);
   const [translate, setTranslate] = useState(0);
   const [moving, setMovement] = useState(false);
 

@@ -1,5 +1,7 @@
 .notificationsPage {
   width: 100%;
+  padding: 0 12px 0 12px;
+  box-sizing: border-box;
   padding-top: calc(env(safe-area-inset-top) + 10px);
   padding-bottom: calc(env(safe-area-inset-bottom) + 10px);
   height: 100%;
@@ -11,7 +13,25 @@
 .infoCard {
   border-radius: 12px !important;
   padding: 16px;
-  margin: 16px 16px 0 16px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.notificationContent {
+  display: flex;
+  width: 85%;
+  flex-direction: column;
+  color: black;
+}
+.notificationContent .title {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.notificationContent .body {
+  font-size: 0.8rem;
 }
 
 .header {
@@ -21,9 +41,27 @@
   text-align: center;
 }
 
-/* .header > p {
-    font-family: GoogleSans;
-  } */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.625em 1em 0.4375em 1em;
+  z-index: 1;
+}
+
+p.title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: black;
+  text-align: left;
+  margin: 0;
+  margin-bottom: 1.5rem;
+  letter-spacing: normal;
+}
+
+.notificationList {
+  overflow-y: auto;
+}
 
 p.bodyText {
   font-size: 0.8em;
@@ -34,5 +72,26 @@ p.bodyText {
   text-rendering: optimizeLegibility;
   text-shadow: rgba(0, 0, 0, 0.01) 0 0 1px;
   color: gray;
-  /* font-family: GoogleSans; */
+}
+
+.animate {
+  animation-duration: 0.3s;
+  animation-name: animateCards;
+  animation-timing-function: ease;
+  animation-fill-mode: forwards;
+}
+
+@keyframes animateCards {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  70% {
+    opacity: 0.7;
+    transform: translateY(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
 }
