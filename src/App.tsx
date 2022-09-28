@@ -11,11 +11,23 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { getAnalytics, logEvent } from 'firebase/analytics';
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import lazy from 'react-lazy-with-preload';
-import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import {
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom';
 import { getMessages, getStops } from './api/APIUtils';
 import idbService from './api/LocalDB';
 import styles from './App.module.css';
+import Header from './beta-components/Header';
+import Nav from './beta-components/Nav';
+import NotificationsView from './beta-components/NotificationsView';
+import SavedStopsView from './beta-components/SavedStopsView';
+import SettingsView from './beta-components/SettingsView';
 import Home from './components/Home';
+import { getBounds, getLocation } from './components/Map/utils';
 import { useScreenTracking, useUpdate } from './hooks';
 import { Message, Stop, Time } from './types';
 
@@ -101,6 +113,25 @@ const App = () => {
     }
   }, [currentStop]);
 
+  // User Location (BETA)
+  const [userLocation, setUserLocation] = useState<any>();
+  const getCurrentLocation = async () => {
+    navigator.geolocation.getCurrentPosition((pos) => {
+      setUserLocation({
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude,
+      });
+    });
+  };
+
+  // Show Hide Top Nav (BETA)
+  const [showHeader, setShowHeader] = useState(true);
+  const location = useLocation();
+  useEffect(() => {
+    setShowHeader(() => location.pathname === '/home');
+    console.log(location.pathname);
+  }, [location]);
+
   return (
     <>
       <ThemeProvider theme={theme}>
@@ -110,24 +141,27 @@ const App = () => {
           restarting={update.restarting}
           restart={update.restart}
         />
-        <Suspense fallback={<div>Loading...</div>}>
-          <Map
-            stopMarkersEnabled={true}
-            routeOverlayEnabled={true}
-            darkModeEnabled={darkMode}
-            currentStop={currentStop}
-            onMarkerSelect={onMarkerSelect}
-            logoContainer={logoContainer}
-          />
-        </Suspense>
-        <div className={styles.logoContainer} ref={logoContainer} />
-        <Card className={styles.mainCard} elevation={24}>
-          <Routes>
-            <Route path="/" element={<Navigate to="/home" />} />
-            <Route
-              path="/home"
-              element={
-                <Home
+        <Suspense fallback={<div>Loading...</div>}></Suspense>
+        <Nav showHeader={showHeader} getLocation={getCurrentLocation} />
+        <Header showHeader={showHeader} />
+
+        {/* <div className={styles.logoContainer} ref={logoContainer} /> */}
+        <Routes>
+          <Route path="/" element={<Navigate to="/home" />} />
+          <Route
+            path="/home"
+            element={
+              <>
+                <Map
+                  stopMarkersEnabled={true}
+                  routeOverlayEnabled={true}
+                  darkModeEnabled={darkMode}
+                  currentStop={currentStop}
+                  onMarkerSelect={onMarkerSelect}
+                  logoContainer={logoContainer}
+                  userLocation={userLocation}
+                />
+                {/* <Home
                   stops={stops}
                   setCurrentStop={setCurrentStop}
                   currentStop={currentStop}
@@ -136,27 +170,30 @@ const App = () => {
                   messages={messages}
                   onLoad={() => StopView.preload()}
                   checkForUpdates={update.checkForUpdates}
-                />
-              }
-            />
-            <Route
-              path="/stopview"
-              element={
-                currentStop || markerSelect ? (
-                  <Suspense fallback={<div>Loading...</div>}>
-                    <StopView
-                      stop={currentStop}
-                      unSelectStop={unSelectStop}
-                      darkMode={darkMode}
-                    />
-                  </Suspense>
-                ) : (
-                  <Navigate to="/home" />
-                )
-              }
-            />
-          </Routes>
-        </Card>
+                /> */}
+              </>
+            }
+          />
+          <Route path="/notifications" element={<NotificationsView />}></Route>
+          <Route path="/saved" element={<SavedStopsView />}></Route>
+          <Route path="/menu" element={<SettingsView />}></Route>
+          <Route
+            path="/stopview"
+            element={
+              currentStop || markerSelect ? (
+                <Suspense fallback={<div>Loading...</div>}>
+                  <StopView
+                    stop={currentStop}
+                    unSelectStop={unSelectStop}
+                    darkMode={darkMode}
+                  />
+                </Suspense>
+              ) : (
+                <Navigate to="/home" />
+              )
+            }
+          />
+        </Routes>
       </ThemeProvider>
     </>
   );

@@ -1,0 +1,38 @@
+.notificationsPage {
+  width: 100%;
+  padding-top: calc(env(safe-area-inset-top) + 10px);
+  padding-bottom: calc(env(safe-area-inset-bottom) + 10px);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+}
+
+.infoCard {
+  border-radius: 12px !important;
+  padding: 16px;
+  margin: 16px 16px 0 16px;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* .header > p {
+    font-family: GoogleSans;
+  } */
+
+p.bodyText {
+  font-size: 0.8em;
+  width: 100%;
+  font-family: 'Roboto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-smooth: antialiased;
+  text-rendering: optimizeLegibility;
+  text-shadow: rgba(0, 0, 0, 0.01) 0 0 1px;
+  color: gray;
+  /* font-family: GoogleSans; */
+}

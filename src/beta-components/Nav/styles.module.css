@@ -1,0 +1,90 @@
+.Nav {
+  position: absolute;
+  bottom: calc(env(safe-area-inset-bottom) + 5px);
+  left: 0;
+  padding: 12px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100vw;
+  z-index: 1000000000000000000;
+}
+
+.location {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(50, 50, 50);
+  color: white;
+  padding: 6px;
+  box-sizing: border-box;
+  border-radius: 40px;
+  width: 60px;
+  height: 45px;
+  flex-grow: 0;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.menuItems {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background-color: rgb(255, 255, 255);
+  border-radius: 40px;
+  width: 80%;
+  padding: 6px;
+  height: 60px;
+  box-sizing: border-box;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.icon {
+  width: 20px !important;
+  height: 20px !important;
+  color: rgb(183, 183, 183);
+}
+
+.iconActive {
+  transition: 0.2s;
+  color: white;
+}
+
+.selectedPill {
+  position: absolute;
+  left: 0;
+  transition: transform 0.3s;
+  background-color: rgb(133, 56, 234);
+  color: white;
+  z-index: 0;
+  padding: 6px;
+  box-sizing: border-box;
+  border-radius: 40px;
+  width: 20%;
+  height: 50px;
+  transition: 0.5s;
+}
+
+.animatedPill {
+  animation-duration: 0.3s;
+  animation-name: movement;
+  animation-direction: alternate;
+  animation-timing-function: ease-in-out;
+}
+
+@keyframes movement {
+  0% {
+    width: 20%;
+  }
+  50% {
+    border-radius: 49px;
+    margin-left: 5px;
+    width: 60px;
+    height: 40px;
+  }
+  100% {
+    width: 20%;
+  }
+}

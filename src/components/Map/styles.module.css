@@ -46,7 +46,7 @@
 } */
 
 .mapContainer {
-  height: 43%;
+  height: 100%;
 }
 
 @media screen and (min-width: 960px) {

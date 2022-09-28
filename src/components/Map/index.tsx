@@ -1,7 +1,7 @@
 import NearMeOutlined from '@mui/icons-material/NearMeOutlined';
 import Fab from '@mui/material/Fab';
 import { useTheme } from '@mui/material/styles';
-import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
+import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import { RefObject, useEffect, useState } from 'react';
 import { getRoutePath, getStops } from '../../api/APIUtils';
 import config from '../../config';
@@ -11,6 +11,7 @@ import StopMarkers from './components/StopMarkers';
 import { mapStylesDark, mapStylesLight } from './styles';
 import styles from './styles.module.css';
 import { getBounds, getLocation, moveLogo } from './utils';
+import locationMarkerIcon from '../../assets/locationmarkericon.png';
 
 const mapOptions: google.maps.MapOptions = {
   disableDefaultUI: true,
@@ -27,6 +28,7 @@ interface MapProps {
   onMarkerSelect?: (stop: Stop) => void;
   currentStop?: Stop;
   logoContainer: RefObject<HTMLDivElement>;
+  userLocation: any;
 }
 
 const Map = (props: MapProps) => {
@@ -37,21 +39,19 @@ const Map = (props: MapProps) => {
     onMarkerSelect,
     currentStop,
     logoContainer,
+    userLocation,
   } = props;
 
   const [map, setMap] = useState<google.maps.Map>();
   const [routeOverlay, setRouteOverlay] = useState<LatLng[]>();
   const [stops, setStops] = useState<Stop[]>();
 
-  const [thing, setThing] = useState<any>();
-
-  const getCurrentLocation = async () => {
-    const position = await getLocation();
-    setThing(position);
+  useEffect(() => {
+    console.log(userLocation, 'update');
     if (map) {
-      map?.fitBounds(getBounds(position), 20);
+      map?.fitBounds(getBounds(userLocation), 20);
     }
-  };
+  }, [userLocation]);
 
   useEffect(() => {
     const getData = async () => {
@@ -129,19 +129,19 @@ const Map = (props: MapProps) => {
             onMarkerSelect={onMarkerSelect}
           />
         </GoogleMap>
-        {/* {thing && (
+        {userLocation && (
           <Marker
-            position={map.getCenter()}
+            position={userLocation}
             options={{
               icon: {
                 url: locationMarkerIcon,
-                // scaledSize: new google.maps.Size(35, 50),
-                // origin: new google.maps.Point(0, 0),
-                // anchor: new google.maps.Point(17.5, 50),
+                scaledSize: new google.maps.Size(35, 50),
+                origin: new google.maps.Point(0, 0),
+                anchor: new google.maps.Point(17.5, 50),
               },
             }}
           />
-        )} */}
+        )}
         <div
           style={{
             position: 'absolute',
@@ -164,11 +164,11 @@ const Map = (props: MapProps) => {
           <div className={styles.statusBarBlur} />
         </div>
 
-        <Fab
+        {/* <Fab
           size="small"
           style={{
             position: 'absolute',
-            // bottom: '63.5%',
+            bottom: 'calc(env(safe-area-inset-bottom) + 10px)',
             right: '1em',
             backgroundColor: theme.palette.background.default,
             color: theme.palette.text.primary,
@@ -177,7 +177,7 @@ const Map = (props: MapProps) => {
           onClick={getCurrentLocation}
         >
           <NearMeOutlined />
-        </Fab>
+        </Fab> */}
       </>
     );
   };
