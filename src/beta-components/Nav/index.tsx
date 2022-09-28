@@ -19,7 +19,9 @@ const Nav = (props: NavProps) => {
   const { getLocation, showHeader } = props;
   const navigate = useNavigate();
   const location = useLocation();
-  const [selected, setSelected] = useState(location.pathname.split('/')[1]);
+  const [selected, setSelected] = useState(
+    location.pathname !== '/' ? location.pathname.split('/')[1] : 'home'
+  );
   const [translate, setTranslate] = useState(0);
   const [moving, setMovement] = useState(false);
 
