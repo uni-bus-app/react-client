@@ -28,11 +28,11 @@ const Nav = (props: NavProps) => {
   const handleClick = (e: any) => {
     if (e.target.id) {
       setSelected(e.target.id);
-      navigate(`/${e.target.id}`);
+      navigate(`/${e.target.id}`, { replace: true });
     }
     if (e.target.parentElement.id) {
       setSelected(e.target.parentElement.id);
-      navigate(`/${e.target.parentElement.id}`);
+      navigate(`/${e.target.parentElement.id}`, { replace: true });
     }
   };
 
@@ -51,7 +51,7 @@ const Nav = (props: NavProps) => {
           sx={{ height: '100%' }}
           onClick={() => {
             if (showHeader !== true) {
-              navigate('/home');
+              navigate('/home', { replace: true });
               setSelected('home');
             }
             setTimeout(() => {

@@ -19,7 +19,7 @@ const BottomSheet = (props: BottomSheetProps) => {
     </Drawer>
   ) : (
     <SwipeableDrawer
-      sx={{ zIndex: 100000000000000000000 }}
+      sx={{ zIndex: 10000000000000 }}
       anchor={'bottom'}
       open={open}
       onClose={() => setOpen(false)}

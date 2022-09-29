@@ -1,8 +1,14 @@
 import NearMeOutlined from '@mui/icons-material/NearMeOutlined';
 import Fab from '@mui/material/Fab';
 import { useTheme } from '@mui/material/styles';
-import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
-import { RefObject, useEffect, useState } from 'react';
+import {
+  GoogleMap,
+  Marker,
+  MarkerF,
+  OverlayView,
+  useJsApiLoader,
+} from '@react-google-maps/api';
+import { RefObject, useEffect, useMemo, useState } from 'react';
 import { getRoutePath, getStops } from '../../api/APIUtils';
 import config from '../../config';
 import { LatLng, Stop } from '../../types';
@@ -12,6 +18,8 @@ import { mapStylesDark, mapStylesLight } from './styles';
 import styles from './styles.module.css';
 import { getBounds, getLocation, moveLogo } from './utils';
 import locationMarkerIcon from '../../assets/locationmarkericon.png';
+import CustomMapMarker from '../../beta-components/MapMarker';
+import { buildings as customMapLocations } from '../../assets/data/buildingLocations';
 
 const mapOptions: google.maps.MapOptions = {
   disableDefaultUI: true,
@@ -45,6 +53,7 @@ const Map = (props: MapProps) => {
   const [map, setMap] = useState<google.maps.Map>();
   const [routeOverlay, setRouteOverlay] = useState<LatLng[]>();
   const [stops, setStops] = useState<Stop[]>();
+
 
   useEffect(() => {
     console.log(userLocation, 'update');
@@ -91,14 +100,19 @@ const Map = (props: MapProps) => {
   });
   const theme = useTheme();
   const renderMap = () => {
+    const webglOverlayView = new google.maps.WebGLOverlayView();
     const onLoad = (mapInstance: google.maps.Map) => {
-      setMap(mapInstance);
-      moveLogo(mapInstance, logoContainer);
+      // setMap(mapInstance);
+      webglOverlayView.setMap(mapInstance);
+      // moveLogo(mapInstance, logoContainer);
     };
 
     const onUnmount = () => {
       setMap(undefined);
     };
+
+
+
 
     return (
       <>
@@ -128,6 +142,11 @@ const Map = (props: MapProps) => {
             selectedStop={currentStop}
             onMarkerSelect={onMarkerSelect}
           />
+          {/* <CustomMapMarker
+            enabled={stopMarkersEnabled}
+            locations={customMapLocations}
+          /> */}
+        
         </GoogleMap>
         {userLocation && (
           <Marker

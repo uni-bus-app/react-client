@@ -155,7 +155,7 @@ const App = () => {
                 <Map
                   stopMarkersEnabled={true}
                   routeOverlayEnabled={true}
-                  darkModeEnabled={darkMode}
+                  darkModeEnabled={false /**darkMode */}
                   currentStop={currentStop}
                   onMarkerSelect={onMarkerSelect}
                   logoContainer={logoContainer}
