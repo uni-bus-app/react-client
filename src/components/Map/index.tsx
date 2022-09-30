@@ -35,8 +35,10 @@ interface MapProps {
   stopMarkersEnabled?: boolean;
   onMarkerSelect?: (stop: Stop) => void;
   currentStop?: Stop;
-  logoContainer: RefObject<HTMLDivElement>;
-  userLocation: any;
+  logoContainer?: RefObject<HTMLDivElement>;
+  userLocation?: any;
+  width: string;
+  height: string;
 }
 
 const Map = (props: MapProps) => {
@@ -48,12 +50,13 @@ const Map = (props: MapProps) => {
     currentStop,
     logoContainer,
     userLocation,
+    width,
+    height,
   } = props;
 
   const [map, setMap] = useState<google.maps.Map>();
   const [routeOverlay, setRouteOverlay] = useState<LatLng[]>();
   const [stops, setStops] = useState<Stop[]>();
-
 
   useEffect(() => {
     console.log(userLocation, 'update');
@@ -111,16 +114,16 @@ const Map = (props: MapProps) => {
       setMap(undefined);
     };
 
-
-
-
     return (
       <>
         <GoogleMap
           mapContainerStyle={{
-            width: '100vw',
-            // height: 'calc(40vh + env(safe-area-inset-top))',
+            width: width,
+            height: height,
             position: 'absolute',
+            top: '0',
+            left: '0',
+            borderRadius: '12px',
           }}
           mapContainerClassName={styles.mapContainer}
           options={{
@@ -146,7 +149,6 @@ const Map = (props: MapProps) => {
             enabled={stopMarkersEnabled}
             locations={customMapLocations}
           /> */}
-        
         </GoogleMap>
         {userLocation && (
           <Marker

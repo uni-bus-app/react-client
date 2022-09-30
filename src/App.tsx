@@ -22,6 +22,7 @@ import { getMessages, getStops } from './api/APIUtils';
 import idbService from './api/LocalDB';
 import styles from './App.module.css';
 import Header from './beta-components/Header';
+import HomepageView from './beta-components/HomepageView';
 import Nav from './beta-components/Nav';
 import NotificationsView from './beta-components/NotificationsView';
 import SavedStopsView from './beta-components/SavedStopsView';
@@ -125,11 +126,18 @@ const App = () => {
   };
 
   // Show Hide Top Nav (BETA)
-  const [showHeader, setShowHeader] = useState(true);
+  const [showHeader, setShowHeader] = useState(false);
   const location = useLocation();
   useEffect(() => {
-    setShowHeader(() => location.pathname === '/home');
+    setShowHeader(() => location.pathname === '/map');
     console.log(location.pathname);
+  }, [location]);
+
+  // Move pill on nav depending on page
+
+  const [pathName, setPathname] = useState('/home');
+  useEffect(() => {
+    setPathname(location.pathname);
   }, [location]);
 
   return (
@@ -142,14 +150,19 @@ const App = () => {
           restart={update.restart}
         />
         <Suspense fallback={<div>Loading...</div>}></Suspense>
-        <Nav showHeader={showHeader} getLocation={getCurrentLocation} />
+        <Nav
+          pathName={pathName}
+          showHeader={showHeader}
+          getLocation={getCurrentLocation}
+        />
         <Header showHeader={showHeader} />
 
         {/* <div className={styles.logoContainer} ref={logoContainer} /> */}
         <Routes>
           <Route path="/" element={<Navigate to="/home" />} />
+          <Route path="/home" element={<HomepageView />} />
           <Route
-            path="/home"
+            path="/map"
             element={
               <>
                 <Map
@@ -160,6 +173,8 @@ const App = () => {
                   onMarkerSelect={onMarkerSelect}
                   logoContainer={logoContainer}
                   userLocation={userLocation}
+                  width={'100vw'}
+                  height={'100vh'}
                 />
                 {/* <Home
                   stops={stops}
@@ -176,7 +191,7 @@ const App = () => {
           />
           <Route path="/notifications" element={<NotificationsView />}></Route>
           <Route path="/saved" element={<SavedStopsView />}></Route>
-          <Route path="/menu" element={<SettingsView />}></Route>
+          <Route path="/settings" element={<SettingsView />}></Route>
           <Route
             path="/stopview"
             element={
