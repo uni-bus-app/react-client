@@ -154,15 +154,22 @@ const Map = (props: MapProps) => {
     // Places
     const places = (map: any) => {
       var request = {
-        query: 'Museum of Contemporary Art Australia',
+        query: 'Anglesea Building Portsmouth',
         fields: ['name', 'geometry'],
       };
 
       var service = new google.maps.places.PlacesService(map);
 
       service.findPlaceFromQuery(request, function (results, status) {
-        if (status === google.maps.places.PlacesServiceStatus.OK) {
+        if (
+          status === google.maps.places.PlacesServiceStatus.OK &&
+          results !== null
+        ) {
           console.log(results);
+          const marker = new google.maps.Marker({
+            position: results[0]?.geometry?.location,
+          });
+          marker.setMap(map);
         }
       });
     };
