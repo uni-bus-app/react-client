@@ -3,6 +3,7 @@ import Fab from '@mui/material/Fab';
 import { useTheme } from '@mui/material/styles';
 import {
   GoogleMap,
+  LoadScriptProps,
   Marker,
   MarkerF,
   OverlayView,
@@ -39,6 +40,8 @@ interface MapProps {
   userLocation?: any;
   width: string;
   height: string;
+  stopDistanceData?: any;
+  setStopDistanceData?: any;
 }
 
 const Map = (props: MapProps) => {
@@ -52,6 +55,8 @@ const Map = (props: MapProps) => {
     userLocation,
     width,
     height,
+    stopDistanceData,
+    setStopDistanceData,
   } = props;
 
   const [map, setMap] = useState<google.maps.Map>();
@@ -97,18 +102,96 @@ const Map = (props: MapProps) => {
   }, [currentStop]);
   // map.panToBounds()
 
+  const myLocale = [{ lat: 50.8297216, lng: -1.097728 }];
+
+  const googleMapsLibraries: LoadScriptProps['libraries'] = ['places'];
+
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: config.mapsApiKey,
     mapIds: ['63b6f095713871bd'],
+    libraries: googleMapsLibraries,
   });
+
+  useEffect(() => {
+    console.log('LOADED');
+  }, [isLoaded]);
+
   const theme = useTheme();
   const renderMap = () => {
     const webglOverlayView = new google.maps.WebGLOverlayView();
     const onLoad = (mapInstance: google.maps.Map) => {
       // setMap(mapInstance);
       webglOverlayView.setMap(mapInstance);
+      places(mapInstance);
       // moveLogo(mapInstance, logoContainer);
     };
+
+    // Other closest stop work
+    const getLocationData = () => {
+      if (stopDistanceData !== null) {
+        return;
+      }
+      console.log(true);
+      var service = new google.maps.DistanceMatrixService();
+      stops !== undefined &&
+        service.getDistanceMatrix(
+          {
+            origins: myLocale,
+            destinations: stops.map((a) => a.location),
+            travelMode: google.maps.TravelMode.WALKING,
+          },
+          callback
+        );
+
+      function callback(response: any, status: any) {
+        console.log(response);
+        setStopDistanceData(response);
+      }
+    };
+    getLocationData();
+    console.log(stopDistanceData);
+
+    // Places
+    const places = (map: any) => {
+      var request = {
+        query: 'Museum of Contemporary Art Australia',
+        fields: ['name', 'geometry'],
+      };
+
+      var service = new google.maps.places.PlacesService(map);
+
+      service.findPlaceFromQuery(request, function (results, status) {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+          console.log(results);
+        }
+      });
+    };
+
+    // End places
+
+    // End other closest stop work
+
+    // // Closest stop work
+    // const findClosestStop = () => {
+    //   var distances = [];
+    //   for (let i = 0; i < markers.length; i++) {
+    //     var d = google.maps.geometry.spherical.computeDistanceBetween(
+    //       markers[i],
+    //       myLocale
+    //     );
+    //     distances[i] = {
+    //       distance: d,
+    //       lat: markers[i].lat,
+    //       lng: markers[i].lng,
+    //     };
+    //   }
+
+    //   const closestStop = distances.reduce(function (prev, curr) {
+    //     return prev.distance < curr.distance ? prev : curr;
+    //   });
+    //   console.log(closestStop);
+    // };
+    // // End closest stop work
 
     const onUnmount = () => {
       setMap(undefined);
@@ -189,13 +272,12 @@ const Map = (props: MapProps) => {
           size="small"
           style={{
             position: 'absolute',
-            bottom: 'calc(env(safe-area-inset-bottom) + 10px)',
             right: '1em',
             backgroundColor: theme.palette.background.default,
             color: theme.palette.text.primary,
           }}
           className={styles.locationButton}
-          onClick={getCurrentLocation}
+          onClick={getLocationData}
         >
           <NearMeOutlined />
         </Fab> */}

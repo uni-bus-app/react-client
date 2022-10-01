@@ -1,11 +1,13 @@
 import { Button } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { ReactComponent as Shop } from '../../assets/SVGs/shopping.svg';
 import { useTimetable } from '../../hooks';
 import BusAlert from '@mui/icons-material/BusAlert';
 import RouteSwitchView from '../RouteSwitchView';
 import Map from '../../components/Map';
+import dayjs from 'dayjs';
+
 import './styles.scss';
 
 const uniLibraryObject = {
@@ -41,7 +43,14 @@ const Favourites = (props: any) => {
 const HomepageView = () => {
   const [showRouteSelector, setRouteSelectorVisibility] = useState(false);
   const navigate = useNavigate();
-  let { times, loadMore } = useTimetable(uniLibraryObject);
+  let { times, loadMore } = useTimetable(uniLibraryObject, true);
+
+  let time: any;
+  useEffect(() => {
+    times !== undefined && (time = times[0]);
+  }, [times]);
+
+  console.log(true);
 
   return (
     <>
@@ -55,24 +64,32 @@ const HomepageView = () => {
         <div className="pageStructure">
           <div className="routeCard">
             <div className="routeCard-nextBusTimeLogo">Next Departures</div>
-            <div className="routeCard-nextTime">
-              <div className="routeCard-nextTime-startLocation">
-                University Library{' '}
-                <span style={{ fontSize: '0.7rem' }}>departing at</span>
-              </div>
-              <div className="routeCard-nextTime-leavingTime">
-                {times && times[0].time}
-              </div>
-            </div>
-            <div className="routeCard-nextTime">
-              <div className="routeCard-nextTime-startLocation">
-                University Library{' '}
-                <span style={{ fontSize: '0.7rem' }}>departing at</span>
-              </div>
-              <div className="routeCard-nextTime-leavingTime">
-                {times && times[1].time}
-              </div>
-            </div>
+            {time?.timeValue?.day() === dayjs().day() ? (
+              <>
+                <div className="routeCard-nextTime">
+                  <div className="routeCard-nextTime-startLocation">
+                    University Library{' '}
+                    <span style={{ fontSize: '0.7rem' }}>departing at</span>
+                  </div>
+                  <div className="routeCard-nextTime-leavingTime">
+                    {times && times[0].time}
+                  </div>
+                </div>
+                <div className="routeCard-nextTime">
+                  <div className="routeCard-nextTime-startLocation">
+                    University Library{' '}
+                    <span style={{ fontSize: '0.7rem' }}>departing at</span>
+                  </div>
+                  <div className="routeCard-nextTime-leavingTime">
+                    {times && times[1].time}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <span className="routeCard-overlay">
+                This service does not run on weekends
+              </span>
+            )}
           </div>
 
           <div style={{ width: '100%' }}>
@@ -111,11 +128,11 @@ const HomepageView = () => {
               Switch Route
             </Button>
           </div>
-          <div className="Favourites">
+          {/* <div className="Favourites">
             {dummyToDeleteArray.map((fav) => (
               <Favourites name={fav} />
             ))}
-          </div>
+          </div> */}
         </div>
       </div>
     </>

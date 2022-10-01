@@ -122,6 +122,7 @@ const App = () => {
         lat: pos.coords.latitude,
         lng: pos.coords.longitude,
       });
+      console.log(pos);
     });
   };
 
@@ -134,11 +135,13 @@ const App = () => {
   }, [location]);
 
   // Move pill on nav depending on page
-
   const [pathName, setPathname] = useState('/home');
   useEffect(() => {
     setPathname(location.pathname);
   }, [location]);
+
+  // Distance from user to stops location data
+  const [stopDistanceData, setStopDistanceData] = useState(null);
 
   return (
     <>
@@ -175,6 +178,8 @@ const App = () => {
                   userLocation={userLocation}
                   width={'100vw'}
                   height={'100vh'}
+                  stopDistanceData={stopDistanceData}
+                  setStopDistanceData={setStopDistanceData}
                 />
                 {/* <Home
                   stops={stops}
