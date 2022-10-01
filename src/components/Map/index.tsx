@@ -102,7 +102,7 @@ const Map = (props: MapProps) => {
   }, [currentStop]);
   // map.panToBounds()
 
-  const myLocale = [{ lat: 50.8297216, lng: -1.097728 }];
+  const myLocale = { lat: 50.8297216, lng: -1.097728 };
 
   const googleMapsLibraries: LoadScriptProps['libraries'] = ['places'];
 
@@ -127,16 +127,15 @@ const Map = (props: MapProps) => {
     };
 
     // Other closest stop work
-    const getLocationData = () => {
+    const getLocationData = (origin?: any) => {
       if (stopDistanceData !== null) {
         return;
       }
-      console.log(true);
       var service = new google.maps.DistanceMatrixService();
       stops !== undefined &&
         service.getDistanceMatrix(
           {
-            origins: myLocale,
+            origins: [myLocale, origin !== undefined && origin],
             destinations: stops.map((a) => a.location),
             travelMode: google.maps.TravelMode.WALKING,
           },
@@ -148,8 +147,6 @@ const Map = (props: MapProps) => {
         setStopDistanceData(response);
       }
     };
-    getLocationData();
-    console.log(stopDistanceData);
 
     // Places
     const places = (map: any) => {
@@ -169,7 +166,9 @@ const Map = (props: MapProps) => {
           const marker = new google.maps.Marker({
             position: results[0]?.geometry?.location,
           });
+          getLocationData(results[0]?.geometry?.location);
           marker.setMap(map);
+          console.log(stopDistanceData);
         }
       });
     };
