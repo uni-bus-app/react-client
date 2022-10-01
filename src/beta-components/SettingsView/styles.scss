@@ -1,0 +1,83 @@
+.page {
+  width: 100%;
+  padding: 0 12px 0 12px;
+  box-sizing: border-box;
+  padding-top: calc(env(safe-area-inset-top) + 10px);
+  padding-bottom: calc(env(safe-area-inset-bottom) + 80px);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+}
+
+.pageStructure {
+  overflow-x: auto;
+  text-align: center;
+  border-radius: 0 0 12px 12px;
+  padding: 15px 15px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  row-gap: 8px;
+}
+
+.pageStructure::-webkit-scrollbar {
+  display: none;
+}
+
+.recentsList {
+  margin-top: 80px;
+  width: 100%;
+  height: 100%;
+  color: black;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-left: 0;
+}
+
+.pageHeader {
+  color: black;
+  margin-left: 1px;
+  font-size: 1.2rem;
+}
+
+.title {
+  color: black;
+}
+
+.quote {
+  font-size: 0.8rem;
+  font-weight: lighter;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  line-height: 1.2;
+  color: black;
+  word-wrap: nowrap;
+  margin-bottom: 1.5rem;
+}
+
+.profile--image {
+  border-radius: 50%;
+  width: 140px;
+}
+
+.profession {
+  font-size: 0.8rem;
+  color: black;
+}
+
+.name {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: black;
+}
+
+.card {
+  width: 100% !important;
+  border-radius: 16px !important;
+  padding: 10px !important;
+  box-sizing: border-box !important;
+  background-color: white !important;
+}

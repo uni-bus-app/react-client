@@ -1,8 +1,15 @@
 import NearMeOutlined from '@mui/icons-material/NearMeOutlined';
 import Fab from '@mui/material/Fab';
 import { useTheme } from '@mui/material/styles';
-import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
-import { RefObject, useEffect, useState } from 'react';
+import {
+  GoogleMap,
+  LoadScriptProps,
+  Marker,
+  MarkerF,
+  OverlayView,
+  useJsApiLoader,
+} from '@react-google-maps/api';
+import { RefObject, useEffect, useMemo, useState } from 'react';
 import { getRoutePath, getStops } from '../../api/APIUtils';
 import config from '../../config';
 import { LatLng, Stop } from '../../types';
@@ -11,6 +18,9 @@ import StopMarkers from './components/StopMarkers';
 import { mapStylesDark, mapStylesLight } from './styles';
 import styles from './styles.module.css';
 import { getBounds, getLocation, moveLogo } from './utils';
+import locationMarkerIcon from '../../assets/locationmarkericon.png';
+import CustomMapMarker from '../../beta-components/MapMarker';
+import { buildings as customMapLocations } from '../../assets/data/buildingLocations';
 
 const mapOptions: google.maps.MapOptions = {
   disableDefaultUI: true,
@@ -26,7 +36,12 @@ interface MapProps {
   stopMarkersEnabled?: boolean;
   onMarkerSelect?: (stop: Stop) => void;
   currentStop?: Stop;
-  logoContainer: RefObject<HTMLDivElement>;
+  logoContainer?: RefObject<HTMLDivElement>;
+  userLocation?: any;
+  width: string;
+  height: string;
+  stopDistanceData?: any;
+  setStopDistanceData?: any;
 }
 
 const Map = (props: MapProps) => {
@@ -37,21 +52,23 @@ const Map = (props: MapProps) => {
     onMarkerSelect,
     currentStop,
     logoContainer,
+    userLocation,
+    width,
+    height,
+    stopDistanceData,
+    setStopDistanceData,
   } = props;
 
   const [map, setMap] = useState<google.maps.Map>();
   const [routeOverlay, setRouteOverlay] = useState<LatLng[]>();
   const [stops, setStops] = useState<Stop[]>();
 
-  const [thing, setThing] = useState<any>();
-
-  const getCurrentLocation = async () => {
-    const position = await getLocation();
-    setThing(position);
+  useEffect(() => {
+    console.log(userLocation, 'update');
     if (map) {
-      map?.fitBounds(getBounds(position), 20);
+      map?.fitBounds(getBounds(userLocation), 20);
     }
-  };
+  }, [userLocation]);
 
   useEffect(() => {
     const getData = async () => {
@@ -85,16 +102,102 @@ const Map = (props: MapProps) => {
   }, [currentStop]);
   // map.panToBounds()
 
+  const myLocale = { lat: 50.8297216, lng: -1.097728 };
+
+  const googleMapsLibraries: LoadScriptProps['libraries'] = ['places'];
+
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: config.mapsApiKey,
     mapIds: ['63b6f095713871bd'],
+    libraries: googleMapsLibraries,
   });
+
+  useEffect(() => {
+    console.log('LOADED');
+  }, [isLoaded]);
+
   const theme = useTheme();
   const renderMap = () => {
+    const webglOverlayView = new google.maps.WebGLOverlayView();
     const onLoad = (mapInstance: google.maps.Map) => {
-      setMap(mapInstance);
-      moveLogo(mapInstance, logoContainer);
+      // setMap(mapInstance);
+      webglOverlayView.setMap(mapInstance);
+      places(mapInstance);
+      // moveLogo(mapInstance, logoContainer);
     };
+
+    // Other closest stop work
+    const getLocationData = (origin?: any) => {
+      if (stopDistanceData !== null) {
+        return;
+      }
+      var service = new google.maps.DistanceMatrixService();
+      stops !== undefined &&
+        service.getDistanceMatrix(
+          {
+            origins: [myLocale, origin !== undefined && origin],
+            destinations: stops.map((a) => a.location),
+            travelMode: google.maps.TravelMode.WALKING,
+          },
+          callback
+        );
+
+      function callback(response: any, status: any) {
+        console.log(response);
+        setStopDistanceData(response);
+      }
+    };
+
+    // Places
+    const places = (map: any) => {
+      var request = {
+        query: 'Anglesea Building Portsmouth',
+        fields: ['name', 'geometry'],
+      };
+
+      var service = new google.maps.places.PlacesService(map);
+
+      service.findPlaceFromQuery(request, function (results, status) {
+        if (
+          status === google.maps.places.PlacesServiceStatus.OK &&
+          results !== null
+        ) {
+          console.log(results);
+          const marker = new google.maps.Marker({
+            position: results[0]?.geometry?.location,
+          });
+          getLocationData(results[0]?.geometry?.location);
+          marker.setMap(map);
+          console.log(stopDistanceData);
+        }
+      });
+    };
+
+    // End places
+
+    // End other closest stop work
+
+    // // Closest stop work
+    // const findClosestStop = () => {
+    //   var distances = [];
+    //   for (let i = 0; i < markers.length; i++) {
+    //     var d = google.maps.geometry.spherical.computeDistanceBetween(
+    //       markers[i],
+    //       myLocale
+    //     );
+    //     distances[i] = {
+    //       distance: d,
+    //       lat: markers[i].lat,
+    //       lng: markers[i].lng,
+    //     };
+    //   }
+
+    //   const closestStop = distances.reduce(function (prev, curr) {
+    //     return prev.distance < curr.distance ? prev : curr;
+    //   });
+    //   console.log(closestStop);
+    // };
+    // // End closest stop work
 
     const onUnmount = () => {
       setMap(undefined);
@@ -104,9 +207,12 @@ const Map = (props: MapProps) => {
       <>
         <GoogleMap
           mapContainerStyle={{
-            width: '100vw',
-            // height: 'calc(40vh + env(safe-area-inset-top))',
+            width: width,
+            height: height,
             position: 'absolute',
+            top: '0',
+            left: '0',
+            borderRadius: '12px',
           }}
           mapContainerClassName={styles.mapContainer}
           options={{
@@ -128,20 +234,24 @@ const Map = (props: MapProps) => {
             selectedStop={currentStop}
             onMarkerSelect={onMarkerSelect}
           />
+          {/* <CustomMapMarker
+            enabled={stopMarkersEnabled}
+            locations={customMapLocations}
+          /> */}
         </GoogleMap>
-        {/* {thing && (
+        {userLocation && (
           <Marker
-            position={map.getCenter()}
+            position={userLocation}
             options={{
               icon: {
                 url: locationMarkerIcon,
-                // scaledSize: new google.maps.Size(35, 50),
-                // origin: new google.maps.Point(0, 0),
-                // anchor: new google.maps.Point(17.5, 50),
+                scaledSize: new google.maps.Size(35, 50),
+                origin: new google.maps.Point(0, 0),
+                anchor: new google.maps.Point(17.5, 50),
               },
             }}
           />
-        )} */}
+        )}
         <div
           style={{
             position: 'absolute',
@@ -164,20 +274,19 @@ const Map = (props: MapProps) => {
           <div className={styles.statusBarBlur} />
         </div>
 
-        <Fab
+        {/* <Fab
           size="small"
           style={{
             position: 'absolute',
-            // bottom: '63.5%',
             right: '1em',
             backgroundColor: theme.palette.background.default,
             color: theme.palette.text.primary,
           }}
           className={styles.locationButton}
-          onClick={getCurrentLocation}
+          onClick={getLocationData}
         >
           <NearMeOutlined />
-        </Fab>
+        </Fab> */}
       </>
     );
   };
