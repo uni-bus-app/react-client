@@ -1,6 +1,6 @@
 {
-  "name": "unibus",
-  "version": "2.1.6",
+  "name": "@uni-bus-app/react-client",
+  "version": "2.1.7",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.9.0",

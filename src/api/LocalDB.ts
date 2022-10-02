@@ -8,8 +8,8 @@ class IdbService {
   async generateChecksums() {
     const stops = await this.getStops();
     const times = stops ? await this.getAllTimes(stops) : {};
-    const stopsVersion = 'hash(stops || {}, { respectType: false });';
-    const timesVersion = 'hash(times, { unorderedArrays: true });';
+    const stopsVersion = await get('stopsVersion');
+    const timesVersion = await get('timesVersion');
     return { stopsVersion, timesVersion };
   }
 
