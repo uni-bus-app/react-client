@@ -31,7 +31,7 @@ const Home = (props: HomeProps) => {
     <>
       <StopSelect stops={stops} value={currentStop} onChange={selectStop} />
       {/* <InfoCards messages={messages} /> */}
-      <MessageCard title={'Site Issues'} body={'We are aware of issues surrounding the app not loading for some, and are working to fix them. We apologize for the inconvenience.'} />
+      <MessageCard title={'iOS 16.4 Issues'} body={'Those of you on iOS 16.4+ may not be able to interact with the dropdown, please use the markers to open the desired stop.'} />
     </>
   );
 };
