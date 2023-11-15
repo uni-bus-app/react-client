@@ -3,7 +3,7 @@ import Bus from '../../assets/busStop.png';
 import Notifications from '../../assets/notifications.png';
 import styles from './styles.module.css';
 
-export const InitialStartup = () => {
+export const WelcomeView = () => {
   return (
     <div className={styles.box}>
       <div className={styles.pageContainer}>

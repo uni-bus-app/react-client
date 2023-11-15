@@ -1,6 +1,6 @@
-import BottomSheet from '../BottomSheet';
+import BottomSheet from '../../components/BottomSheet';
 import Satellite from '../../assets/satellite.png';
-import React, { useState } from 'react';
+import React from 'react';
 import styles from './styles.module.css';
 
 const HowToLocation = () => {

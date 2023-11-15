@@ -27,12 +27,8 @@ import NotificationsView from './beta-components/Views/NotificationsView';
 import SettingsView from './beta-components/Views/SettingsView';
 import { useScreenTracking, useUpdate } from './hooks';
 import { Message, Stop, Time } from './types';
-import Carousel, { CarouselItem } from './beta-components/Carousel/carousel';
-import {
-  FinalScreenView,
-  InitialStartup,
-  LocationPermissionView,
-} from './beta-components/SetupScreen';
+import SettingsProvider from './components/SettingsProvider';
+import InitialStartup from './beta-components/InitialStartup';
 
 const Map = lazy(() => import('./components/Map'));
 const StopView = lazy(() => import('./components/StopView'));
@@ -143,62 +139,66 @@ const App = () => {
     setPathname(location.pathname);
   }, [location]);
 
+  // Check localhost to see if the user has seen the splash screen (BETA)
+  const [splashScreen, setSplashScreen] = useState(true);
+  useEffect(() => {
+    if (localStorage.getItem('splashScreen') === 'true') {
+      setSplashScreen(false);
+    }
+  }, []);
+
   // Distance from user to stops location data
   const [stopDistanceData, setStopDistanceData] = useState(null);
 
   return (
-    <>
-      <Carousel>
-        <CarouselItem>
-          <InitialStartup />
-        </CarouselItem>
-        <CarouselItem>
-          <LocationPermissionView />
-        </CarouselItem>
+    <SettingsProvider>
+      {/*
+          We only want this to display once to the user 
+          If the user has already seen this, don't display 
+      */}
 
-        <CarouselItem>
-          <FinalScreenView />
-        </CarouselItem>
-      </Carousel>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <UpdateSnackBar
-          updateAvailable={update.updateAvailable}
-          restarting={update.restarting}
-          restart={update.restart}
-        />
-        <Suspense fallback={<div>Loading...</div>}></Suspense>
+      {splashScreen && <InitialStartup setSplashScreen={setSplashScreen} />}
 
-        <Header showHeader={showHeader} />
+      {!splashScreen && (
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <UpdateSnackBar
+            updateAvailable={update.updateAvailable}
+            restarting={update.restarting}
+            restart={update.restart}
+          />
+          <Suspense fallback={<div>Loading...</div>}></Suspense>
 
-        <Nav
-          pathName={pathName}
-          showHeader={showHeader}
-          getLocation={getCurrentLocation}
-        />
+          <Header showHeader={showHeader} />
 
-        {/* <div className={styles.logoContainer} ref={logoContainer} /> */}
-        <Routes>
-          <Route path="/" element={<Navigate to="/home" />} />
-          <Route path="/home" element={<HomepageView />} />
-          <Route
-            path="/map"
-            element={
-              <>
-                <Map
-                  stopMarkersEnabled={true}
-                  routeOverlayEnabled={true}
-                  darkModeEnabled={false /**darkMode */}
-                  currentStop={currentStop}
-                  onMarkerSelect={onMarkerSelect}
-                  logoContainer={logoContainer}
-                  userLocation={userLocation}
-                  width={'100vw'}
-                  height={'100vh'}
-                  stopDistanceData={stopDistanceData}
-                  setStopDistanceData={setStopDistanceData}
-                />
-                {/* <Home
+          <Nav
+            pathName={pathName}
+            showHeader={showHeader}
+            getLocation={getCurrentLocation}
+          />
+
+          {/* <div className={styles.logoContainer} ref={logoContainer} /> */}
+          <Routes>
+            <Route path="/" element={<Navigate to="/home" />} />
+            <Route path="/home" element={<HomepageView />} />
+            <Route
+              path="/map"
+              element={
+                <>
+                  <Map
+                    stopMarkersEnabled={true}
+                    routeOverlayEnabled={true}
+                    darkModeEnabled={false /**darkMode */}
+                    currentStop={currentStop}
+                    onMarkerSelect={onMarkerSelect}
+                    logoContainer={logoContainer}
+                    userLocation={userLocation}
+                    width={'100vw'}
+                    height={'100vh'}
+                    stopDistanceData={stopDistanceData}
+                    setStopDistanceData={setStopDistanceData}
+                  />
+                  {/* <Home
                   stops={stops}
                   setCurrentStop={setCurrentStop}
                   currentStop={currentStop}
@@ -208,31 +208,35 @@ const App = () => {
                   onLoad={() => StopView.preload()}
                   checkForUpdates={update.checkForUpdates}
                 /> */}
-              </>
-            }
-          />
-          <Route path="/notifications" element={<NotificationsView />}></Route>
-          {/* <Route path="/saved" element={<SavedStopsView />}></Route> */}
-          <Route path="/settings" element={<SettingsView />}></Route>
-          <Route
-            path="/stopview"
-            element={
-              currentStop || markerSelect ? (
-                <Suspense fallback={<div>Loading...</div>}>
-                  <StopView
-                    stop={currentStop}
-                    unSelectStop={unSelectStop}
-                    darkMode={darkMode}
-                  />
-                </Suspense>
-              ) : (
-                <Navigate to="/home" />
-              )
-            }
-          />
-        </Routes>
-      </ThemeProvider>
-    </>
+                </>
+              }
+            />
+            <Route
+              path="/notifications"
+              element={<NotificationsView />}
+            ></Route>
+            {/* <Route path="/saved" element={<SavedStopsView />}></Route> */}
+            <Route path="/settings" element={<SettingsView />}></Route>
+            <Route
+              path="/stopview"
+              element={
+                currentStop || markerSelect ? (
+                  <Suspense fallback={<div>Loading...</div>}>
+                    <StopView
+                      stop={currentStop}
+                      unSelectStop={unSelectStop}
+                      darkMode={darkMode}
+                    />
+                  </Suspense>
+                ) : (
+                  <Navigate to="/home" />
+                )
+              }
+            />
+          </Routes>
+        </ThemeProvider>
+      )}
+    </SettingsProvider>
   );
 };
 
