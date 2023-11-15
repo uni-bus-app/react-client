@@ -27,6 +27,12 @@ import NotificationsView from './beta-components/Views/NotificationsView';
 import SettingsView from './beta-components/Views/SettingsView';
 import { useScreenTracking, useUpdate } from './hooks';
 import { Message, Stop, Time } from './types';
+import Carousel, { CarouselItem } from './beta-components/Carousel/carousel';
+import {
+  FinalScreenView,
+  InitialStartup,
+  LocationPermissionView,
+} from './beta-components/SetupScreen';
 
 const Map = lazy(() => import('./components/Map'));
 const StopView = lazy(() => import('./components/StopView'));
@@ -142,6 +148,18 @@ const App = () => {
 
   return (
     <>
+      <Carousel>
+        <CarouselItem>
+          <InitialStartup />
+        </CarouselItem>
+        <CarouselItem>
+          <LocationPermissionView />
+        </CarouselItem>
+
+        <CarouselItem>
+          <FinalScreenView />
+        </CarouselItem>
+      </Carousel>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <UpdateSnackBar
