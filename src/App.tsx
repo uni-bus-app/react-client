@@ -1,7 +1,6 @@
 import { PaletteMode } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
 import CircularProgress from '@mui/material/CircularProgress';
 import { grey } from '@mui/material/colors';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -22,13 +21,10 @@ import { getMessages, getStops } from './api/APIUtils';
 import idbService from './api/LocalDB';
 import styles from './App.module.css';
 import Header from './beta-components/Header';
-import HomepageView from './beta-components/HomepageView';
+import HomepageView from './beta-components/Views/HomepageView';
 import Nav from './beta-components/Nav';
-import NotificationsView from './beta-components/NotificationsView';
-import SavedStopsView from './beta-components/SavedStopsView';
-import SettingsView from './beta-components/SettingsView';
-import Home from './components/Home';
-import { getBounds, getLocation } from './components/Map/utils';
+import NotificationsView from './beta-components/Views/NotificationsView';
+import SettingsView from './beta-components/Views/SettingsView';
 import { useScreenTracking, useUpdate } from './hooks';
 import { Message, Stop, Time } from './types';
 
@@ -114,7 +110,7 @@ const App = () => {
     }
   }, [currentStop]);
 
-  // User Location (BETA) beta
+  // User Location (BETA)
   const [userLocation, setUserLocation] = useState<any>();
   const getCurrentLocation = async () => {
     navigator.geolocation.getCurrentPosition((pos) => {
@@ -126,15 +122,16 @@ const App = () => {
     });
   };
 
+  // Fetch location on each state change (BETA)
+  const location = useLocation();
+
   // Show Hide Top Nav (BETA)
   const [showHeader, setShowHeader] = useState(false);
-  const location = useLocation();
   useEffect(() => {
     setShowHeader(() => location.pathname === '/map');
-    console.log(location.pathname);
   }, [location]);
 
-  // Move pill on nav depending on page
+  // Move pill on nav depending on page (BETA)
   const [pathName, setPathname] = useState('/home');
   useEffect(() => {
     setPathname(location.pathname);
@@ -153,12 +150,14 @@ const App = () => {
           restart={update.restart}
         />
         <Suspense fallback={<div>Loading...</div>}></Suspense>
+
+        <Header showHeader={showHeader} />
+
         <Nav
           pathName={pathName}
           showHeader={showHeader}
           getLocation={getCurrentLocation}
         />
-        <Header showHeader={showHeader} />
 
         {/* <div className={styles.logoContainer} ref={logoContainer} /> */}
         <Routes>
@@ -195,7 +194,7 @@ const App = () => {
             }
           />
           <Route path="/notifications" element={<NotificationsView />}></Route>
-          <Route path="/saved" element={<SavedStopsView />}></Route>
+          {/* <Route path="/saved" element={<SavedStopsView />}></Route> */}
           <Route path="/settings" element={<SettingsView />}></Route>
           <Route
             path="/stopview"

@@ -1,8 +1,6 @@
-import Reece from '../../assets/reece.jpg';
+import Reece from '../../../assets/reece.jpg';
 import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import Divider from '@mui/material/Divider';
-import Jools from '../../assets/jools.jpg';
+import Jools from '../../../assets/jools.jpg';
 import './styles.scss';
 import { Paper } from '@mui/material';
 
@@ -30,6 +28,15 @@ const SettingsView = () => {
         </Paper>
 
         <Paper className="card">
+          <p className="pageHeader">Why?</p>
+          <p className="quote">
+            This has been a long running (since 2019) passion project for us, it
+            was originally created as a way to help me get from home to my 9am
+            lectures, I never imagined it would take off in the way it has.
+          </p>
+        </Paper>
+
+        <Paper className="card">
           <p className="pageHeader">Our Mission</p>
           <p className="quote">
             Transforming travel for Portsmouth University, helping the students
@@ -40,20 +47,22 @@ const SettingsView = () => {
         <Paper className="card">
           <p className="pageHeader">About Us</p>
           <p className="quote">
-            Run by students for students, we are both aspiring computing
+            Run by (now) graduates for students, we are both aspiring computing
             department students set on making the web a better place.
           </p>
           <p className="name">Reece Birchmore</p>
-          <img src={Reece} className="profile--image"></img>
-          <p className="profession">Front End Developer</p>
+          <img src={Reece} className="profile--image" alt="Reece"></img>
+          <p className="profession">Front End Developer/ UI Designer</p>
           <p className="name">Jools Hattey</p>
-          <img src={Jools} className="profile--image"></img>
-          <p className="profession">Front End Developer</p>
+          <img src={Jools} className="profile--image" alt="Jools"></img>
+          <p className="profession">Full Stack Developer</p>
         </Paper>
 
         <Paper className="card">
           <p className="pageHeader">How To Join</p>
-          <p className="quote">Fancy looking to get your face put on here?</p>
+          <p className="quote">
+            Want to help us build and make this app even better?
+          </p>
           <Button
             variant="contained"
             onClick={() =>
