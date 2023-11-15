@@ -18,6 +18,7 @@ import styles from './App.module.css';
 import Home from './components/Home';
 import { useScreenTracking, useUpdate } from './hooks';
 import { Message, Stop, Time } from './types';
+import SplashScreen from './components/SplashScreen';
 
 const Map = lazy(() => import('./components/Map'));
 const StopView = lazy(() => import('./components/StopView'));
@@ -110,6 +111,7 @@ const App = () => {
           restarting={update.restarting}
           restart={update.restart}
         />
+        <SplashScreen />
         <Suspense fallback={<div>Loading...</div>}>
           <Map
             stopMarkersEnabled={true}
