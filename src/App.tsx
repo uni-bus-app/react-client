@@ -114,7 +114,7 @@ const App = () => {
     }
   }, [currentStop]);
 
-  // User Location (BETA)
+  // User Location (BETA) beta
   const [userLocation, setUserLocation] = useState<any>();
   const getCurrentLocation = async () => {
     navigator.geolocation.getCurrentPosition((pos) => {
