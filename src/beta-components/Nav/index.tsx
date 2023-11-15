@@ -16,10 +16,8 @@ interface NavProps {
   getLocation: () => void;
   showHeader: boolean;
 }
-
 const Nav = (props: NavProps) => {
   const { pathName, getLocation, showHeader } = props;
-  const location = useLocation();
 
   const [translate, setTranslate] = useState(0);
   const [moving, setMovement] = useState(false);
@@ -35,49 +33,53 @@ const Nav = (props: NavProps) => {
   };
 
   useEffect(() => {
-    console.log(pathName, 'Pathname');
-    pathName === '/home' && setTranslate(7);
-    pathName === '/saved' && setTranslate(102);
-    pathName === '/map' && setTranslate(199);
-    pathName === '/notifications' && setTranslate(296);
-    pathName === '/settings' && setTranslate(391);
+    pathName === '/home' && setTranslate(20);
+    pathName === '/map' && setTranslate(140);
+    pathName === '/notifications' && setTranslate(260);
+    pathName === '/settings' && setTranslate(380);
     setMovement(true);
   }, [pathName]);
 
   return (
     <div className={styles.Nav}>
-      {/* <div className={styles.location}>
+      <div className={styles.location}>
         <IconButton
           sx={{ height: '100%' }}
-          onClick={() => {
+          onClick={(e) => {
             if (showHeader !== true) {
               navigate('/home', { replace: true });
-              setSelected('home');
+              handleClick(e);
             }
             setTimeout(() => {
               getLocation();
             }, 700);
           }}
+          id={'map'}
         >
           <Locate
             className={styles.icon}
             style={{ color: 'rgb(183, 183, 183)' }}
           />
         </IconButton>
-      </div> */}
+      </div>
 
       <div className={styles.menuItems}>
         <div
           className={classNames(
             styles.selectedPill,
-            moving == true && styles.animatedPill
+            moving === true && styles.animatedPill
           )}
           style={{
             transform: `translateX(${translate}%)`,
           }}
           onAnimationEnd={() => setMovement(false)}
         />
-        <IconButton sx={{ height: '100%' }} onClick={(e) => handleClick(e)}>
+
+        {/**
+         * Sites navigation
+         *
+         */}
+        <IconButton onClick={(e) => handleClick(e)}>
           <Home
             className={classNames(
               styles.icon,
@@ -88,15 +90,6 @@ const Nav = (props: NavProps) => {
         </IconButton>
 
         <IconButton sx={{ height: '100%' }} onClick={(e) => handleClick(e)}>
-          <Saved
-            id={'saved'}
-            className={classNames(
-              styles.icon,
-              pathName === '/saved' && styles.iconActive
-            )}
-          />
-        </IconButton>
-        <IconButton sx={{ height: '100%' }} onClick={(e) => handleClick(e)}>
           <Map
             className={classNames(
               styles.icon,
@@ -105,6 +98,7 @@ const Nav = (props: NavProps) => {
             id={'map'}
           />
         </IconButton>
+
         <IconButton sx={{ height: '100%' }} onClick={(e) => handleClick(e)}>
           <Notification
             className={classNames(

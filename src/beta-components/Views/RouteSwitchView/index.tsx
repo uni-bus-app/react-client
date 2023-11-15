@@ -1,9 +1,8 @@
 import { Button } from '@mui/material';
 import classNames from 'classnames';
 import { useState } from 'react';
-import { ReactComponent as Close } from '../../assets/SVGs/close.svg';
-import Paper from '@mui/material/Paper';
-import BusIcon from '../../assets/bus-icon.png';
+import { ReactComponent as Close } from '../../../assets/SVGs/close.svg';
+import BusIcon from '../../../assets/bus-icon.png';
 import './styles.scss';
 
 const RouteSwitchView = (props: any) => {
@@ -22,7 +21,7 @@ const RouteSwitchView = (props: any) => {
     <div className="RouteSwitchViewPage">
       <div className="pageStructure">
         <div className="header">
-          <Close className="icon" onClick={() => console.log(true)} />
+          <Close className="icon" onClick={() => handleConfirm()} />
         </div>
         <div className="Title">
           <div className="Title-header">Select Your Route</div>
@@ -51,6 +50,7 @@ const RouteSwitchView = (props: any) => {
                     selectedRoute !== 'u1' && 'inactive',
                     selectedRoute !== 'u1' && 'inactive-iconBackground'
                   )}
+                  alt="Bus Icon"
                   onClick={() => handleSwitchRoutes('u1')}
                 />
               </div>
@@ -71,6 +71,7 @@ const RouteSwitchView = (props: any) => {
                     selectedRoute !== 'u2' && 'inactive',
                     selectedRoute !== 'u2' && 'inactive-iconBackground'
                   )}
+                  alt="Bus Icon"
                   onClick={() => handleSwitchRoutes('u2')}
                 />
               </div>

@@ -1,11 +1,10 @@
 import { Button } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { ReactComponent as Shop } from '../../assets/SVGs/shopping.svg';
-import { useTimetable } from '../../hooks';
+import { useTimetable } from '../../../hooks';
 import BusAlert from '@mui/icons-material/BusAlert';
 import RouteSwitchView from '../RouteSwitchView';
-import Map from '../../components/Map';
+import Map from '../../../components/Map';
 import dayjs from 'dayjs';
 
 import './styles.scss';
@@ -20,26 +19,6 @@ const uniLibraryObject = {
   },
 };
 
-const dummyToDeleteArray = [
-  'Lidl',
-  'Crown Place',
-  'Tesco',
-  'Lidl',
-  'Crown Place',
-  'Tesco',
-];
-
-const Favourites = (props: any) => {
-  return (
-    <div className="Favourites-item">
-      <div className="Favourites-item-icon">
-        <Shop className="icon" />
-      </div>
-      <div className="Favourites-item-destination">{props.name}</div>
-    </div>
-  );
-};
-
 const HomepageView = () => {
   const [showRouteSelector, setRouteSelectorVisibility] = useState(false);
   const navigate = useNavigate();
@@ -48,6 +27,10 @@ const HomepageView = () => {
   let time: any;
   useEffect(() => {
     times !== undefined && (time = times[0]);
+    console.log('-----------------------------');
+    times !== undefined && console.log(times[0]?.timeValue?.day());
+    console.log(dayjs().day());
+    console.log(time?.timeValue?.day() === dayjs().day());
   }, [times]);
 
   console.log(true);
@@ -64,7 +47,7 @@ const HomepageView = () => {
         <div className="pageStructure">
           <div className="routeCard">
             <div className="routeCard-nextBusTimeLogo">Next Departures</div>
-            {time?.timeValue?.day() === dayjs().day() ? (
+            {time?.timeValue?.day() !== dayjs().day() ? (
               <>
                 <div className="routeCard-nextTime">
                   <div className="routeCard-nextTime-startLocation">
