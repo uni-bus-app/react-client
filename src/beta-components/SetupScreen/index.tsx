@@ -8,7 +8,7 @@ export const InitialStartup = () => {
     <div className={styles.box}>
       <div className={styles.pageContainer}>
         <div className={styles.imageTextContainer}>
-          <img src={Bus} />
+          <img src={Bus} alt="Bus" />
 
           <div className={styles.pageContainerTextContainer}>
             <p className={styles.pageContainerTitle}>Travel, simplified.</p>
@@ -33,7 +33,7 @@ export const LocationPermissionView = () => {
     <div className={styles.box}>
       <div className={styles.pageContainer}>
         <div className={styles.imageTextContainer}>
-          <img src={Satellite} />
+          <img src={Satellite} alt="Location" />
 
           <div className={styles.pageContainerTextContainer}>
             <p className={styles.pageContainerTitle}>Location Data</p>
@@ -55,7 +55,7 @@ export const NotificationPermissionView = () => {
     <div className={styles.box}>
       <div className={styles.pageContainer}>
         <div className={styles.imageTextContainer}>
-          <img src={Notifications} />
+          <img src={Notifications} alt="Notifications" />
 
           <div className={styles.pageContainerTextContainer}>
             <p className={styles.pageContainerTitle}>Notifications</p>
@@ -77,7 +77,7 @@ export const FinalScreenView = () => {
     <div className={styles.box}>
       <div className={styles.pageContainer}>
         <div className={styles.imageTextContainer}>
-          <img src={Notifications} />
+          <img src={Notifications} alt="notifications" />
 
           <div className={styles.pageContainerTextContainer}>
             <p className={styles.pageContainerTitle}>You're all set!</p>

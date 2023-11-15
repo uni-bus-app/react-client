@@ -1,7 +1,7 @@
 import { Button } from '@mui/material';
-import React, { cloneElement, useEffect, useState } from 'react';
-import { useSettings } from '../SettingsProvider';
-import { SettingsItemsNames } from '../SettingsProvider/types';
+import React, { cloneElement, useState } from 'react';
+import { useSettings } from '../../components/SettingsProvider';
+import { SettingsItemsNames } from '../../components/SettingsProvider/types';
 import './styles.css';
 
 export const CarouselItem = ({ children, width }: any) => {
