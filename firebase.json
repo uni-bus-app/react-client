@@ -6,6 +6,13 @@
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "rewrites": [
         {
+          "source": "/api/**",
+          "run": {
+            "serviceId": "unibus-api-test",
+            "region": "europe-west2"
+          }
+        },
+        {
           "source": "!(png)",
           "destination": "/index.html"
         }
@@ -27,6 +34,13 @@
       "public": "build",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "rewrites": [
+        {
+          "source": "/api/**",
+          "run": {
+            "serviceId": "unibus-api",
+            "region": "europe-west2"
+          }
+        },
         {
           "source": "!(png)",
           "destination": "/index.html"
