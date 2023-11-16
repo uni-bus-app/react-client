@@ -1,0 +1,25 @@
+.WhatsNew {
+  &-card {
+    width: 100% !important;
+    border-radius: 16px !important;
+    padding: 10px !important;
+    box-sizing: border-box !important;
+  }
+
+  &-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+  }
+
+  &-body {
+    font-size: 0.8rem;
+    font-weight: lighter;
+    text-align: left;
+  }
+  &-list {
+    text-align: left;
+    font-size: 0.8rem;
+    font-weight: lighter;
+    padding-left: 29px;
+  }
+}

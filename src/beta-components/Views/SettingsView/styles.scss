@@ -6,7 +6,6 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  background-color: whitesmoke;
 }
 
 .pageStructure {
@@ -18,6 +17,7 @@
   flex-direction: column;
   align-items: center;
   row-gap: 8px;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 80px);
 }
 
 .pageStructure::-webkit-scrollbar {
@@ -36,14 +36,9 @@
 }
 
 .pageHeader {
-  color: black;
   margin-left: 1px;
   font-size: 1.2rem;
   font-weight: 800;
-}
-
-.title {
-  color: black;
 }
 
 .quote {
@@ -53,9 +48,12 @@
   padding: 0;
   width: 100%;
   line-height: 1.2;
-  color: black;
   word-wrap: nowrap;
   margin-bottom: 1.5rem;
+}
+
+.italics {
+  font-style: italic;
 }
 
 .profile--image {
@@ -65,13 +63,11 @@
 
 .profession {
   font-size: 0.8rem;
-  color: black;
 }
 
 .name {
   font-size: 0.8rem;
   font-weight: 800;
-  color: black;
 }
 
 .card {
@@ -79,5 +75,20 @@
   border-radius: 16px !important;
   padding: 10px !important;
   box-sizing: border-box !important;
-  background-color: white !important;
+}
+
+.Settings {
+  &-helpText {
+    font-size: 0.8rem;
+    font-weight: 800;
+    margin-bottom: 0;
+    text-align: left;
+    margin-bottom: 0.5rem;
+  }
+  &-settingInfo {
+    font-size: 0.7rem;
+    margin-bottom: 0;
+    text-align: left;
+    margin-bottom: 0.5rem;
+  }
 }

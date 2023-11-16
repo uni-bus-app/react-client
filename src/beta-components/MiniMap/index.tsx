@@ -1,6 +1,7 @@
 import { BusAlert } from '@mui/icons-material';
 import { useNavigate } from 'react-router';
 import Map from '../../components/Map';
+import './styles.scss';
 
 const MiniMap = () => {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ const MiniMap = () => {
           <div className="mapCard-actions-busesAvailable">
             <BusAlert />2 Buses available
           </div>
-          <button className="white button" onClick={() => console.log(true)}>
+          <button className="button" onClick={() => console.log(true)}>
             Tap to Track
           </button>
         </div>

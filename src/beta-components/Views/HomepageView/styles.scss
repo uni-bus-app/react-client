@@ -1,19 +1,15 @@
 .HomePageView {
   position: relative;
-  width: 100;
+  width: 100%;
   padding: 0 12px 0 12px;
   box-sizing: border-box;
   padding-top: calc(env(safe-area-inset-top) + 10px);
-  padding-bottom: calc(env(safe-area-inset-bottom) + 80px);
-  height: 100%;
+  margin-bottom: calc(env(safe-area-inset-bottom) + 100px);
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: whitesmoke;
-  overflow: hidden;
 
   .pageStructure {
-    overflow-y: scroll;
-    overflow-x: hidden;
     text-align: center;
     border-radius: 0 0 12px 12px;
     padding: 15px 15px 20px;
@@ -21,11 +17,9 @@
     flex-direction: column;
     align-items: center;
     row-gap: 8px;
-    height: 900px;
-  }
-
-  p {
-    color: black;
+    overflow: scroll;
+    height: 100vh;
+    padding-bottom: calc(env(safe-area-inset-bottom) + 180px);
   }
 
   .button {
@@ -47,68 +41,5 @@
   .white {
     background-color: white;
     color: rgb(62, 57, 97);
-  }
-
-  .mapCard {
-    width: 100%;
-    position: relative;
-    border-radius: 12px;
-    height: 40vh;
-    margin-bottom: 20px;
-
-    &-cover {
-      background-color: black;
-      opacity: 0.3;
-      position: absolute;
-      top: 0;
-      height: 100%;
-      width: 100%;
-      z-index: 100000;
-      left: 0;
-      border-radius: 12px;
-    }
-
-    &-actions {
-      display: flex;
-      flex-direction: row;
-      position: absolute;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px;
-      box-sizing: border-box;
-      bottom: 20px;
-      left: 0;
-      width: 100%;
-      height: 40px;
-      z-index: 1000000;
-
-      &-busesAvailable {
-        display: flex;
-        flex-direction: row;
-        font-weight: 600;
-        align-items: center;
-        font-size: 0.8rem;
-        color: rgb(48, 47, 58);
-        gap: 6px;
-      }
-    }
-
-    &-routeNumberOverlay {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      background-color: rgba(70, 70, 70, 0.7);
-      border-radius: 6px;
-      color: white;
-      padding: 6px;
-      box-sizing: border-box;
-      font-weight: 400;
-      font-size: 0.8rem;
-      z-index: 1000000;
-    }
-
-    .button {
-      width: 40%;
-    }
   }
 }

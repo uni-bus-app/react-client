@@ -1,4 +1,4 @@
-import { AlertTitle, Collapse, IconButton, PaletteMode } from '@mui/material';
+import { PaletteMode } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -10,25 +10,18 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { getAnalytics, logEvent } from 'firebase/analytics';
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import lazy from 'react-lazy-with-preload';
-import {
-  Navigate,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-} from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import styles from './App.module.css';
-import Header from './beta-components/Header';
-import Alert from '@mui/material/Alert';
 import HomepageView from './beta-components/Views/HomepageView';
 import Nav from './beta-components/Nav';
 import NotificationsView from './beta-components/Views/NotificationsView';
 import SettingsView from './beta-components/Views/SettingsView';
 import { useScreenTracking, useUpdate } from './hooks';
-import { Message, Stop } from './types';
+import { Stop } from './types';
 import SettingsProvider from './components/SettingsProvider';
 import InitialStartup from './beta-components/InitialStartup';
-import CloseIcon from '@mui/icons-material/Close';
+import LowDataModeView from './beta-components/Views/LowDataModeView';
+import AlertComponent from './beta-components/Alert';
 
 const Map = lazy(() => import('./components/Map'));
 const NextTimesSheet = lazy(() => import('./components/NextTimesSheet'));
@@ -56,12 +49,25 @@ const UpdateSnackBar = ({ updateAvailable, restarting, restart }: any) => {
 const App = () => {
   useScreenTracking();
   const update = useUpdate();
-  const [stops, setStops] = useState([]);
   const [currentStop, setCurrentStop] = useState<Stop>();
-  const [messages, setMessages] = useState<Message[]>([]);
 
-  const logoContainer = useRef() as any;
+  const [timesSheetOpen, setTimesSheetOpen] = useState<boolean>(false); //BETA - Show times sheet
+  const [pathName, setPathname] = useState(''); // BETA - Track page location
+  const [splashScreen, setSplashScreen] = useState(true); // BETA - Show splash screen
+  const [showAlert, setShowAlert] = useState(false); // BETA - Show alert
+  const [userLocation, setUserLocation] = useState<any>(); // BETA - Users location
+  const [userSettings, setUserSettings] = useState<any>({
+    darkMode: false,
+    openingPage: '/map',
+    lowData: false,
+    location: false,
+  }); // BETA - Users settings
+
   const darkMode = useMediaQuery('(prefers-color-scheme: dark)');
+  const logoContainer = useRef() as any;
+
+  const location = useLocation(); // Fetch page location on each page change (BETA)
+
   const getDesignTokens = (mode: PaletteMode) => ({
     palette: {
       mode,
@@ -86,12 +92,7 @@ const App = () => {
     setCurrentStop(stop);
   };
 
-  // useEffect(() => {
-  //   getStops().then(setStops);
-  //   getMessages().then(setMessages);
-  //   idbService.sync();
-  // }, []);
-
+  // Log StopView event for analytics
   useEffect(() => {
     if (currentStop) {
       window.setTimeout(() => {
@@ -103,8 +104,7 @@ const App = () => {
     }
   }, [currentStop]);
 
-  // User Location (BETA)
-  const [userLocation, setUserLocation] = useState<any>();
+  // Fetch Users Location (BETA)
   const getCurrentLocation = async () => {
     navigator.geolocation.getCurrentPosition((pos) => {
       setUserLocation({
@@ -114,125 +114,101 @@ const App = () => {
     });
   };
 
-  // Fetch page location on each page change (BETA)
-  const location = useLocation();
-
-  // Show Hide Top Nav (BETA)
-  // TODO: Remove
-  // const [showHeader, setShowHeader] = useState(false);
-  // useEffect(() => {
-  //   setShowHeader(() => location.pathname === '/map');
-  // }, [location]);
-
-  // Move pill on nav depending on page (BETA)
-  const [pathName, setPathname] = useState('/home');
+  // Update pathName on page change (BETA)
   useEffect(() => {
-    setPathname(location.pathname);
-  }, [location]);
+    console.log(pathName);
+    if (pathName === '') {
+      setPathname(userSettings.openingPage);
+    } else {
+      setPathname(location.pathname);
+    }
+  }, [location, pathName, userSettings.openingPage]);
 
   // Check localhost to see if the user has seen the splash screen (BETA)
-  const [splashScreen, setSplashScreen] = useState(true);
   useEffect(() => {
     if (localStorage.getItem('splashScreen') === 'true') {
       setSplashScreen(false);
     }
   }, []);
 
-  // Distance from user to stops location data
-  const [stopDistanceData, setStopDistanceData] = useState(null);
-
-  const [timesSheetOpen, setTimesSheetOpen] = useState<boolean>(false);
-
   // Show alert for downloaded content (BETA)
-  const [showAlert, setShowAlert] = useState(false);
+  // TODO: Delete this, it should be dynamically generated
   useEffect(() => {
     const showAlertAfterDelay = setTimeout(() => {
       setShowAlert(true);
-      const hideAlert = setTimeout(() => {
-        setShowAlert(false);
-      }, 5000); // Dismiss the alert after 5 seconds
-      return () => clearTimeout(hideAlert);
-    }, 1000); // Show the alert after 5 seconds
+    }, 1000);
     return () => clearTimeout(showAlertAfterDelay);
   }, []);
-  const animationDuration = 0.25; // seconds
-  const transitionStyles = {
-    entering: { opacity: 0, transform: 'translateY(-100%)' },
-    entered: { opacity: 1, transform: 'translateY(0)' },
-    exiting: { opacity: 0, transform: 'translateY(-100%)' },
-    exited: { opacity: 0, transform: 'translateY(-100%)' },
-  };
 
   return (
     <SettingsProvider>
-      {/*
-          We only want this to display once to the user 
-          If the user has already seen this, don't display 
-      */}
-      {splashScreen && <InitialStartup setSplashScreen={setSplashScreen} />}
-
-      {/* If the user has already seen the splashscreen, just load the app */}
-      {!splashScreen && (
-        <ThemeProvider theme={theme}>
-          {/* Alert message */}
-          <div
-            style={{
-              position: 'fixed',
-              display: 'flex',
-              justifyContent: 'center',
-              width: '100%',
-              top: '6px',
-              zIndex: 9999,
-              transition: `opacity ${animationDuration}s, transform ${animationDuration}s`,
-              ...transitionStyles[showAlert ? 'entered' : 'exited'],
-            }}
-          >
-            <Alert sx={{ borderRadius: '8px' }} severity="success">
-              Offline data downloaded
-            </Alert>
-          </div>
-          <CssBaseline />
-          <UpdateSnackBar
-            updateAvailable={update.updateAvailable}
-            restarting={update.restarting}
-            restart={update.restart}
-          />
-          <Suspense fallback={<div>Loading...</div>}></Suspense>
-          {/* <Header showHeader={showHeader} /> */}
-          {/* <div className={styles.logoContainer} ref={logoContainer} /> */}
-          <Routes>
-            <Route path="/" element={<Navigate to="/home" />} />
-            <Route path="/home" element={<HomepageView />} />
-            <Route path="/notifications" element={<NotificationsView />} />
-            <Route path="/settings" element={<SettingsView />} />
-            <Route
-              path="/map"
-              element={
-                <>
-                  <Map
-                    stopMarkersEnabled={true}
-                    routeOverlayEnabled={true}
-                    darkModeEnabled={false /**darkMode */}
-                    currentStop={currentStop}
-                    onMarkerSelect={onMarkerSelect}
-                    logoContainer={logoContainer}
-                    userLocation={userLocation}
-                    width={'100vw'}
-                    height={'100vh'}
-                    stopDistanceData={stopDistanceData}
-                    setStopDistanceData={setStopDistanceData}
-                  />
-                </>
-              }
-            />
-          </Routes>
-          <NextTimesSheet
-            open={timesSheetOpen}
-            setOpen={setTimesSheetOpen}
-            stop={currentStop}
-          />
-          <Nav pathName={pathName} getLocation={getCurrentLocation} />
-        </ThemeProvider>
+      {/* If the user has low data mode on, show them this */}
+      {userSettings.lowData ? (
+        <LowDataModeView />
+      ) : (
+        <>
+          {splashScreen ? (
+            <InitialStartup setSplashScreen={setSplashScreen} />
+          ) : (
+            <ThemeProvider theme={theme}>
+              <AlertComponent
+                message="Offline content downloaded"
+                alertSeverity="Success"
+                showAlert={showAlert}
+                setShowAlert={setShowAlert}
+              />
+              <CssBaseline />
+              <UpdateSnackBar
+                updateAvailable={update.updateAvailable}
+                restarting={update.restarting}
+                restart={update.restart}
+              />
+              <Suspense fallback={<div>Loading...</div>}></Suspense>
+              <div className={styles.logoContainer} ref={logoContainer} />
+              <Routes>
+                <Route
+                  path="/"
+                  element={<Navigate to={userSettings.openingPage} />}
+                />
+                <Route path="/home" element={<HomepageView />} />
+                <Route path="/notifications" element={<NotificationsView />} />
+                <Route
+                  path="/settings"
+                  element={
+                    <SettingsView
+                      userSettings={userSettings}
+                      setUserSettings={setUserSettings}
+                    />
+                  }
+                />
+                <Route
+                  path="/map"
+                  element={
+                    <>
+                      <Map
+                        stopMarkersEnabled={true}
+                        routeOverlayEnabled={true}
+                        darkModeEnabled={false /**darkMode */}
+                        currentStop={currentStop}
+                        onMarkerSelect={onMarkerSelect}
+                        logoContainer={logoContainer}
+                        userLocation={userLocation}
+                        width={'100vw'}
+                        height={'100vh'}
+                      />
+                    </>
+                  }
+                />
+              </Routes>
+              <NextTimesSheet
+                open={timesSheetOpen}
+                setOpen={setTimesSheetOpen}
+                stop={currentStop}
+              />
+              <Nav pathName={pathName} getLocation={getCurrentLocation} />
+            </ThemeProvider>
+          )}
+        </>
       )}
     </SettingsProvider>
   );

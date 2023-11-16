@@ -4,6 +4,7 @@ import RouteSwitchView from '../RouteSwitchView';
 import NextDeparturesCard from '../../NextDeparturesCard';
 import MiniMap from '../../MiniMap';
 import './styles.scss';
+import WhatsNewCard from '../../WhatsNewCard';
 
 const HomepageView = () => {
   const [showRouteSelector, setRouteSelectorVisibility] = useState(false);
@@ -17,10 +18,11 @@ const HomepageView = () => {
         />
       )}
       <div className="HomePageView">
-        <div className="pageStructure">
+        <main className="pageStructure">
           <NextDeparturesCard />
           <MiniMap />
-          <Button
+          <WhatsNewCard />
+          {/* <Button
             variant="contained"
             className="indigo button"
             onClick={() => {
@@ -29,8 +31,8 @@ const HomepageView = () => {
             }}
           >
             Switch Route
-          </Button>
-        </div>
+          </Button> */}
+        </main>
       </div>
     </>
   );
