@@ -87,7 +87,7 @@ const Map = (props: MapProps) => {
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: config.mapsApiKey,
-    mapIds: ['63b6f095713871bd'],
+    mapIds: ['f9e34791c612c2be', '8d48c9186a06dab'],
   });
   const theme = useTheme();
   const renderMap = () => {
@@ -111,7 +111,7 @@ const Map = (props: MapProps) => {
           mapContainerClassName={styles.mapContainer}
           options={{
             ...mapOptions,
-            styles: darkModeEnabled ? mapStylesDark : mapStylesLight,
+            mapId: darkModeEnabled ? '8d48c9186a06dab' : 'f9e34791c612c2be',
           }}
           onLoad={onLoad}
           onUnmount={onUnmount}
