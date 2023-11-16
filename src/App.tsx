@@ -116,7 +116,6 @@ const App = () => {
 
   // Update pathName on page change (BETA)
   useEffect(() => {
-    console.log(pathName);
     if (pathName === '') {
       setPathname(userSettings.openingPage);
     } else {
@@ -164,7 +163,6 @@ const App = () => {
                 restart={update.restart}
               />
               <Suspense fallback={<div>Loading...</div>}></Suspense>
-              <div className={styles.logoContainer} ref={logoContainer} />
               <Routes>
                 <Route
                   path="/"

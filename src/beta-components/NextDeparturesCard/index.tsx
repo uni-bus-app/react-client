@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useTimetable } from '../../hooks';
 import { Time } from '../../types';
 import './styles.scss';
+import { StarBorder } from '@mui/icons-material';
 
 const uniLibraryObject = {
   name: 'Camrbidge Road',
@@ -23,7 +24,10 @@ const NextDeparturesCard = () => {
 
   return (
     <div className="routeCard">
-      <div className="routeCard-nextBusTimeLogo">Next Departures</div>
+      <div className="routeCard-nextBusTimeLogo">
+        <StarBorder fontSize="small" />
+        Next Departures
+      </div>
       <>
         <div className="routeCard-nextTime">
           <div className="routeCard-nextTime-startLocation">

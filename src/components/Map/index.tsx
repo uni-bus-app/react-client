@@ -29,8 +29,6 @@ interface MapProps {
   userLocation?: any;
   width: string;
   height: string;
-  stopDistanceData?: any;
-  setStopDistanceData?: any;
 }
 
 const Map = (props: MapProps) => {
@@ -157,38 +155,8 @@ const Map = (props: MapProps) => {
             onMarkerSelect={onMarkerSelect}
           />
         </GoogleMap>
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            width: '100%',
-          }}
-          className={styles.statusBarContainer}
-        >
-          <div
-            style={{
-              opacity: theme.palette.mode === 'dark' ? 0 : undefined,
-            }}
-            className={styles.statusBar}
-          />
-          <div className={styles.statusBarBlur} />
-        </div>
 
-        {/* <Fab
-          size="small"
-          style={{
-            position: 'absolute',
-            right: '1em',
-            backgroundColor: theme.palette.background.default,
-            color: theme.palette.text.primary,
-          }}
-          className={styles.locationButton}
-          onClick={getLocationData}
-        >
-          <NearMeOutlined />
-        </Fab> */}
+        <div className={styles.logoContainer} ref={logoContainer} />
       </>
     );
   };
