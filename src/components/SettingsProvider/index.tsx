@@ -23,6 +23,7 @@ const SettingsContext = createContext<ContextState>({
 
 const SettingsProvider = ({ children }: any) => {
   const [state, setState] = useState<SettingsItems>(defaultSettings);
+
   const setValue = <K extends keyof SettingsItems>(
     name: K,
     value: SettingsItems[K]

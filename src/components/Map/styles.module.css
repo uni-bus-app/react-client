@@ -1,7 +1,3 @@
-.statusBarContainer {
-  height: env(safe-area-inset-top);
-}
-
 .statusBar {
   /* position: relative; */
   /* background-color: white; */

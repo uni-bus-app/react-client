@@ -23,6 +23,7 @@ const Nav = (props: NavProps) => {
   const navigate = useNavigate();
 
   const handleClick = (e: any) => {
+    console.log(e);
     if (e.target.id) {
       navigate(`/${e.target.id}`, { replace: true });
     }
@@ -91,7 +92,7 @@ const Nav = (props: NavProps) => {
          * Sites navigation
          *
          */}
-        <IconButton onClick={(e) => handleClick(e)}>
+        <IconButton onClick={(e) => handleClick(e)} id={'home'}>
           <Home
             className={classNames(
               styles.icon,
@@ -101,7 +102,11 @@ const Nav = (props: NavProps) => {
           />
         </IconButton>
 
-        <IconButton sx={{ height: '100%' }} onClick={(e) => handleClick(e)}>
+        <IconButton
+          sx={{ height: '100%' }}
+          onClick={(e) => handleClick(e)}
+          id={'map'}
+        >
           <Map
             className={classNames(
               styles.icon,
@@ -111,24 +116,17 @@ const Nav = (props: NavProps) => {
           />
         </IconButton>
 
-        {/* <IconButton sx={{ height: '100%' }} onClick={(e) => handleClick(e)}>
-          <Notification
-            className={classNames(
-              styles.icon,
-              pathName === '/notifications' && styles.iconActive
-            )}
-            id={'notifications'}
-          />
-        </IconButton> */}
-
-        <IconButton sx={{ height: '100%' }} onClick={(e) => handleClick(e)}>
+        <IconButton
+          sx={{ height: '100%' }}
+          onClick={(e) => handleClick(e)}
+          id={'settings'}
+        >
           <Menu
             className={classNames(
               styles.icon,
               pathName === '/settings' && styles.iconActive
             )}
             id={'settings'}
-            style={{}}
           />
         </IconButton>
       </div>

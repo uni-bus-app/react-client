@@ -1,4 +1,4 @@
-import { PaletteMode } from '@mui/material';
+import { AlertTitle, Collapse, IconButton, PaletteMode } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -19,6 +19,7 @@ import {
 } from 'react-router-dom';
 import styles from './App.module.css';
 import Header from './beta-components/Header';
+import Alert from '@mui/material/Alert';
 import HomepageView from './beta-components/Views/HomepageView';
 import Nav from './beta-components/Nav';
 import NotificationsView from './beta-components/Views/NotificationsView';
@@ -27,6 +28,7 @@ import { useScreenTracking, useUpdate } from './hooks';
 import { Message, Stop } from './types';
 import SettingsProvider from './components/SettingsProvider';
 import InitialStartup from './beta-components/InitialStartup';
+import CloseIcon from '@mui/icons-material/Close';
 
 const Map = lazy(() => import('./components/Map'));
 const NextTimesSheet = lazy(() => import('./components/NextTimesSheet'));
@@ -53,7 +55,6 @@ const UpdateSnackBar = ({ updateAvailable, restarting, restart }: any) => {
 
 const App = () => {
   useScreenTracking();
-  const navigate = useNavigate();
   const update = useUpdate();
   const [stops, setStops] = useState([]);
   const [currentStop, setCurrentStop] = useState<Stop>();
@@ -142,6 +143,26 @@ const App = () => {
 
   const [timesSheetOpen, setTimesSheetOpen] = useState<boolean>(false);
 
+  // Show alert for downloaded content (BETA)
+  const [showAlert, setShowAlert] = useState(false);
+  useEffect(() => {
+    const showAlertAfterDelay = setTimeout(() => {
+      setShowAlert(true);
+      const hideAlert = setTimeout(() => {
+        setShowAlert(false);
+      }, 5000); // Dismiss the alert after 5 seconds
+      return () => clearTimeout(hideAlert);
+    }, 1000); // Show the alert after 5 seconds
+    return () => clearTimeout(showAlertAfterDelay);
+  }, []);
+  const animationDuration = 0.25; // seconds
+  const transitionStyles = {
+    entering: { opacity: 0, transform: 'translateY(-100%)' },
+    entered: { opacity: 1, transform: 'translateY(0)' },
+    exiting: { opacity: 0, transform: 'translateY(-100%)' },
+    exited: { opacity: 0, transform: 'translateY(-100%)' },
+  };
+
   return (
     <SettingsProvider>
       {/*
@@ -153,6 +174,23 @@ const App = () => {
       {/* If the user has already seen the splashscreen, just load the app */}
       {!splashScreen && (
         <ThemeProvider theme={theme}>
+          {/* Alert message */}
+          <div
+            style={{
+              position: 'fixed',
+              display: 'flex',
+              justifyContent: 'center',
+              width: '100%',
+              top: '6px',
+              zIndex: 9999,
+              transition: `opacity ${animationDuration}s, transform ${animationDuration}s`,
+              ...transitionStyles[showAlert ? 'entered' : 'exited'],
+            }}
+          >
+            <Alert sx={{ borderRadius: '8px' }} severity="success">
+              Offline data downloaded
+            </Alert>
+          </div>
           <CssBaseline />
           <UpdateSnackBar
             updateAvailable={update.updateAvailable}

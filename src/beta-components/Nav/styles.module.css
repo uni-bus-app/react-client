@@ -37,12 +37,26 @@
   justify-content: space-around;
   background-color: rgb(255, 255, 255);
   border-radius: 40px;
-  width: 60%;
+  width: 60%; /* Default width for screens smaller than a phone */
   padding: 6px;
   height: 60px;
   box-sizing: border-box;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
   pointer-events: all;
+}
+
+@media (min-width: 600px) {
+  /* Media query for screens bigger than a phone */
+  .menuItems {
+    width: 30%; /* Adjusted width for larger screens */
+  }
+}
+
+@media (min-width: 900px) {
+  /* Media query for screens bigger than a phone */
+  .menuItems {
+    width: 20%; /* Adjusted width for larger screens */
+  }
 }
 
 .icon {
