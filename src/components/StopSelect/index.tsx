@@ -14,6 +14,17 @@ interface StopSelectProps {
   onChange: (stop: Stop) => void;
 }
 
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
+
 const StopSelect = (props: StopSelectProps) => {
   const { stops, value, onChange } = props;
   const selectStop = (event: SelectChangeEvent<Stop>) => {
@@ -37,20 +48,7 @@ const StopSelect = (props: StopSelectProps) => {
               (document.activeElement as any).blur();
             }, 0)
           }
-          MenuProps={{
-            sx: {
-              transformStyle: 'preserve-3d',
-            },
-            className: styles.thing,
-            PaperProps: {
-              sx: {
-                backgroundImage: 'none',
-                maxHeight: '256px',
-                transformStyle: 'preserve-3d',
-              },
-              className: styles.thing,
-            },
-          }}
+          MenuProps={MenuProps}
         >
           {stops.map((stop, index) => {
             return (
