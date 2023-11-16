@@ -17,5 +17,5 @@ jobs:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_UNIBUS_APP }}'
           channelId: live
-          target: unibus-test
+          target: test
           projectId: unibus-app
