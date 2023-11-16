@@ -1,7 +1,18 @@
 {
   "projects": {
-    "default": "uni-bus-dev",
-    "development": "uni-bus-dev"
+    "default": "unibus-app"
   },
-  "targets": {}
+  "targets": {
+    "unibus-app": {
+      "hosting": {
+        "test": [
+          "unibus-test"
+        ],
+        "production": [
+          "unibus-app"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }
