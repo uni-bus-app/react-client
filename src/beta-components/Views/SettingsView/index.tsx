@@ -11,6 +11,17 @@ const SettingsView = () => {
     window.open(link, 'emailWin');
   };
 
+  /**
+   * Settings to include
+   *
+   * Dark mode  override
+   *
+   * Opening page override
+   *
+   * Clear all cache
+   *
+   *
+   */
   return (
     <div className="page">
       <main className="pageStructure">

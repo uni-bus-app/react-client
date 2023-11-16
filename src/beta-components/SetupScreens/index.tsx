@@ -2,6 +2,7 @@ import Satellite from '../../assets/satellite.png';
 import Bus from '../../assets/busStop.png';
 import Notifications from '../../assets/notifications.png';
 import styles from './styles.module.css';
+import { CircularProgress } from '@mui/material';
 
 export const WelcomeView = () => {
   return (
@@ -39,8 +40,8 @@ export const LocationPermissionView = () => {
             <p className={styles.pageContainerTitle}>Location Data</p>
             <p className={styles.pageContainerIntroduction}>
               In order to provide you with all the cool services we have built
-              the app needs your location, but don't worry, the nerds have no
-              access to your data! It is all stored on your device.
+              the app needs your location, but don't worry, we have no access to
+              your data - that's all stored locally on your device.
             </p>
             <p className={styles.pageContainerIntroduction}></p>
           </div>
@@ -77,13 +78,13 @@ export const FinalScreenView = () => {
     <div className={styles.box}>
       <div className={styles.pageContainer}>
         <div className={styles.imageTextContainer}>
-          <img src={Notifications} alt="notifications" />
-
           <div className={styles.pageContainerTextContainer}>
             <p className={styles.pageContainerTitle}>You're all set!</p>
-            <p className={styles.pageContainerIntroduction}></p>
-            <p className={styles.pageContainerIntroduction}></p>
+            <p className={styles.pageContainerIntroduction}>
+              We're just doing some final setup bits, should only take a few...
+            </p>
           </div>
+          <CircularProgress />
         </div>
       </div>
     </div>

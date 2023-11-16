@@ -7,18 +7,19 @@
 
 .header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   padding: 1.625em 1em 0.4375em 1em;
   z-index: 1;
+  margin-bottom: 12px;
 }
 
 .title {
-  font-size: 1.5625rem;
+  font-size: 1.2em;
   font-weight: lighter;
-  color: grey;
+  color: rgba(255, 255, 255, 0.6);
   text-align: left;
   margin: 0;
-  font-family: Roboto, sans-serif;
+  padding-left: 0.7em;
   letter-spacing: normal;
 }

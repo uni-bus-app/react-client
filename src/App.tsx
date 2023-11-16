@@ -17,8 +17,6 @@ import {
   useLocation,
   useNavigate,
 } from 'react-router-dom';
-import { getMessages, getStops } from './api/APIUtils';
-import idbService from './api/LocalDB';
 import styles from './App.module.css';
 import Header from './beta-components/Header';
 import HomepageView from './beta-components/Views/HomepageView';
@@ -26,12 +24,12 @@ import Nav from './beta-components/Nav';
 import NotificationsView from './beta-components/Views/NotificationsView';
 import SettingsView from './beta-components/Views/SettingsView';
 import { useScreenTracking, useUpdate } from './hooks';
-import { Message, Stop, Time } from './types';
+import { Message, Stop } from './types';
 import SettingsProvider from './components/SettingsProvider';
 import InitialStartup from './beta-components/InitialStartup';
 
 const Map = lazy(() => import('./components/Map'));
-const StopView = lazy(() => import('./components/StopView'));
+const NextTimesSheet = lazy(() => import('./components/NextTimesSheet'));
 
 const UpdateSnackBar = ({ updateAvailable, restarting, restart }: any) => {
   return (
@@ -58,10 +56,8 @@ const App = () => {
   const navigate = useNavigate();
   const update = useUpdate();
   const [stops, setStops] = useState([]);
-  const [loadingStop, setLoadingStop] = useState<Promise<Time[]>>();
   const [currentStop, setCurrentStop] = useState<Stop>();
   const [messages, setMessages] = useState<Message[]>([]);
-  const [markerSelect, setMarkerSelect] = useState<boolean>(false);
 
   const logoContainer = useRef() as any;
   const darkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -78,28 +74,22 @@ const App = () => {
           }),
     },
   });
+
   const theme = useMemo(
     () => createTheme(getDesignTokens(darkMode ? 'dark' : 'light')),
     [darkMode]
   );
 
   const onMarkerSelect = (stop: Stop) => {
-    setMarkerSelect(true);
-    navigate('/stopview');
+    setTimesSheetOpen(true);
     setCurrentStop(stop);
   };
-  const unSelectStop = () => {
-    setCurrentStop(undefined);
-    navigate('home');
-  };
 
-  useEffect(() => {
-    getStops().then(setStops);
-
-    getMessages().then(setMessages);
-
-    idbService.sync();
-  }, []);
+  // useEffect(() => {
+  //   getStops().then(setStops);
+  //   getMessages().then(setMessages);
+  //   idbService.sync();
+  // }, []);
 
   useEffect(() => {
     if (currentStop) {
@@ -120,18 +110,18 @@ const App = () => {
         lat: pos.coords.latitude,
         lng: pos.coords.longitude,
       });
-      console.log(pos);
     });
   };
 
-  // Fetch location on each state change (BETA)
+  // Fetch page location on each page change (BETA)
   const location = useLocation();
 
   // Show Hide Top Nav (BETA)
-  const [showHeader, setShowHeader] = useState(false);
-  useEffect(() => {
-    setShowHeader(() => location.pathname === '/map');
-  }, [location]);
+  // TODO: Remove
+  // const [showHeader, setShowHeader] = useState(false);
+  // useEffect(() => {
+  //   setShowHeader(() => location.pathname === '/map');
+  // }, [location]);
 
   // Move pill on nav depending on page (BETA)
   const [pathName, setPathname] = useState('/home');
@@ -150,15 +140,17 @@ const App = () => {
   // Distance from user to stops location data
   const [stopDistanceData, setStopDistanceData] = useState(null);
 
+  const [timesSheetOpen, setTimesSheetOpen] = useState<boolean>(false);
+
   return (
     <SettingsProvider>
       {/*
           We only want this to display once to the user 
           If the user has already seen this, don't display 
       */}
-
       {splashScreen && <InitialStartup setSplashScreen={setSplashScreen} />}
 
+      {/* If the user has already seen the splashscreen, just load the app */}
       {!splashScreen && (
         <ThemeProvider theme={theme}>
           <CssBaseline />
@@ -168,19 +160,13 @@ const App = () => {
             restart={update.restart}
           />
           <Suspense fallback={<div>Loading...</div>}></Suspense>
-
-          <Header showHeader={showHeader} />
-
-          <Nav
-            pathName={pathName}
-            showHeader={showHeader}
-            getLocation={getCurrentLocation}
-          />
-
+          {/* <Header showHeader={showHeader} /> */}
           {/* <div className={styles.logoContainer} ref={logoContainer} /> */}
           <Routes>
             <Route path="/" element={<Navigate to="/home" />} />
             <Route path="/home" element={<HomepageView />} />
+            <Route path="/notifications" element={<NotificationsView />} />
+            <Route path="/settings" element={<SettingsView />} />
             <Route
               path="/map"
               element={
@@ -198,42 +184,16 @@ const App = () => {
                     stopDistanceData={stopDistanceData}
                     setStopDistanceData={setStopDistanceData}
                   />
-                  {/* <Home
-                  stops={stops}
-                  setCurrentStop={setCurrentStop}
-                  currentStop={currentStop}
-                  loadingTimes={loadingStop}
-                  setLoadingTimes={setLoadingStop}
-                  messages={messages}
-                  onLoad={() => StopView.preload()}
-                  checkForUpdates={update.checkForUpdates}
-                /> */}
                 </>
               }
             />
-            <Route
-              path="/notifications"
-              element={<NotificationsView />}
-            ></Route>
-            {/* <Route path="/saved" element={<SavedStopsView />}></Route> */}
-            <Route path="/settings" element={<SettingsView />}></Route>
-            <Route
-              path="/stopview"
-              element={
-                currentStop || markerSelect ? (
-                  <Suspense fallback={<div>Loading...</div>}>
-                    <StopView
-                      stop={currentStop}
-                      unSelectStop={unSelectStop}
-                      darkMode={darkMode}
-                    />
-                  </Suspense>
-                ) : (
-                  <Navigate to="/home" />
-                )
-              }
-            />
           </Routes>
+          <NextTimesSheet
+            open={timesSheetOpen}
+            setOpen={setTimesSheetOpen}
+            stop={currentStop}
+          />
+          <Nav pathName={pathName} getLocation={getCurrentLocation} />
         </ThemeProvider>
       )}
     </SettingsProvider>

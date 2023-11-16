@@ -1,6 +1,5 @@
 import { IconButton } from '@mui/material';
 import { ReactComponent as Map } from '../../assets/SVGs/map.svg';
-import { ReactComponent as Saved } from '../../assets/SVGs/bookmark.svg';
 import { ReactComponent as Menu } from '../../assets/SVGs/menu.svg';
 import { ReactComponent as Notification } from '../../assets/SVGs/notification.svg';
 import { ReactComponent as Locate } from '../../assets/SVGs/locate.svg';
@@ -9,18 +8,18 @@ import classNames from 'classnames';
 
 import styles from './styles.module.css';
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 
 interface NavProps {
   pathName: string;
   getLocation: () => void;
-  showHeader: boolean;
 }
 const Nav = (props: NavProps) => {
-  const { pathName, getLocation, showHeader } = props;
+  const { pathName, getLocation } = props;
 
   const [translate, setTranslate] = useState(0);
   const [moving, setMovement] = useState(false);
+  const [locationActive, setLocationActive] = useState(false);
   const navigate = useNavigate();
 
   const handleClick = (e: any) => {
@@ -33,12 +32,18 @@ const Nav = (props: NavProps) => {
   };
 
   useEffect(() => {
-    pathName === '/home' && setTranslate(20);
-    pathName === '/map' && setTranslate(140);
+    // Turn off location persistence if moving around the app
+    if (pathName !== '/map') {
+      setLocationActive(false);
+    }
+    pathName === '/home' && setTranslate(25);
+    pathName === '/map' && setTranslate(150);
     pathName === '/notifications' && setTranslate(260);
-    pathName === '/settings' && setTranslate(380);
+    pathName === '/settings' && setTranslate(275);
     setMovement(true);
   }, [pathName]);
+
+  const buttonClasses = `${styles.icon} ${locationActive ? styles.pulse : ''}`;
 
   return (
     <div className={styles.Nav}>
@@ -46,19 +51,26 @@ const Nav = (props: NavProps) => {
         <IconButton
           sx={{ height: '100%' }}
           onClick={(e) => {
-            if (showHeader !== true) {
-              navigate('/home', { replace: true });
+            if (!locationActive) {
+              navigate('/map', { replace: true });
               handleClick(e);
+              setLocationActive(true);
+              setTimeout(() => {
+                getLocation();
+              }, 700);
+            } else {
+              setLocationActive(false);
             }
-            setTimeout(() => {
-              getLocation();
-            }, 700);
           }}
           id={'map'}
         >
           <Locate
-            className={styles.icon}
-            style={{ color: 'rgb(183, 183, 183)' }}
+            className={buttonClasses}
+            style={{
+              color: locationActive
+                ? 'rgba(255,255,255,0.87)'
+                : 'rgba(255,255,255,0.2)',
+            }}
           />
         </IconButton>
       </div>
@@ -99,7 +111,7 @@ const Nav = (props: NavProps) => {
           />
         </IconButton>
 
-        <IconButton sx={{ height: '100%' }} onClick={(e) => handleClick(e)}>
+        {/* <IconButton sx={{ height: '100%' }} onClick={(e) => handleClick(e)}>
           <Notification
             className={classNames(
               styles.icon,
@@ -107,7 +119,7 @@ const Nav = (props: NavProps) => {
             )}
             id={'notifications'}
           />
-        </IconButton>
+        </IconButton> */}
 
         <IconButton sx={{ height: '100%' }} onClick={(e) => handleClick(e)}>
           <Menu

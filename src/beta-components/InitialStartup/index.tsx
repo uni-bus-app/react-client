@@ -19,7 +19,6 @@ const InitialStartup = (props: InitialStartupProps) => {
       <CarouselItem>
         <LocationPermissionView />
       </CarouselItem>
-
       <CarouselItem>
         <FinalScreenView />
       </CarouselItem>

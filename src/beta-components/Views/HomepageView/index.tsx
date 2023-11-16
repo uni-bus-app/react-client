@@ -8,6 +8,7 @@ import Map from '../../../components/Map';
 import dayjs from 'dayjs';
 
 import './styles.scss';
+import { Time } from '../../../types';
 
 const uniLibraryObject = {
   name: 'Camrbidge Road',
@@ -21,19 +22,13 @@ const uniLibraryObject = {
 
 const HomepageView = () => {
   const [showRouteSelector, setRouteSelectorVisibility] = useState(false);
+  let { times } = useTimetable(uniLibraryObject, true);
   const navigate = useNavigate();
-  let { times, loadMore } = useTimetable(uniLibraryObject, true);
+  let time: Time | undefined;
 
-  let time: any;
   useEffect(() => {
     times !== undefined && (time = times[0]);
-    console.log('-----------------------------');
-    times !== undefined && console.log(times[0]?.timeValue?.day());
-    console.log(dayjs().day());
-    console.log(time?.timeValue?.day() === dayjs().day());
   }, [times]);
-
-  console.log(true);
 
   return (
     <>
@@ -47,32 +42,26 @@ const HomepageView = () => {
         <div className="pageStructure">
           <div className="routeCard">
             <div className="routeCard-nextBusTimeLogo">Next Departures</div>
-            {time?.timeValue?.day() !== dayjs().day() ? (
-              <>
-                <div className="routeCard-nextTime">
-                  <div className="routeCard-nextTime-startLocation">
-                    University Library{' '}
-                    <span style={{ fontSize: '0.7rem' }}>departing at</span>
-                  </div>
-                  <div className="routeCard-nextTime-leavingTime">
-                    {times && times[0].time}
-                  </div>
+            <>
+              <div className="routeCard-nextTime">
+                <div className="routeCard-nextTime-startLocation">
+                  University Library{' '}
+                  <span style={{ fontSize: '0.7rem' }}>departing at</span>
                 </div>
-                <div className="routeCard-nextTime">
-                  <div className="routeCard-nextTime-startLocation">
-                    University Library{' '}
-                    <span style={{ fontSize: '0.7rem' }}>departing at</span>
-                  </div>
-                  <div className="routeCard-nextTime-leavingTime">
-                    {times && times[1].time}
-                  </div>
+                <div className="routeCard-nextTime-leavingTime">
+                  {times && times[0].time}
                 </div>
-              </>
-            ) : (
-              <span className="routeCard-overlay">
-                This service does not run on weekends
-              </span>
-            )}
+              </div>
+              <div className="routeCard-nextTime">
+                <div className="routeCard-nextTime-startLocation">
+                  University Library{' '}
+                  <span style={{ fontSize: '0.7rem' }}>departing at</span>
+                </div>
+                <div className="routeCard-nextTime-leavingTime">
+                  {times && times[1].time}
+                </div>
+              </div>
+            </>
           </div>
 
           <div style={{ width: '100%' }}>

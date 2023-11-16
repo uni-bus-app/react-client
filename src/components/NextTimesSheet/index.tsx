@@ -1,27 +1,30 @@
-import Close from '@mui/icons-material/Close';
-import { Dispatch, SetStateAction } from 'react';
-import { Time } from '../../types';
+import { Stop } from '../../types';
 import BottomSheet from '../BottomSheet';
 import TimesList from '../TimesList';
 import styles from './styles.module.css';
+import { useTimetable } from '../../hooks';
+import StopInfoCard from '../StopInfoCard';
+import { Divider } from '@mui/material';
 
 interface NextTimesSheetProps {
-  open: boolean;
-  setOpen: Dispatch<SetStateAction<boolean>>;
-  times: Time[];
-  loadMoreTimes: () => Promise<void>;
+  open: any;
+  setOpen: any;
+  stop?: Stop;
 }
 
 const NextTimesSheet = (props: NextTimesSheetProps) => {
-  const { open, setOpen, times, loadMoreTimes } = props;
+  const { open, setOpen, stop } = props;
+
+  const { times, loadMore } = useTimetable(stop);
+
   return (
     <BottomSheet open={open} setOpen={setOpen}>
       <div className={styles.container}>
         <div className={styles.header}>
-          <p className={styles.title}>Upcoming Departures</p>
-          <Close onClick={() => setOpen(false)} />
+          <StopInfoCard stop={stop} setOpen={setOpen} />
         </div>
-        <TimesList times={times} loadMoreTimes={loadMoreTimes} />
+        <Divider sx={{ marginBottom: '6px' }} />
+        {times && <TimesList times={times} loadMoreTimes={loadMore} />}
       </div>
     </BottomSheet>
   );
