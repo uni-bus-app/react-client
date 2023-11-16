@@ -25,6 +25,9 @@ export default {
   mapsApiKey,
   // apiURL: 'https://20210404t132447-dot-unibus-app.nw.r.appspot.com',
   // apiURL: 'http://localhost:8080',
-  apiURL: 'https://20220427t182541-dot-unibus-app.nw.r.appspot.com',
+  apiURL:
+    process.env.NODE_ENV === 'development'
+      ? 'https://unibus-api-test-igs2fx2gia-nw.a.run.app/api'
+      : '/api',
   firebase: isProd ? prodFirebaseConfig : devFirebaseConfig,
 };
