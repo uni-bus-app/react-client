@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router';
 import { Tune } from '@mui/icons-material';
 
 import styles from './styles.module.css';
+import { useSettings } from '../../components/SettingsProvider';
 
 interface NavProps {
   pathName: string;
@@ -22,6 +23,7 @@ const Nav = (props: NavProps) => {
   const [moving, setMovement] = useState(false);
   const [locationActive, setLocationActive] = useState(false);
   const navigate = useNavigate();
+  const settings = useSettings();
 
   const handleClick = (e: any) => {
     if (e.target.id) {
@@ -39,8 +41,7 @@ const Nav = (props: NavProps) => {
     }
     pathName === '/home' && setTranslate(25);
     pathName === '/map' && setTranslate(150);
-    pathName === '/notifications' && setTranslate(260);
-    pathName === '/settings' && setTranslate(275);
+    pathName === '/settings' && setTranslate(270);
     setMovement(true);
   }, [pathName]);
 
@@ -60,6 +61,8 @@ const Nav = (props: NavProps) => {
         <div
           className={classNames(
             styles.selectedPill,
+            settings.rainbowNav && pathName === '/map' && styles.bluePill,
+            settings.rainbowNav && pathName === '/settings' && styles.greenPill,
             moving === true && styles.animatedPill
           )}
           style={{

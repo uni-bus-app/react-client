@@ -3,6 +3,9 @@ export interface SettingsItems {
   darkModeOverride: boolean;
   useLocation: boolean;
   useNotifications: boolean;
+  favouriteStop: string | null;
+  lowDataMode: boolean;
+  rainbowNav: boolean;
 }
 
 export enum SettingsItemsNames {
@@ -10,4 +13,7 @@ export enum SettingsItemsNames {
   DarkModeOverride = 'darkModeOverride',
   UseLocation = 'useLocation',
   UseNotifications = 'useNotifications',
+  favouriteStop = 'favouriteStop',
+  lowDataMode = 'lowDataMode',
+  rainbowNav = 'rainbowNav',
 }

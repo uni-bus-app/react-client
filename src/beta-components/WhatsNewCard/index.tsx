@@ -13,18 +13,20 @@ const WhatsNewCard = () => {
         </p>
         <ul className="WhatsNew-list">
           <li>
-            Major redesign across the board, we wanted to make the app feel more
-            official and fluid
+            You may have noticed the new design, we've been working on this for
+            a short while now.
           </li>
           <li>
             Live tracking for the buses - you can now see them moving around
             portsmouth and get more accurate times
           </li>
           <li>
+            We've finally fixed the location button, it actually works (for now)
+          </li>
+          <li>
             Set a favourite stop, see that stops info at the top of this
             dashboard
           </li>
-          <li>Toggle for low data mode</li>
           <li>
             Automatic downloading of times, if you run out of data while and out
             about, the app will still work

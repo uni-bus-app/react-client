@@ -17,11 +17,12 @@ import Nav from './beta-components/Nav';
 import NotificationsView from './beta-components/Views/NotificationsView';
 import SettingsView from './beta-components/Views/SettingsView';
 import { useScreenTracking, useUpdate } from './hooks';
-import { Stop } from './types';
-import SettingsProvider from './components/SettingsProvider';
+import { LatLng, Stop } from './types';
+import SettingsProvider, { useSettings } from './components/SettingsProvider';
 import InitialStartup from './beta-components/InitialStartup';
 import LowDataModeView from './beta-components/Views/LowDataModeView';
 import AlertComponent from './beta-components/Alert';
+import { getRoutePath, getStops } from './api/APIUtils';
 
 const Map = lazy(() => import('./components/Map'));
 const NextTimesSheet = lazy(() => import('./components/NextTimesSheet'));
@@ -52,19 +53,27 @@ const App = () => {
   const [currentStop, setCurrentStop] = useState<Stop>();
 
   const [timesSheetOpen, setTimesSheetOpen] = useState<boolean>(false); //BETA - Show times sheet
+  const [nextCardOpen, setNextCardOpen] = useState(false); // ISSUE 65 - Show next card popup
 
   const [pathName, setPathname] = useState(''); // BETA - Track page location
   const [splashScreen, setSplashScreen] = useState(true); // BETA - Show splash screen
   const [showAlert, setShowAlert] = useState(false); // BETA - Show alert
   const [userLocation, setUserLocation] = useState<any>(); // BETA - Users location
-  const [nextCardOpen, setNextCardOpen] = useState(false); // ISSUE 65
 
-  const [userSettings, setUserSettings] = useState<any>({
-    darkMode: false,
-    openingPage: '/map',
-    lowData: false,
-    location: false,
-  }); // BETA - Users settings
+  // Moved from map, move to own service
+  const [stops, setStops] = useState<Stop[]>(); // Store all stops data
+  const [routeOverlay, setRouteOverlay] = useState<LatLng[]>();
+  useEffect(() => {
+    const getData = async () => {
+      setRouteOverlay(await getRoutePath());
+      setStops(await getStops());
+    };
+    getData();
+  }, []);
+
+  useEffect(() => {
+    console.log(stops, 'stops data');
+  }, [stops]);
 
   const darkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const logoContainer = useRef() as any;
@@ -74,25 +83,16 @@ const App = () => {
   const getDesignTokens = (mode: PaletteMode) => ({
     palette: {
       mode,
-      ...(mode === 'light'
-        ? {
-            background: {
-              default: '#eeeeee',
-              paper: '#f5f5f5',
-            },
-            text: {
-              primary: '#222222',
-            },
-          }
-        : {
-            background: {
-              default: grey[800],
-              paper: grey[800],
-            },
-            text: {
-              primary: '#f5f5f5',
-            },
-          }),
+      background: {
+        default: '#eeeeee',
+        paper: '#f5f5f5',
+      },
+      text: {
+        primary: '#222222',
+      },
+      icon: {
+        default: '#000000',
+      },
     },
   });
 
@@ -101,12 +101,13 @@ const App = () => {
     [darkMode]
   );
 
+  // Set the current stop when a marker is selected
   const onMarkerSelect = (stop: Stop) => {
     setCurrentStop(stop);
     setNextCardOpen(true);
   };
 
-  // ISSUE 65 - Clear the markers whenevever tapping away from the sheet
+  // Clear the markers whenevever tapping away from the sheet
   useEffect(() => {
     if (!nextCardOpen) {
       setCurrentStop(undefined);
@@ -126,6 +127,7 @@ const App = () => {
   }, [currentStop]);
 
   // Fetch Users Location (BETA)
+  // TODO: Move to hook
   const getCurrentLocation = async () => {
     navigator.geolocation.getCurrentPosition((pos) => {
       setUserLocation({
@@ -137,14 +139,11 @@ const App = () => {
 
   // Update pathName on page change (BETA)
   useEffect(() => {
-    if (pathName === '') {
-      setPathname(userSettings.openingPage);
-    } else {
-      setPathname(location.pathname);
-    }
-  }, [location, pathName, userSettings.openingPage]);
+    setPathname(location.pathname);
+  }, [location, pathName]);
 
   // Check localhost to see if the user has seen the splash screen (BETA)
+  // TODO: Replace with userSettings object
   useEffect(() => {
     if (localStorage.getItem('splashScreen') === 'true') {
       setSplashScreen(false);
@@ -163,77 +162,69 @@ const App = () => {
   return (
     <SettingsProvider>
       {/* If the user has low data mode on, show them this */}
-      {userSettings.lowData ? (
+      {/* {userSettings.lowData ? (
         <LowDataModeView />
-      ) : (
-        <>
-          {splashScreen ? (
-            <InitialStartup setSplashScreen={setSplashScreen} />
-          ) : (
-            <ThemeProvider theme={theme}>
-              <AlertComponent
-                message="Offline content downloaded"
-                alertSeverity="Success"
-                showAlert={showAlert}
-                setShowAlert={setShowAlert}
+      ) : ( */}
+      <>
+        {splashScreen ? (
+          <InitialStartup setSplashScreen={setSplashScreen} />
+        ) : (
+          <ThemeProvider theme={theme}>
+            <AlertComponent
+              message="Offline content downloaded"
+              alertSeverity="Success"
+              showAlert={showAlert}
+              setShowAlert={setShowAlert}
+            />
+            <CssBaseline />
+            <UpdateSnackBar
+              updateAvailable={update.updateAvailable}
+              restarting={update.restarting}
+              restart={update.restart}
+            />
+            <Suspense fallback={<div>Loading...</div>}></Suspense>
+            <Routes>
+              <Route path="/" element={<Navigate to={'/home'} />} />
+              <Route path="/home" element={<HomepageView stops={stops} />} />
+              <Route path="/notifications" element={<NotificationsView />} />
+              <Route
+                path="/settings"
+                element={<SettingsView stops={stops} />}
               />
-              <CssBaseline />
-              <UpdateSnackBar
-                updateAvailable={update.updateAvailable}
-                restarting={update.restarting}
-                restart={update.restart}
-              />
-              <Suspense fallback={<div>Loading...</div>}></Suspense>
-              <Routes>
-                <Route
-                  path="/"
-                  element={<Navigate to={userSettings.openingPage} />}
-                />
-                <Route path="/home" element={<HomepageView />} />
-                <Route path="/notifications" element={<NotificationsView />} />
-                <Route
-                  path="/settings"
-                  element={
-                    <SettingsView
-                      userSettings={userSettings}
-                      setUserSettings={setUserSettings}
+              <Route
+                path="/map"
+                element={
+                  <>
+                    <Map
+                      stopMarkersEnabled={true}
+                      routeOverlayEnabled={true}
+                      darkModeEnabled={false /**darkMode */}
+                      currentStop={currentStop}
+                      onMarkerSelect={onMarkerSelect}
+                      logoContainer={logoContainer}
+                      stops={stops}
+                      routeOverlay={routeOverlay}
+                      setTimesSheetOpen={setTimesSheetOpen}
+                      nextCardOpen={nextCardOpen}
+                      setNextCardOpen={setNextCardOpen}
                     />
-                  }
-                />
-                <Route
-                  path="/map"
-                  element={
-                    <>
-                      <Map
-                        stopMarkersEnabled={true}
-                        routeOverlayEnabled={true}
-                        darkModeEnabled={false /**darkMode */}
-                        currentStop={currentStop}
-                        onMarkerSelect={onMarkerSelect}
-                        logoContainer={logoContainer}
-                        userLocation={userLocation}
-                        setTimesSheetOpen={setTimesSheetOpen}
-                        nextCardOpen={nextCardOpen}
-                        setNextCardOpen={setNextCardOpen}
-                      />
-                    </>
-                  }
-                />
-              </Routes>
-              <NextTimesSheet
-                openNextTimesSheet={timesSheetOpen}
-                setOpenNextTimesSheet={setTimesSheetOpen}
-                stop={currentStop}
+                  </>
+                }
               />
-              <Nav
-                pathName={pathName}
-                getLocation={getCurrentLocation}
-                setNextCardOpen={setNextCardOpen}
-              />
-            </ThemeProvider>
-          )}
-        </>
-      )}
+            </Routes>
+            <NextTimesSheet
+              openNextTimesSheet={timesSheetOpen}
+              setOpenNextTimesSheet={setTimesSheetOpen}
+              stop={currentStop}
+            />
+            <Nav
+              pathName={pathName}
+              getLocation={getCurrentLocation}
+              setNextCardOpen={setNextCardOpen}
+            />
+          </ThemeProvider>
+        )}
+      </>
     </SettingsProvider>
   );
 };

@@ -13,138 +13,96 @@ import {
   SelectChangeEvent,
   Switch,
 } from '@mui/material';
-import { useState } from 'react';
+import { useSettings } from '../../../components/SettingsProvider';
+import { SettingsItemsNames } from '../../../components/SettingsProvider/types';
+import { Stop } from '../../../types';
+import { ChangeEvent } from 'react';
 
 interface SettingsViewProps {
-  setUserSettings: any;
-  userSettings: any;
+  stops: Stop[] | undefined;
 }
 
 const SettingsView = (props: SettingsViewProps) => {
-  const { setUserSettings, userSettings } = props;
+  const { stops } = props;
+  const settings = useSettings();
+
   const handleSendEmailClick = (subject: string) => {
     const subjectEncoded = encodeURIComponent(subject);
     const link = 'mailto:admin@unib.us?subject=' + subjectEncoded;
     window.open(link, 'emailWin');
   };
 
-  /**
-   * Settings to include
-   *
-   * Dark mode  override
-   *
-   * Opening page override
-   *
-   * Clear all cache
-   *
-   * Low Data Use Mode (no map, no images, no animations)
-   *
-   * Enable Location
-   *
-   *
-   *
-   */
-
-  const handleLowDataToggle = (event: any) => {
-    const updatedSettings = {
-      ...userSettings,
-      lowData: event.target.checked,
-    };
-    setUserSettings(updatedSettings);
+  const handleFavouriteStopChange = (event: SelectChangeEvent<string>) => {
+    settings.setValue(SettingsItemsNames.favouriteStop, event.target.value);
   };
 
-  const handleOpeningPageChange = (event: SelectChangeEvent<string>) => {
-    const updatedSettings = {
-      ...userSettings,
-      openingPage: event.target.value,
-    };
-    setUserSettings(updatedSettings);
+  const handleRainbowMode = (event: ChangeEvent<HTMLInputElement>) => {
+    settings.setValue(SettingsItemsNames.rainbowNav, event.target.checked);
   };
 
   return (
     <div className="page">
       <main className="pageStructure">
         <Paper className="card">
-          <p className="pageHeader">Settings</p>
-          <p className="quote italics">
-            Customise the look and feel of the app
+          <h3>Set your most used stop</h3>
+          <Select
+            value={settings?.favouriteStop || ''}
+            onChange={handleFavouriteStopChange}
+            fullWidth
+            variant="outlined"
+          >
+            {stops &&
+              stops.map((stop) => (
+                <MenuItem value={stop?.id}>{stop?.name}</MenuItem>
+              ))}
+          </Select>
+          <p className="Settings-settingInfo italics">
+            Selecting a favourite stop will display the stops times on your
+            dashboard for quicker viewing.
           </p>
-        </Paper>
-        <Paper className="card">
-          <FormGroup>
-            <p className="Settings-helpText">Not got much data?</p>
-            <FormControlLabel
-              label={
-                <Box component="div" fontSize={14}>
-                  Low Data Mode
-                </Box>
-              }
-              labelPlacement="start"
-              sx={{
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'space-between',
-                margin: 0,
-                paddingLeft: '0.5rem',
-                paddingRight: '0.5rem',
-              }}
-              control={
-                <Switch
-                  checked={userSettings.lowData}
-                  onChange={handleLowDataToggle}
-                  name="lowData"
-                  color="primary"
-                />
-              }
-            />
-            <p className="Settings-settingInfo italics">
-              Enabling this will turn off the map/location tracking and present
-              you with cached times.
-            </p>
-            <Divider />
-            <p className="Settings-helpText">
-              Which page should load when you open this app?
-            </p>
-            <Select
-              value={userSettings.openingPage}
-              onChange={handleOpeningPageChange}
-              displayEmpty
-              fullWidth
-              variant="outlined"
-            >
-              <MenuItem value="/home">Dashboard</MenuItem>
-              <MenuItem value="/map">Map</MenuItem>
-            </Select>
-          </FormGroup>
+
+          <Divider />
+          <h3>Personalise the apps appearence</h3>
+          <FormControlLabel
+            label={
+              <Box component="div" fontSize={14}>
+                Rainbow Navigator Mode
+              </Box>
+            }
+            labelPlacement="start"
+            sx={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'space-between',
+              margin: 0,
+              paddingLeft: '0.5rem',
+              paddingRight: '0.5rem',
+            }}
+            control={
+              <Switch
+                checked={settings.rainbowNav || false}
+                onChange={handleRainbowMode}
+                name="rainbowNav"
+                color="primary"
+              />
+            }
+          />
+          <Divider />
         </Paper>
 
         <Paper className="card">
-          <p className="pageHeader">Got a feature in mind?</p>
+          <p className="pageHeader">
+            Got a feature in mind or want to get involved?
+          </p>
           <p className="quote">
-            Let us know what you're thinking or if you've stumbled across a bug.
+            Let us know what you're thinking or if you've stumbled across a bug,
+            or, if you just want to help us make this app even better!
           </p>
           <Button
             variant="contained"
-            onClick={() =>
-              handleSendEmailClick('Hey, I have a bug/feature request!')
-            }
+            onClick={() => handleSendEmailClick('Hey, I have a request!')}
           >
-            Let Us Know
-          </Button>
-        </Paper>
-
-        <Paper className="card">
-          <p className="pageHeader">Help Develop This App</p>
-          <p className="quote">
-            Want to help us build and make this app even better?
-          </p>
-          <Button
-            variant="contained"
-            onClick={() =>
-              handleSendEmailClick("Hey, I'd like to join the team!")
-            }
-          >
-            Contact Us
+            Get in touch
           </Button>
         </Paper>
 

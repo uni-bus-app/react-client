@@ -28,6 +28,8 @@ interface MapProps {
   setTimesSheetOpen: Dispatch<SetStateAction<boolean>>;
   nextCardOpen: boolean; // ISSUE 65
   setNextCardOpen: Dispatch<SetStateAction<boolean>>; // ISSUE 65
+  stops?: Stop[];
+  routeOverlay?: LatLng[];
 }
 
 const Map = (props: MapProps) => {
@@ -41,11 +43,11 @@ const Map = (props: MapProps) => {
     setTimesSheetOpen, // ISSUE 65
     nextCardOpen, // ISSUE 65
     setNextCardOpen, // ISSUE 65
+    stops,
+    routeOverlay,
   } = props;
 
   const [map, setMap] = useState<google.maps.Map>();
-  const [routeOverlay, setRouteOverlay] = useState<LatLng[]>();
-  const [stops, setStops] = useState<Stop[]>();
 
   const mapOptions: google.maps.MapOptions = {
     disableDefaultUI: true,
@@ -56,35 +58,6 @@ const Map = (props: MapProps) => {
       ? { lat: currentStop.location.lat, lng: currentStop.location.lng }
       : { lat: 50.794236, lng: -1.075 },
   };
-
-  useEffect(() => {
-    const getData = async () => {
-      setRouteOverlay(await getRoutePath());
-      setStops(await getStops());
-    };
-    getData();
-  }, []);
-
-  useEffect(() => {
-    if (map && currentStop) {
-      const pos = new google.maps.LatLng(
-        currentStop.location.lat,
-        currentStop.location.lng
-      );
-      map.setOptions({
-        center: pos,
-        zoom: 17,
-        tilt: 45,
-      });
-    }
-    if (map && !currentStop) {
-      map.setOptions({
-        center: { lat: 50.794236, lng: -1.075 },
-        zoom: 13,
-        tilt: 0,
-      });
-    }
-  }, [currentStop]);
 
   /**
    * Map loading logic
