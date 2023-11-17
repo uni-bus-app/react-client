@@ -48,7 +48,6 @@ const SettingsView = (props: SettingsViewProps) => {
           <Select
             value={settings?.favouriteStop || ''}
             onChange={handleFavouriteStopChange}
-            displayEmpty
             fullWidth
             variant="outlined"
           >

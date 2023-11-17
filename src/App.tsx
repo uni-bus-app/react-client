@@ -81,25 +81,16 @@ const App = () => {
   const getDesignTokens = (mode: PaletteMode) => ({
     palette: {
       mode,
-      ...(mode === 'light' || 'dark'
-        ? {
-            background: {
-              default: '#eeeeee',
-              paper: '#f5f5f5',
-            },
-            text: {
-              primary: '#222222',
-            },
-          }
-        : {
-            background: {
-              default: '#121212',
-              paper: '1e1e1e',
-            },
-            text: {
-              primary: '#cfcfcf',
-            },
-          }),
+      background: {
+        default: '#eeeeee',
+        paper: '#f5f5f5',
+      },
+      text: {
+        primary: '#222222',
+      },
+      icon: {
+        default: '#000000', // Set the default icon color (black in this example)
+      },
     },
   });
 
