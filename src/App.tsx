@@ -17,11 +17,12 @@ import Nav from './beta-components/Nav';
 import NotificationsView from './beta-components/Views/NotificationsView';
 import SettingsView from './beta-components/Views/SettingsView';
 import { useScreenTracking, useUpdate } from './hooks';
-import { Stop } from './types';
+import { LatLng, Stop } from './types';
 import SettingsProvider, { useSettings } from './components/SettingsProvider';
 import InitialStartup from './beta-components/InitialStartup';
 import LowDataModeView from './beta-components/Views/LowDataModeView';
 import AlertComponent from './beta-components/Alert';
+import { getRoutePath, getStops } from './api/APIUtils';
 
 const Map = lazy(() => import('./components/Map'));
 const NextTimesSheet = lazy(() => import('./components/NextTimesSheet'));
@@ -57,6 +58,21 @@ const App = () => {
   const [showAlert, setShowAlert] = useState(false); // BETA - Show alert
   const [userLocation, setUserLocation] = useState<any>(); // BETA - Users location
 
+  // Moved from map
+  const [stops, setStops] = useState<Stop[]>(); // Store all stops data
+  const [routeOverlay, setRouteOverlay] = useState<LatLng[]>();
+  useEffect(() => {
+    const getData = async () => {
+      setRouteOverlay(await getRoutePath());
+      setStops(await getStops());
+    };
+    getData();
+  }, []);
+
+  useEffect(() => {
+    console.log(stops, 'stops data');
+  }, [stops]);
+
   const darkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const logoContainer = useRef() as any;
 
@@ -65,7 +81,7 @@ const App = () => {
   const getDesignTokens = (mode: PaletteMode) => ({
     palette: {
       mode,
-      ...(mode === 'light'
+      ...(mode === 'light' || 'dark'
         ? {
             background: {
               default: '#eeeeee',
@@ -77,11 +93,11 @@ const App = () => {
           }
         : {
             background: {
-              default: grey[800],
-              paper: grey[800],
+              default: '#121212',
+              paper: '1e1e1e',
             },
             text: {
-              primary: '#f5f5f5',
+              primary: '#cfcfcf',
             },
           }),
     },
@@ -165,10 +181,13 @@ const App = () => {
             />
             <Suspense fallback={<div>Loading...</div>}></Suspense>
             <Routes>
-              <Route path="/" element={<Navigate to={'/'} />} />
-              <Route path="/home" element={<HomepageView />} />
+              <Route path="/" element={<Navigate to={'/home'} />} />
+              <Route path="/home" element={<HomepageView stops={stops} />} />
               <Route path="/notifications" element={<NotificationsView />} />
-              <Route path="/settings" element={<SettingsView />} />
+              <Route
+                path="/settings"
+                element={<SettingsView stops={stops} />}
+              />
               <Route
                 path="/map"
                 element={
@@ -181,8 +200,8 @@ const App = () => {
                       onMarkerSelect={onMarkerSelect}
                       logoContainer={logoContainer}
                       userLocation={userLocation}
-                      width={'100vw'}
-                      height={'100vh'}
+                      stops={stops}
+                      routeOverlay={routeOverlay}
                     />
                   </>
                 }

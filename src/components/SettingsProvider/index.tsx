@@ -8,7 +8,7 @@ const defaultSettings: SettingsItems = {
   useLocation: true,
   useNotifications: false,
   lowDataMode: false,
-  favouriteStop: '',
+  favouriteStop: '6TRxDIF8NDpofem64867',
 };
 
 interface ContextState extends SettingsItems {
