@@ -1,6 +1,6 @@
 import { BusAlert } from '@mui/icons-material';
 import { useNavigate } from 'react-router';
-import Map from '../../components/Map';
+import Map from '../../assets/map.png';
 import './styles.scss';
 
 const MiniMap = () => {
@@ -13,13 +13,7 @@ const MiniMap = () => {
         onClick={() => navigate('/map', { replace: true })}
       >
         <span className="mapCard-cover" />
-        <Map
-          stopMarkersEnabled={true}
-          routeOverlayEnabled={true}
-          width={'100%'}
-          height={'100%'}
-          userLocation={true}
-        />
+        <img src={Map} alt="Southsea map" className="mapCard-map" />
         <div className="mapCard-routeNumberOverlay">U1 Route</div>
         <div className="mapCard-actions">
           <div className="mapCard-actions-busesAvailable">

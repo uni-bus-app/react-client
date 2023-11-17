@@ -72,11 +72,22 @@ const App = () => {
     palette: {
       mode,
       ...(mode === 'light'
-        ? {}
+        ? {
+            background: {
+              default: '#eeeeee',
+              paper: '#f5f5f5',
+            },
+            text: {
+              primary: '#222222',
+            },
+          }
         : {
             background: {
               default: grey[800],
               paper: grey[800],
+            },
+            text: {
+              primary: '#f5f5f5',
             },
           }),
     },

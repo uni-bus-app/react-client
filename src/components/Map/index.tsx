@@ -62,13 +62,6 @@ const Map = (props: MapProps) => {
     getData();
   }, []);
 
-  const theme = useTheme();
-
-  const { isLoaded, loadError } = useJsApiLoader({
-    googleMapsApiKey: config.mapsApiKey,
-    mapIds: ['f9e34791c612c2be', '8d48c9186a06dab'],
-  });
-
   /**
    * Creates a marker for the users location
    */
@@ -106,20 +99,20 @@ const Map = (props: MapProps) => {
   }, [map, userLocation, userMarker]);
 
   /**
-   * Renders the map
-   *
-   * @returns Map Component
+   * Map loading logic
    */
+  const { isLoaded, loadError } = useJsApiLoader({
+    googleMapsApiKey: config.mapsApiKey,
+    mapIds: ['f9e34791c612c2be', '8d48c9186a06dab'],
+  });
+  const theme = useTheme();
   const renderMap = () => {
-    const webglOverlayView = new google.maps.WebGLOverlayView();
     const onLoad = (mapInstance: google.maps.Map) => {
       setMap(mapInstance);
-      webglOverlayView.setMap(mapInstance);
       moveLogo(mapInstance, logoContainer);
     };
 
     const onUnmount = () => {
-      setUserMarker(null);
       setMap(undefined);
     };
 
@@ -127,12 +120,9 @@ const Map = (props: MapProps) => {
       <>
         <GoogleMap
           mapContainerStyle={{
-            width: width,
-            height: height,
+            width: '100vw',
+            // height: 'calc(40vh + env(safe-area-inset-top))',
             position: 'absolute',
-            top: '0',
-            left: '0',
-            borderRadius: '12px',
           }}
           mapContainerClassName={styles.mapContainer}
           options={{
@@ -155,12 +145,30 @@ const Map = (props: MapProps) => {
             onMarkerSelect={onMarkerSelect}
           />
         </GoogleMap>
-
-        <div className={styles.logoContainer} ref={logoContainer} />
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            // height: '3em',
+            width: '100%',
+          }}
+          className={styles.statusBarContainer}
+        >
+          <div
+            style={{
+              // position: 'absolute',
+              // top: 0,
+              opacity: theme.palette.mode === 'dark' ? 0 : undefined,
+            }}
+            className={styles.statusBar}
+          />
+          <div className={styles.statusBarBlur} />
+        </div>
       </>
     );
   };
-
   if (loadError) {
     return <div>Map cannot be loaded :(</div>;
   }

@@ -1,14 +1,14 @@
 import { IconButton } from '@mui/material';
 import { ReactComponent as Map } from '../../assets/SVGs/map.svg';
 import { ReactComponent as Menu } from '../../assets/SVGs/menu.svg';
-import { ReactComponent as Notification } from '../../assets/SVGs/notification.svg';
 import { ReactComponent as Locate } from '../../assets/SVGs/locate.svg';
 import { ReactComponent as Home } from '../../assets/SVGs/home.svg';
 import classNames from 'classnames';
-
-import styles from './styles.module.css';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
+import { Tune } from '@mui/icons-material';
+
+import styles from './styles.module.css';
 
 interface NavProps {
   pathName: string;
@@ -48,33 +48,13 @@ const Nav = (props: NavProps) => {
 
   return (
     <div className={styles.Nav}>
-      <div className={styles.location}>
-        <IconButton
-          sx={{ height: '100%' }}
-          onClick={(e) => {
-            if (!locationActive) {
-              navigate('/map', { replace: true });
-              handleClick(e);
-              setLocationActive(true);
-              setTimeout(() => {
-                getLocation();
-              }, 700);
-            } else {
-              setLocationActive(false);
-            }
-          }}
-          id={'map'}
-        >
-          <Locate
-            className={buttonClasses}
-            style={{
-              color: locationActive
-                ? 'rgba(255,255,255,0.87)'
-                : 'rgba(255,255,255,0.2)',
-            }}
-          />
-        </IconButton>
-      </div>
+      {pathName === '/map' && (
+        <div className={styles.filter}>
+          <IconButton onClick={() => console.log('filters')}>
+            <Tune className={styles.icon} />
+          </IconButton>
+        </div>
+      )}
 
       <div className={styles.menuItems}>
         <div
@@ -130,6 +110,36 @@ const Nav = (props: NavProps) => {
           />
         </IconButton>
       </div>
+
+      {pathName === '/map' && (
+        <div className={styles.location}>
+          <IconButton
+            sx={{ height: '100%' }}
+            onClick={(e) => {
+              if (!locationActive) {
+                navigate('/map', { replace: true });
+                handleClick(e);
+                setLocationActive(true);
+                setTimeout(() => {
+                  getLocation();
+                }, 700);
+              } else {
+                setLocationActive(false);
+              }
+            }}
+            id={'map'}
+          >
+            <Locate
+              className={buttonClasses}
+              style={{
+                color: locationActive
+                  ? 'rgba(255,255,255,0.87)'
+                  : 'rgba(255,255,255,0.2)',
+              }}
+            />
+          </IconButton>
+        </div>
+      )}
     </div>
   );
 };
