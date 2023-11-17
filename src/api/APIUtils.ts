@@ -11,6 +11,11 @@ if (process.env.NODE_ENV === 'development') {
 
 const apiURL = config.apiURL;
 
+export const getVehicles = async (): Promise<any[]> => {
+  const res = await fetch(`${apiURL}/vehicles`);
+  return await res.json();
+};
+
 export const getRoutePath = async (): Promise<LatLng[]> => {
   const res = await fetch(`${apiURL}/u1routepath`);
   return await res.json();

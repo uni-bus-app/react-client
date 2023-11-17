@@ -11,6 +11,7 @@ import StopMarkers from './components/StopMarkers';
 import { mapStylesDark, mapStylesLight } from './styles';
 import styles from './styles.module.css';
 import { getBounds, getLocation, moveLogo } from './utils';
+import LiveVehicleLocation from './components/LiveVehicleLocation';
 
 const mapOptions: google.maps.MapOptions = {
   disableDefaultUI: true,
@@ -116,6 +117,7 @@ const Map = (props: MapProps) => {
           onLoad={onLoad}
           onUnmount={onUnmount}
         >
+          <LiveVehicleLocation darkModeEnabled={darkModeEnabled} />
           <RoutePath
             enabled={routeOverlayEnabled}
             path={routeOverlay}
