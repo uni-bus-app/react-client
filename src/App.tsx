@@ -18,7 +18,7 @@ import NotificationsView from './beta-components/Views/NotificationsView';
 import SettingsView from './beta-components/Views/SettingsView';
 import { useScreenTracking, useUpdate } from './hooks';
 import { Stop } from './types';
-import SettingsProvider from './components/SettingsProvider';
+import SettingsProvider, { useSettings } from './components/SettingsProvider';
 import InitialStartup from './beta-components/InitialStartup';
 import LowDataModeView from './beta-components/Views/LowDataModeView';
 import AlertComponent from './beta-components/Alert';
@@ -56,12 +56,6 @@ const App = () => {
   const [splashScreen, setSplashScreen] = useState(true); // BETA - Show splash screen
   const [showAlert, setShowAlert] = useState(false); // BETA - Show alert
   const [userLocation, setUserLocation] = useState<any>(); // BETA - Users location
-  const [userSettings, setUserSettings] = useState<any>({
-    darkMode: false,
-    openingPage: '/map',
-    lowData: false,
-    location: false,
-  }); // BETA - Users settings
 
   const darkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const logoContainer = useRef() as any;
@@ -127,12 +121,8 @@ const App = () => {
 
   // Update pathName on page change (BETA)
   useEffect(() => {
-    if (pathName === '') {
-      setPathname(userSettings.openingPage);
-    } else {
-      setPathname(location.pathname);
-    }
-  }, [location, pathName, userSettings.openingPage]);
+    setPathname(location.pathname);
+  }, [location, pathName]);
 
   // Check localhost to see if the user has seen the splash screen (BETA)
   useEffect(() => {
@@ -175,21 +165,10 @@ const App = () => {
             />
             <Suspense fallback={<div>Loading...</div>}></Suspense>
             <Routes>
-              <Route
-                path="/"
-                element={<Navigate to={userSettings.openingPage} />}
-              />
+              <Route path="/" element={<Navigate to={'/'} />} />
               <Route path="/home" element={<HomepageView />} />
               <Route path="/notifications" element={<NotificationsView />} />
-              <Route
-                path="/settings"
-                element={
-                  <SettingsView
-                    userSettings={userSettings}
-                    setUserSettings={setUserSettings}
-                  />
-                }
-              />
+              <Route path="/settings" element={<SettingsView />} />
               <Route
                 path="/map"
                 element={

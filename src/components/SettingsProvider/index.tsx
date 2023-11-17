@@ -27,7 +27,6 @@ const SettingsProvider = ({ children }: any) => {
   const [state, setState] = useState<SettingsItems>(defaultSettings);
 
   useEffect(() => {
-    // Load from IndexedDB on component mount
     loadSettingsFromIDB();
   }, []);
 
@@ -42,7 +41,7 @@ const SettingsProvider = ({ children }: any) => {
 
   const setSettingsToIDB = async (settings: SettingsItems) => {
     try {
-      await set('settings', settings); // Store settings in IndexedDB with key 'settings'
+      await set('settings', settings);
     } catch (error) {
       console.error('Error saving settings to IndexedDB:', error);
     }
@@ -50,9 +49,9 @@ const SettingsProvider = ({ children }: any) => {
 
   const loadSettingsFromIDB = async () => {
     try {
-      const savedSettings = await get('settings'); // Retrieve settings from IndexedDB
+      const savedSettings = await get('settings');
       if (savedSettings !== undefined && savedSettings !== null) {
-        setState(savedSettings); // Update state with settings from IndexedDB
+        setState(savedSettings);
         console.log(savedSettings, 'settings loaded from IndexedDB');
       }
     } catch (error) {

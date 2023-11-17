@@ -17,14 +17,24 @@ import { useEffect, useState } from 'react';
 import { useSettings } from '../../../components/SettingsProvider';
 import { SettingsItemsNames } from '../../../components/SettingsProvider/types';
 
-interface SettingsViewProps {
-  setUserSettings: any;
-  userSettings: any;
-}
-
-const SettingsView = (props: SettingsViewProps) => {
-  const { setUserSettings, userSettings } = props;
+const SettingsView = () => {
   const settings = useSettings();
+
+  const [userSettings, setUserSettings] = useState<any>({
+    darkMode: false,
+    openingPage: '/map',
+    lowData: false,
+    location: false,
+    favouriteStop: '',
+  }); // BETA - Users settings
+
+  // Set user settings on page load (visual purposes)
+  useEffect(() => {
+    setUserSettings({
+      ...userSettings,
+      lowData: settings.lowDataMode,
+    });
+  }, [settings]);
 
   const handleSendEmailClick = (subject: string) => {
     const subjectEncoded = encodeURIComponent(subject);
@@ -32,53 +42,17 @@ const SettingsView = (props: SettingsViewProps) => {
     window.open(link, 'emailWin');
   };
 
-  /**
-   * Settings to include
-   *
-   * Dark mode  override
-   *
-   * Opening page override
-   *
-   * Clear all cache
-   *
-   * Low Data Use Mode (no map, no images, no animations)
-   *
-   * Enable Location
-   *
-   *
-   *
-   */
-
   const handleLowDataToggle = (event: any) => {
-    const updatedSettings = {
-      ...userSettings,
-      lowData: event.target.checked,
-    };
     settings.setValue(SettingsItemsNames.lowDataMode, event.target.checked);
-    setUserSettings(updatedSettings);
   };
 
-  useEffect(() => {
-    console.log(settings);
-  }, [settings]);
-
-  const handleOpeningPageChange = (event: SelectChangeEvent<string>) => {
-    const updatedSettings = {
-      ...userSettings,
-      openingPage: event.target.value,
-    };
-    setUserSettings(updatedSettings);
+  const handleFavouriteStopChange = (event: SelectChangeEvent<string>) => {
+    settings.setValue(SettingsItemsNames.favouriteStop, event.target.value);
   };
 
   return (
     <div className="page">
       <main className="pageStructure">
-        <Paper className="card">
-          <p className="pageHeader">Settings</p>
-          <p className="quote italics">
-            Customise the look and feel of the app
-          </p>
-        </Paper>
         <Paper className="card">
           <FormGroup>
             <p className="Settings-helpText">Not got much data?</p>
@@ -99,7 +73,7 @@ const SettingsView = (props: SettingsViewProps) => {
               }}
               control={
                 <Switch
-                  checked={userSettings.lowData}
+                  checked={settings.lowDataMode || false}
                   onChange={handleLowDataToggle}
                   name="lowData"
                   color="primary"
@@ -111,19 +85,21 @@ const SettingsView = (props: SettingsViewProps) => {
               you with cached times.
             </p>
             <Divider />
-            <p className="Settings-helpText">
-              Which page should load when you open this app?
-            </p>
+            <p className="Settings-helpText">Which stop do you use the most?</p>
             <Select
-              value={userSettings.openingPage}
-              onChange={handleOpeningPageChange}
+              value={settings?.favouriteStop || ''}
+              onChange={handleFavouriteStopChange}
               displayEmpty
               fullWidth
               variant="outlined"
             >
-              <MenuItem value="/home">Dashboard</MenuItem>
-              <MenuItem value="/map">Map</MenuItem>
+              <MenuItem value="/home">University Library</MenuItem>
+              <MenuItem value="/map">Cambridge Road</MenuItem>
             </Select>
+            <p className="Settings-settingInfo italics">
+              Selecting a favourite stop will display the stops times on your
+              dashboard for quicker viewing.
+            </p>
           </FormGroup>
         </Paper>
 

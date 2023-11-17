@@ -3,7 +3,7 @@ export interface SettingsItems {
   darkModeOverride: boolean;
   useLocation: boolean;
   useNotifications: boolean;
-  favouriteStop: string;
+  favouriteStop: string | null;
   lowDataMode: boolean;
 }
 
