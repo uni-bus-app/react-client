@@ -5,6 +5,7 @@ export interface SettingsItems {
   useNotifications: boolean;
   favouriteStop: string | null;
   lowDataMode: boolean;
+  rainbowNav: boolean;
 }
 
 export enum SettingsItemsNames {
@@ -14,4 +15,5 @@ export enum SettingsItemsNames {
   UseNotifications = 'useNotifications',
   favouriteStop = 'favouriteStop',
   lowDataMode = 'lowDataMode',
+  rainbowNav = 'rainbowNav',
 }

@@ -3,15 +3,20 @@ import Button from '@mui/material/Button';
 import Jools from '../../../assets/jools.jpg';
 import './styles.scss';
 import {
+  Box,
+  Divider,
+  FormControlLabel,
   FormGroup,
   MenuItem,
   Paper,
   Select,
   SelectChangeEvent,
+  Switch,
 } from '@mui/material';
 import { useSettings } from '../../../components/SettingsProvider';
 import { SettingsItemsNames } from '../../../components/SettingsProvider/types';
 import { Stop } from '../../../types';
+import { ChangeEvent } from 'react';
 
 interface SettingsViewProps {
   stops: Stop[] | undefined;
@@ -31,11 +36,15 @@ const SettingsView = (props: SettingsViewProps) => {
     settings.setValue(SettingsItemsNames.favouriteStop, event.target.value);
   };
 
+  const handleRainbowMode = (event: ChangeEvent<HTMLInputElement>) => {
+    settings.setValue(SettingsItemsNames.rainbowNav, event.target.checked);
+  };
+
   return (
     <div className="page">
       <main className="pageStructure">
         <Paper className="card">
-          <h3>Set your favourite stop</h3>
+          <h3>Set your most used stop</h3>
           <Select
             value={settings?.favouriteStop || ''}
             onChange={handleFavouriteStopChange}
@@ -52,6 +61,34 @@ const SettingsView = (props: SettingsViewProps) => {
             Selecting a favourite stop will display the stops times on your
             dashboard for quicker viewing.
           </p>
+
+          <Divider />
+          <h3>Personalise the apps appearence</h3>
+          <FormControlLabel
+            label={
+              <Box component="div" fontSize={14}>
+                Rainbow Navigator Mode
+              </Box>
+            }
+            labelPlacement="start"
+            sx={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'space-between',
+              margin: 0,
+              paddingLeft: '0.5rem',
+              paddingRight: '0.5rem',
+            }}
+            control={
+              <Switch
+                checked={settings.rainbowNav || false}
+                onChange={handleRainbowMode}
+                name="rainbowNav"
+                color="primary"
+              />
+            }
+          />
+          <Divider />
         </Paper>
 
         <Paper className="card">

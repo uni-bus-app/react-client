@@ -9,6 +9,7 @@ const defaultSettings: SettingsItems = {
   useNotifications: false,
   lowDataMode: false,
   favouriteStop: '6TRxDIF8NDpofem64867',
+  rainbowNav: false,
 };
 
 interface ContextState extends SettingsItems {
