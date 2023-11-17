@@ -1,0 +1,70 @@
+.box {
+  background-color: #18171e;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  height: 100vh;
+  z-index: 100000000000000000000000000000000000;
+  width: 100vw;
+}
+
+.pageContainer {
+  height: 100vh;
+  display: flex;
+  background-color: #18171e;
+  flex-direction: column;
+  align-items: center;
+}
+
+img {
+  width: 80%;
+  object-fit: contain;
+}
+
+.imageTextContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.pageContainerTextContainer {
+  display: flex;
+  color: white;
+  padding: 0 2em 0 2em;
+  box-sizing: border-box;
+  text-align: center;
+  flex-direction: column;
+  width: 100%;
+}
+
+.pageContainerTitle {
+  font-family: 'Product Sans Black';
+  font-size: 2.2em;
+  margin-bottom: 0;
+}
+
+.pageContainerIntroduction {
+  line-height: 1.5em;
+  white-space: normal;
+  font-size: small;
+}
+
+.pageContainerButton {
+  width: 85% !important;
+  color: black !important;
+  background-color: white !important;
+  font-size: small !important;
+  font-weight: 650 !important;
+  padding: 1.1em !important;
+  box-sizing: border-box !important;
+  border-radius: 14px !important;
+  text-transform: none !important;
+}
+
+.smallText {
+  font-size: 10px;
+  white-space: normal;
+}

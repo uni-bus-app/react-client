@@ -1,0 +1,149 @@
+.RouteSwitchViewPage {
+  position: relative;
+  width: 100%;
+  padding: 0 12px 0 12px;
+  box-sizing: border-box;
+  padding-top: calc(env(safe-area-inset-top) + 10px);
+  padding-bottom: calc(env(safe-area-inset-bottom) + 80px);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: white;
+  z-index: 100000000;
+
+  .pageStructure {
+    overflow-x: auto;
+    text-align: center;
+    border-radius: 0 0 12px 12px;
+    padding: 15px 15px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    row-gap: 8px;
+    height: 100%;
+  }
+
+  .header {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  .icon {
+    width: 24px;
+    height: 24px;
+    color: rgb(183, 183, 183);
+  }
+
+  p {
+    color: black;
+  }
+
+  .Title {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 1rem;
+
+    &-description {
+      color: rgba(0, 0, 0, 0.5);
+      font-size: 0.9rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    &-header {
+      color: black;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+  }
+
+  .button {
+    padding: 12px !important;
+    border-radius: 12px !important;
+    border: none;
+    font-weight: bold;
+    box-sizing: border-box;
+    width: 100%;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+    text-transform: none !important;
+  }
+
+  .indigo {
+    background-color: rgb(140, 128, 252) !important;
+    color: white !important;
+  }
+
+  .white {
+    background-color: white;
+    color: rgb(62, 57, 97);
+  }
+
+  .Routes {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    &-list {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      width: 100%;
+      justify-content: space-around;
+    }
+
+    &-option {
+      display: flex;
+      flex-direction: column;
+      align-items: center !important;
+      width: 100%;
+      justify-content: center;
+
+      &-iconBackground {
+        width: 80px;
+        height: 80px;
+        border: none;
+        border-radius: 12px;
+        background-color: rgb(247, 247, 247);
+
+        &-img {
+          width: 80px;
+          height: 80px;
+          border-radius: 12px;
+        }
+      }
+
+      &-name {
+        font-weight: bold;
+        font-size: 0.9rem;
+        color: black;
+        width: 100%;
+      }
+    }
+    &-description {
+      color: rgba(0, 0, 0, 0.5);
+      font-size: 0.9rem;
+      width: 80%;
+    }
+  }
+
+  .inactive {
+    width: 68px;
+    height: 68px;
+    border-radius: 12px;
+    background-color: rgb(0, 200, 154);
+    filter: grayscale(0.8);
+
+    &-iconBackground {
+      width: 68px;
+      height: 68px;
+      border: none;
+      border-radius: 12px;
+      background-color: rgb(247, 247, 247);
+    }
+  }
+}

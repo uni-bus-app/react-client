@@ -18,7 +18,7 @@
   bottom: 57%;
   position: absolute;
   width: 100%;
-  z-index: 0;
+  z-index: 1000000;
 }
 
 .updateSnackBar {
@@ -30,4 +30,25 @@
     height: 100%;
     width: 25.5em;
   }
+}
+
+.button {
+  padding: 12px !important;
+  border-radius: 12px !important;
+  border: none;
+  font-weight: bold;
+  box-sizing: border-box;
+  width: 100%;
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+  text-transform: none !important;
+}
+
+.indigo {
+  background-color: rgb(140, 128, 252) !important;
+  color: white !important;
+}
+
+.white {
+  background-color: white;
+  color: rgb(62, 57, 97);
 }

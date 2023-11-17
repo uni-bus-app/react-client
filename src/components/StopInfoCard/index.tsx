@@ -1,15 +1,25 @@
 import Badge from '@mui/icons-material/Badge';
-import Hail from '@mui/icons-material/Hail';
 import NoTransfer from '@mui/icons-material/NoTransfer';
-import Card from '@mui/material/Card';
 import styles from './styles.module.css';
+import { Stop } from '../../types';
+import Close from '@mui/icons-material/Close';
+import { IconButton } from '@mui/material';
+import { DirectionsWalk, NoDrinks } from '@mui/icons-material';
 
-const StopInfoCard = () => {
+interface StopInfoCardProps {
+  stop?: Stop;
+  setOpen: any;
+}
+
+const StopInfoCard = (props: StopInfoCardProps) => {
+  const { stop, setOpen } = props;
   return (
-    <Card className={styles.card} sx={{ boxShadow: 7 }}>
+    <div className={styles.card}>
       <div className={styles.header}>
-        <Hail fontSize="large" />
-        Stop Info
+        <div className={styles.headerText}>{stop?.name}</div>
+        <IconButton onClick={() => setOpen(false)}>
+          <Close />
+        </IconButton>
       </div>
       <div className={styles.details}>
         <div className={styles.item}>
@@ -19,13 +29,17 @@ const StopInfoCard = () => {
           </p>
         </div>
         <div className={styles.item}>
+          <NoDrinks className={styles.icon} />
+          <p className={styles.bodyText}>No alcohol allowed on this service</p>
+        </div>
+        <div className={styles.item}>
           <NoTransfer className={styles.icon} />
           <p className={styles.bodyText}>
             This service does not run on the weekend and bank holidays
           </p>
         </div>
       </div>
-    </Card>
+    </div>
   );
 };
 

@@ -66,6 +66,7 @@ const TimesList = (props: TimesListProps) => {
   const theme = useTheme();
   const darkTheme = theme.palette.mode === 'dark';
   const ref = createRef<HTMLDivElement>();
+
   const load = () => {
     setTimesLoading(true);
     window.setTimeout(() => {
@@ -156,7 +157,7 @@ interface TimesItemProps {
 }
 
 const TimeItem = (props: TimesItemProps) => {
-  const { time, darkTheme, index } = props;
+  const { time, darkTheme } = props;
   return (
     <div className={styles.row}>
       <div className={styles.busInfoContainer}>

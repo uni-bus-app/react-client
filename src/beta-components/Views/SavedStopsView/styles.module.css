@@ -1,0 +1,9 @@
+.savedStopsPage {
+  width: 100%;
+  padding-top: calc(env(safe-area-inset-top) + 10px);
+  padding-bottom: calc(env(safe-area-inset-bottom) + 10px);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+}
