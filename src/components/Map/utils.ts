@@ -63,7 +63,6 @@ export const getLocation: () => Promise<google.maps.LatLng> = () => {
         lng: pos.coords.longitude,
       };
       const position = new google.maps.LatLng(position1);
-      console.log(position, 'position');
       resolve(position);
     });
   });

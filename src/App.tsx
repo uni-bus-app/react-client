@@ -52,10 +52,13 @@ const App = () => {
   const [currentStop, setCurrentStop] = useState<Stop>();
 
   const [timesSheetOpen, setTimesSheetOpen] = useState<boolean>(false); //BETA - Show times sheet
+
   const [pathName, setPathname] = useState(''); // BETA - Track page location
   const [splashScreen, setSplashScreen] = useState(true); // BETA - Show splash screen
   const [showAlert, setShowAlert] = useState(false); // BETA - Show alert
   const [userLocation, setUserLocation] = useState<any>(); // BETA - Users location
+  const [nextCardOpen, setNextCardOpen] = useState(false); // ISSUE 65
+
   const [userSettings, setUserSettings] = useState<any>({
     darkMode: false,
     openingPage: '/map',
@@ -99,9 +102,18 @@ const App = () => {
   );
 
   const onMarkerSelect = (stop: Stop) => {
-    setTimesSheetOpen(true);
+    console.log('Marker selected');
+    console.log(stop, currentStop);
     setCurrentStop(stop);
+    setNextCardOpen(true);
   };
+
+  // ISSUE 65 - Clear the markers whenevever tapping away from the sheet
+  useEffect(() => {
+    if (!nextCardOpen) {
+      setCurrentStop(undefined);
+    }
+  }, [nextCardOpen]);
 
   // Log StopView event for analytics
   useEffect(() => {
@@ -202,19 +214,24 @@ const App = () => {
                         onMarkerSelect={onMarkerSelect}
                         logoContainer={logoContainer}
                         userLocation={userLocation}
-                        width={'100vw'}
-                        height={'100vh'}
+                        setTimesSheetOpen={setTimesSheetOpen}
+                        nextCardOpen={nextCardOpen}
+                        setNextCardOpen={setNextCardOpen}
                       />
                     </>
                   }
                 />
               </Routes>
               <NextTimesSheet
-                open={timesSheetOpen}
-                setOpen={setTimesSheetOpen}
+                openNextTimesSheet={timesSheetOpen}
+                setOpenNextTimesSheet={setTimesSheetOpen}
                 stop={currentStop}
               />
-              <Nav pathName={pathName} getLocation={getCurrentLocation} />
+              <Nav
+                pathName={pathName}
+                getLocation={getCurrentLocation}
+                setNextCardOpen={setNextCardOpen}
+              />
             </ThemeProvider>
           )}
         </>

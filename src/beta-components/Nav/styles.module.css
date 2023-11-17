@@ -57,7 +57,7 @@
   display: flex;
   align-items: center;
   justify-content: space-around;
-  background-color: rgb(255, 255, 255);
+  background-color: #f5f5f5;
   border-radius: 40px;
   width: 60%; /* Default width for screens smaller than a phone */
   padding: 6px;

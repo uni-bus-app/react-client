@@ -4,7 +4,7 @@ import { ReactComponent as Menu } from '../../assets/SVGs/menu.svg';
 import { ReactComponent as Locate } from '../../assets/SVGs/locate.svg';
 import { ReactComponent as Home } from '../../assets/SVGs/home.svg';
 import classNames from 'classnames';
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Tune } from '@mui/icons-material';
 
@@ -13,9 +13,10 @@ import styles from './styles.module.css';
 interface NavProps {
   pathName: string;
   getLocation: () => void;
+  setNextCardOpen: Dispatch<SetStateAction<boolean>>;
 }
 const Nav = (props: NavProps) => {
-  const { pathName, getLocation } = props;
+  const { pathName, getLocation, setNextCardOpen } = props;
 
   const [translate, setTranslate] = useState(0);
   const [moving, setMovement] = useState(false);
@@ -23,7 +24,6 @@ const Nav = (props: NavProps) => {
   const navigate = useNavigate();
 
   const handleClick = (e: any) => {
-    console.log(e);
     if (e.target.id) {
       navigate(`/${e.target.id}`, { replace: true });
     }
@@ -33,9 +33,9 @@ const Nav = (props: NavProps) => {
   };
 
   useEffect(() => {
-    // Turn off location persistence if moving around the app
     if (pathName !== '/map') {
-      setLocationActive(false);
+      setLocationActive(false); // Turn off location persistence if moving around the app
+      setNextCardOpen(false); // Make sure the cards are closed if we move away from the map
     }
     pathName === '/home' && setTranslate(25);
     pathName === '/map' && setTranslate(150);
