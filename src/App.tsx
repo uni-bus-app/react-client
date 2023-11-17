@@ -102,8 +102,6 @@ const App = () => {
   );
 
   const onMarkerSelect = (stop: Stop) => {
-    console.log('Marker selected');
-    console.log(stop, currentStop);
     setCurrentStop(stop);
     setNextCardOpen(true);
   };
