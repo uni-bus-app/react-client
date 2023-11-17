@@ -137,7 +137,8 @@ const Map = (props: MapProps) => {
           setOpen={setNextCardOpen}
           disableBackdrop={true}
           zIndex={5000}
-          minHeight={250}
+          minHeight={220}
+          borderRadius={50}
         >
           <NextTimeCard
             darkMode={true}

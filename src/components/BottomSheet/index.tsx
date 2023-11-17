@@ -12,6 +12,7 @@ interface BottomSheetProps {
   disableBackdrop?: boolean;
   zIndex?: number;
   minHeight?: number;
+  borderRadius?: number;
 }
 
 const BottomSheet = (props: BottomSheetProps) => {
@@ -22,7 +23,8 @@ const BottomSheet = (props: BottomSheetProps) => {
     children,
     disableBackdrop = false,
     zIndex,
-    minHeight,
+    minHeight = 0,
+    borderRadius = 0,
   } = props;
 
   return disableSwipe ? (
@@ -31,7 +33,7 @@ const BottomSheet = (props: BottomSheetProps) => {
     </Drawer>
   ) : (
     <SwipeableDrawer
-      sx={{ zIndex: zIndex || 10000000000000 }}
+      sx={{ zIndex: zIndex || 10000000000000, borderRadius: '50%' }}
       anchor={'bottom'}
       open={open}
       onClose={() => setOpen(false)}
@@ -40,7 +42,9 @@ const BottomSheet = (props: BottomSheetProps) => {
       BackdropProps={{ invisible: disableBackdrop }}
       PaperProps={{
         sx: {
-          minHeight: minHeight || 0,
+          minHeight,
+          borderTopLeftRadius: `${borderRadius / 2}px`,
+          borderTopRightRadius: `${borderRadius / 2}px`,
         },
       }}
     >
