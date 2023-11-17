@@ -13,7 +13,9 @@ import {
   SelectChangeEvent,
   Switch,
 } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSettings } from '../../../components/SettingsProvider';
+import { SettingsItemsNames } from '../../../components/SettingsProvider/types';
 
 interface SettingsViewProps {
   setUserSettings: any;
@@ -22,6 +24,8 @@ interface SettingsViewProps {
 
 const SettingsView = (props: SettingsViewProps) => {
   const { setUserSettings, userSettings } = props;
+  const settings = useSettings();
+
   const handleSendEmailClick = (subject: string) => {
     const subjectEncoded = encodeURIComponent(subject);
     const link = 'mailto:admin@unib.us?subject=' + subjectEncoded;
@@ -50,8 +54,13 @@ const SettingsView = (props: SettingsViewProps) => {
       ...userSettings,
       lowData: event.target.checked,
     };
+    settings.setValue(SettingsItemsNames.lowDataMode, event.target.checked);
     setUserSettings(updatedSettings);
   };
+
+  useEffect(() => {
+    console.log(settings);
+  }, [settings]);
 
   const handleOpeningPageChange = (event: SelectChangeEvent<string>) => {
     const updatedSettings = {

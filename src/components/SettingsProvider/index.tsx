@@ -1,12 +1,14 @@
-import { set } from 'idb-keyval';
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { SettingsItems } from './types';
+import { get, set } from 'idb-keyval'; // Import idb-keyval package
 
 const defaultSettings: SettingsItems = {
   useSystemTheme: true,
   darkModeOverride: false,
   useLocation: true,
   useNotifications: false,
+  lowDataMode: false,
+  favouriteStop: '',
 };
 
 interface ContextState extends SettingsItems {
@@ -24,12 +26,38 @@ const SettingsContext = createContext<ContextState>({
 const SettingsProvider = ({ children }: any) => {
   const [state, setState] = useState<SettingsItems>(defaultSettings);
 
+  useEffect(() => {
+    // Load from IndexedDB on component mount
+    loadSettingsFromIDB();
+  }, []);
+
   const setValue = <K extends keyof SettingsItems>(
     name: K,
     value: SettingsItems[K]
   ) => {
-    setState((oldValue: any) => ({ ...oldValue, [name]: value }));
-    set(name, value);
+    const updatedSettings = { ...state, [name]: value };
+    setState(updatedSettings);
+    setSettingsToIDB(updatedSettings);
+  };
+
+  const setSettingsToIDB = async (settings: SettingsItems) => {
+    try {
+      await set('settings', settings); // Store settings in IndexedDB with key 'settings'
+    } catch (error) {
+      console.error('Error saving settings to IndexedDB:', error);
+    }
+  };
+
+  const loadSettingsFromIDB = async () => {
+    try {
+      const savedSettings = await get('settings'); // Retrieve settings from IndexedDB
+      if (savedSettings !== undefined && savedSettings !== null) {
+        setState(savedSettings); // Update state with settings from IndexedDB
+        console.log(savedSettings, 'settings loaded from IndexedDB');
+      }
+    } catch (error) {
+      console.error('Error loading settings from IndexedDB:', error);
+    }
   };
 
   const value: ContextState = { ...state, setValue };

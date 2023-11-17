@@ -153,72 +153,72 @@ const App = () => {
   return (
     <SettingsProvider>
       {/* If the user has low data mode on, show them this */}
-      {userSettings.lowData ? (
+      {/* {userSettings.lowData ? (
         <LowDataModeView />
-      ) : (
-        <>
-          {splashScreen ? (
-            <InitialStartup setSplashScreen={setSplashScreen} />
-          ) : (
-            <ThemeProvider theme={theme}>
-              <AlertComponent
-                message="Offline content downloaded"
-                alertSeverity="Success"
-                showAlert={showAlert}
-                setShowAlert={setShowAlert}
+      ) : ( */}
+      <>
+        {splashScreen ? (
+          <InitialStartup setSplashScreen={setSplashScreen} />
+        ) : (
+          <ThemeProvider theme={theme}>
+            <AlertComponent
+              message="Offline content downloaded"
+              alertSeverity="Success"
+              showAlert={showAlert}
+              setShowAlert={setShowAlert}
+            />
+            <CssBaseline />
+            <UpdateSnackBar
+              updateAvailable={update.updateAvailable}
+              restarting={update.restarting}
+              restart={update.restart}
+            />
+            <Suspense fallback={<div>Loading...</div>}></Suspense>
+            <Routes>
+              <Route
+                path="/"
+                element={<Navigate to={userSettings.openingPage} />}
               />
-              <CssBaseline />
-              <UpdateSnackBar
-                updateAvailable={update.updateAvailable}
-                restarting={update.restarting}
-                restart={update.restart}
+              <Route path="/home" element={<HomepageView />} />
+              <Route path="/notifications" element={<NotificationsView />} />
+              <Route
+                path="/settings"
+                element={
+                  <SettingsView
+                    userSettings={userSettings}
+                    setUserSettings={setUserSettings}
+                  />
+                }
               />
-              <Suspense fallback={<div>Loading...</div>}></Suspense>
-              <Routes>
-                <Route
-                  path="/"
-                  element={<Navigate to={userSettings.openingPage} />}
-                />
-                <Route path="/home" element={<HomepageView />} />
-                <Route path="/notifications" element={<NotificationsView />} />
-                <Route
-                  path="/settings"
-                  element={
-                    <SettingsView
-                      userSettings={userSettings}
-                      setUserSettings={setUserSettings}
+              <Route
+                path="/map"
+                element={
+                  <>
+                    <Map
+                      stopMarkersEnabled={true}
+                      routeOverlayEnabled={true}
+                      darkModeEnabled={false /**darkMode */}
+                      currentStop={currentStop}
+                      onMarkerSelect={onMarkerSelect}
+                      logoContainer={logoContainer}
+                      userLocation={userLocation}
+                      width={'100vw'}
+                      height={'100vh'}
                     />
-                  }
-                />
-                <Route
-                  path="/map"
-                  element={
-                    <>
-                      <Map
-                        stopMarkersEnabled={true}
-                        routeOverlayEnabled={true}
-                        darkModeEnabled={false /**darkMode */}
-                        currentStop={currentStop}
-                        onMarkerSelect={onMarkerSelect}
-                        logoContainer={logoContainer}
-                        userLocation={userLocation}
-                        width={'100vw'}
-                        height={'100vh'}
-                      />
-                    </>
-                  }
-                />
-              </Routes>
-              <NextTimesSheet
-                open={timesSheetOpen}
-                setOpen={setTimesSheetOpen}
-                stop={currentStop}
+                  </>
+                }
               />
-              <Nav pathName={pathName} getLocation={getCurrentLocation} />
-            </ThemeProvider>
-          )}
-        </>
-      )}
+            </Routes>
+            <NextTimesSheet
+              open={timesSheetOpen}
+              setOpen={setTimesSheetOpen}
+              stop={currentStop}
+            />
+            <Nav pathName={pathName} getLocation={getCurrentLocation} />
+          </ThemeProvider>
+        )}
+      </>
+      {/* )} */}
     </SettingsProvider>
   );
 };
