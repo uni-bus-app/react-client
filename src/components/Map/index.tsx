@@ -1,23 +1,21 @@
 import { useTheme } from '@mui/material/styles';
 import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
-import { RefObject, useEffect, useState } from 'react';
+import {
+  Dispatch,
+  RefObject,
+  SetStateAction,
+  useEffect,
+  useState,
+} from 'react';
 import { getRoutePath, getStops } from '../../api/APIUtils';
 import config from '../../config';
 import { LatLng, Stop } from '../../types';
 import RoutePath from './components/RoutePath';
 import StopMarkers from './components/StopMarkers';
-import { mapStylesDark, mapStylesLight } from './styles';
 import styles from './styles.module.css';
-import { getBounds, moveLogo } from './utils';
-import locationMarkerIcon from '../../assets/locationmarkericon.png';
-
-const mapOptions: google.maps.MapOptions = {
-  disableDefaultUI: true,
-  gestureHandling: 'greedy',
-  clickableIcons: false,
-  zoom: 13,
-  center: { lat: 50.794236, lng: -1.075 },
-};
+import { moveLogo } from './utils';
+import NextTimeCard from '../NextTimeCard';
+import BottomSheet from '../BottomSheet';
 
 interface MapProps {
   darkModeEnabled?: boolean;
@@ -27,6 +25,9 @@ interface MapProps {
   currentStop?: Stop;
   logoContainer?: RefObject<HTMLDivElement>;
   userLocation?: any;
+  setTimesSheetOpen: Dispatch<SetStateAction<boolean>>;
+  nextCardOpen: boolean; // ISSUE 65
+  setNextCardOpen: Dispatch<SetStateAction<boolean>>; // ISSUE 65
   stops?: Stop[];
   routeOverlay?: LatLng[];
 }
@@ -39,54 +40,24 @@ const Map = (props: MapProps) => {
     onMarkerSelect,
     currentStop,
     logoContainer,
-    userLocation,
+    setTimesSheetOpen, // ISSUE 65
+    nextCardOpen, // ISSUE 65
+    setNextCardOpen, // ISSUE 65
     stops,
     routeOverlay,
   } = props;
 
   const [map, setMap] = useState<google.maps.Map>();
 
-  useEffect(() => {
-    if (map) {
-      map?.fitBounds(getBounds(userLocation), 20);
-    }
-  }, [userLocation]);
-
-  /**
-   * Creates a marker for the users location
-   */
-  const [userMarker, setUserMarker] = useState<any>(null);
-  useEffect(() => {
-    if (map && userLocation) {
-      const icon = {
-        url: locationMarkerIcon,
-        scaledSize: new google.maps.Size(15, 15),
-        size: new google.maps.Size(15, 15),
-        origin: new google.maps.Point(0, 0),
-      };
-      if (!userMarker) {
-        console.log('creating marker');
-        const marker = new google.maps.Marker({
-          position: {
-            lat: userLocation.lat,
-            lng: userLocation.lng,
-          },
-          icon,
-          map: map,
-        });
-        setUserMarker(marker);
-      }
-
-      if (userMarker) {
-        userMarker.setPosition({
-          lat: userLocation.lat,
-          lng: userLocation.lng,
-        });
-        console.log(userMarker);
-        setUserMarker(userMarker);
-      }
-    }
-  }, [map, userLocation, userMarker]);
+  const mapOptions: google.maps.MapOptions = {
+    disableDefaultUI: true,
+    gestureHandling: 'greedy',
+    clickableIcons: false,
+    zoom: currentStop ? 17 : 13,
+    center: currentStop
+      ? { lat: currentStop.location.lat, lng: currentStop.location.lng }
+      : { lat: 50.794236, lng: -1.075 },
+  };
 
   /**
    * Map loading logic
@@ -95,7 +66,6 @@ const Map = (props: MapProps) => {
     googleMapsApiKey: config.mapsApiKey,
     mapIds: ['f9e34791c612c2be', '8d48c9186a06dab'],
   });
-  const theme = useTheme();
   const renderMap = () => {
     const onLoad = (mapInstance: google.maps.Map) => {
       setMap(mapInstance);
@@ -111,8 +81,8 @@ const Map = (props: MapProps) => {
         <GoogleMap
           mapContainerStyle={{
             width: '100vw',
-            // height: 'calc(40vh + env(safe-area-inset-top))',
             position: 'absolute',
+            borderRadius: '0',
           }}
           mapContainerClassName={styles.mapContainer}
           options={{
@@ -135,27 +105,21 @@ const Map = (props: MapProps) => {
             onMarkerSelect={onMarkerSelect}
           />
         </GoogleMap>
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            // height: '3em',
-            width: '100%',
-          }}
-          className={styles.statusBarContainer}
+        <BottomSheet
+          open={nextCardOpen}
+          setOpen={setNextCardOpen}
+          disableBackdrop={true}
+          zIndex={5000}
+          minHeight={220}
+          borderRadius={50}
         >
-          <div
-            style={{
-              // position: 'absolute',
-              // top: 0,
-              opacity: theme.palette.mode === 'dark' ? 0 : undefined,
-            }}
-            className={styles.statusBar}
+          <NextTimeCard
+            darkMode={true}
+            currentStop={currentStop}
+            onClick={() => setTimesSheetOpen(true)}
+            setNextCardOpen={setNextCardOpen}
           />
-          <div className={styles.statusBarBlur} />
-        </div>
+        </BottomSheet>
       </>
     );
   };

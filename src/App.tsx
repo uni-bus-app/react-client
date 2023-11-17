@@ -53,12 +53,14 @@ const App = () => {
   const [currentStop, setCurrentStop] = useState<Stop>();
 
   const [timesSheetOpen, setTimesSheetOpen] = useState<boolean>(false); //BETA - Show times sheet
+  const [nextCardOpen, setNextCardOpen] = useState(false); // ISSUE 65 - Show next card popup
+
   const [pathName, setPathname] = useState(''); // BETA - Track page location
   const [splashScreen, setSplashScreen] = useState(true); // BETA - Show splash screen
   const [showAlert, setShowAlert] = useState(false); // BETA - Show alert
   const [userLocation, setUserLocation] = useState<any>(); // BETA - Users location
 
-  // Moved from map
+  // Moved from map, move to own service
   const [stops, setStops] = useState<Stop[]>(); // Store all stops data
   const [routeOverlay, setRouteOverlay] = useState<LatLng[]>();
   useEffect(() => {
@@ -89,7 +91,7 @@ const App = () => {
         primary: '#222222',
       },
       icon: {
-        default: '#000000', // Set the default icon color (black in this example)
+        default: '#000000',
       },
     },
   });
@@ -99,10 +101,18 @@ const App = () => {
     [darkMode]
   );
 
+  // Set the current stop when a marker is selected
   const onMarkerSelect = (stop: Stop) => {
-    setTimesSheetOpen(true);
     setCurrentStop(stop);
+    setNextCardOpen(true);
   };
+
+  // Clear the markers whenevever tapping away from the sheet
+  useEffect(() => {
+    if (!nextCardOpen) {
+      setCurrentStop(undefined);
+    }
+  }, [nextCardOpen]);
 
   // Log StopView event for analytics
   useEffect(() => {
@@ -117,6 +127,7 @@ const App = () => {
   }, [currentStop]);
 
   // Fetch Users Location (BETA)
+  // TODO: Move to hook
   const getCurrentLocation = async () => {
     navigator.geolocation.getCurrentPosition((pos) => {
       setUserLocation({
@@ -132,6 +143,7 @@ const App = () => {
   }, [location, pathName]);
 
   // Check localhost to see if the user has seen the splash screen (BETA)
+  // TODO: Replace with userSettings object
   useEffect(() => {
     if (localStorage.getItem('splashScreen') === 'true') {
       setSplashScreen(false);
@@ -190,24 +202,29 @@ const App = () => {
                       currentStop={currentStop}
                       onMarkerSelect={onMarkerSelect}
                       logoContainer={logoContainer}
-                      userLocation={userLocation}
                       stops={stops}
                       routeOverlay={routeOverlay}
+                      setTimesSheetOpen={setTimesSheetOpen}
+                      nextCardOpen={nextCardOpen}
+                      setNextCardOpen={setNextCardOpen}
                     />
                   </>
                 }
               />
             </Routes>
             <NextTimesSheet
-              open={timesSheetOpen}
-              setOpen={setTimesSheetOpen}
+              openNextTimesSheet={timesSheetOpen}
+              setOpenNextTimesSheet={setTimesSheetOpen}
               stop={currentStop}
             />
-            <Nav pathName={pathName} getLocation={getCurrentLocation} />
+            <Nav
+              pathName={pathName}
+              getLocation={getCurrentLocation}
+              setNextCardOpen={setNextCardOpen}
+            />
           </ThemeProvider>
         )}
       </>
-      {/* )} */}
     </SettingsProvider>
   );
 };

@@ -5,7 +5,7 @@
   width: 100%;
 }
 
-.header {
+.StopInfoheader {
   display: flex;
   flex-direction: row;
   gap: 6px;
