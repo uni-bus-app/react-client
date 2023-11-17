@@ -18,7 +18,7 @@ const StopInfoCard = (props: StopInfoCardProps) => {
       <div className={styles.header}>
         <div className={styles.headerText}>{stop?.name}</div>
         <IconButton onClick={() => setOpen(false)}>
-          <Close />
+          <Close className="icon" style={{ color: 'black' }} />
         </IconButton>
       </div>
       <div className={styles.details}>

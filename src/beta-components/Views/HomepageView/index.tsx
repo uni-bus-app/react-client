@@ -5,8 +5,14 @@ import NextDeparturesCard from '../../NextDeparturesCard';
 import MiniMap from '../../MiniMap';
 import './styles.scss';
 import WhatsNewCard from '../../WhatsNewCard';
+import { Stop } from '../../../types';
 
-const HomepageView = () => {
+interface HomepageViewProps {
+  stops: Stop[] | undefined;
+}
+
+const HomepageView = (props: HomepageViewProps) => {
+  const { stops } = props;
   const [showRouteSelector, setRouteSelectorVisibility] = useState(false);
 
   return (
@@ -19,7 +25,7 @@ const HomepageView = () => {
       )}
       <div className="HomePageView">
         <main className="pageStructure">
-          <NextDeparturesCard />
+          <NextDeparturesCard stops={stops} />
           <MiniMap />
           <WhatsNewCard />
           {/* <Button

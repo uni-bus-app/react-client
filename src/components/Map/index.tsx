@@ -27,8 +27,8 @@ interface MapProps {
   currentStop?: Stop;
   logoContainer?: RefObject<HTMLDivElement>;
   userLocation?: any;
-  width: string;
-  height: string;
+  stops?: Stop[];
+  routeOverlay?: LatLng[];
 }
 
 const Map = (props: MapProps) => {
@@ -40,27 +40,17 @@ const Map = (props: MapProps) => {
     currentStop,
     logoContainer,
     userLocation,
-    width,
-    height,
+    stops,
+    routeOverlay,
   } = props;
 
   const [map, setMap] = useState<google.maps.Map>();
-  const [routeOverlay, setRouteOverlay] = useState<LatLng[]>();
-  const [stops, setStops] = useState<Stop[]>();
 
   useEffect(() => {
     if (map) {
       map?.fitBounds(getBounds(userLocation), 20);
     }
   }, [userLocation]);
-
-  useEffect(() => {
-    const getData = async () => {
-      setRouteOverlay(await getRoutePath());
-      setStops(await getStops());
-    };
-    getData();
-  }, []);
 
   /**
    * Creates a marker for the users location
