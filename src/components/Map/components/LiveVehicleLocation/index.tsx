@@ -73,7 +73,7 @@ const LiveVehicleLocation = (props: LiveVehicleLocationProps) => {
 
     fetchVehicles();
 
-    const intervalId = setInterval(fetchVehicles, 60000);
+    const intervalId = setInterval(fetchVehicles, 30000);
 
     return () => clearInterval(intervalId);
   }, []);
