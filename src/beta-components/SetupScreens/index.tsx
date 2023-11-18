@@ -15,12 +15,8 @@ export const WelcomeView = () => {
             <p className={styles.pageContainerTitle}>Travel, simplified.</p>
             <div className={styles.pageContainerBody}>
               <p className={styles.pageContainerIntroduction}>
-                Our aim is to simplify the University bus experience, providing
-                you easy access to university travel resources.
-              </p>
-              <p className={styles.pageContainerIntroduction}>
-                Because, let's be real, who <i>really</i> wants to use a PDF to
-                get their bus times?
+                Let's be real, who <i>really</i> wants to use a PDF to get their
+                bus times?
               </p>
               <br />
               <i className={styles.smallText}>
@@ -75,9 +71,8 @@ export const LocationPermissionView = () => {
             <div className={styles.pageContainerBody}>
               <p className={styles.pageContainerIntroduction}>
                 We use your location to provide you with the closest bus stops,
-                estimated walking distance and some cool algorithmic maths to
-                determine whether you'll make the next bus, but we can offer so
-                much more in the future!
+                estimated walking distance and to determine whether you'll make
+                the next bus.
               </p>
               <i className={styles.smallText}>
                 In order to provide you with all the cool services we have built
@@ -106,15 +101,10 @@ export const NotificationPermissionView = () => {
                 Get notified of any changes to your bus route, we'll let you
                 know in advance if there are any disruptions or cancellations.
               </p>
-              <p className={styles.pageContainerIntroduction}>
-                Note: For iOS users, we <b>must</b> be added to your homescreen
-                for this to work!
-              </p>
               <br />
               <i className={styles.smallText}>
-                Figuring out how to enable the notifications may be a bit
-                tricky, jump over to the Settings section of the app for more
-                help!
+                Note: You'll need to enable this feature manually, jump over to
+                the Settings section of the app for more help!
               </i>
             </div>
           </div>
