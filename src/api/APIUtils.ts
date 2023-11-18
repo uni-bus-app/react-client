@@ -23,20 +23,20 @@ export const getMessages = async (): Promise<Message[]> => {
 
 export const getStops = async (): Promise<any> => {
   try {
-    // if (process.env.NODE_ENV === 'development') {
-    await db.init();
-    const stops = await db.getStops();
-    console.log(stops);
-    if (stops && stops?.length > 0) {
-      return parseStops(stops);
+    if (process.env.NODE_ENV === 'development') {
+      await db.init();
+      const stops = await db.getStops();
+      console.log(stops);
+      if (stops && stops?.length > 0) {
+        return parseStops(stops);
+      } else {
+        const res = await fetch(`${apiURL}/stops`);
+        return parseStops(await res.json());
+      }
     } else {
       const res = await fetch(`${apiURL}/stops`);
       return parseStops(await res.json());
     }
-    // } else {
-    //   const res = await fetch(`${apiURL}/stops`);
-    //   return parseStops(await res.json());
-    // }
   } catch (error) {
     throw error;
   }
@@ -59,21 +59,21 @@ export const getTimes = async (
   stopID: string,
   date?: string
 ): Promise<Time[]> => {
-  // if (process.env.NODE_ENV === 'development') {
-  await db.init();
-  const localTimes = await db.getTimes(stopID, date);
-  if (localTimes?.length) {
-    return parseTimes(localTimes);
+  if (process.env.NODE_ENV === 'development') {
+    await db.init();
+    const localTimes = await db.getTimes(stopID, date);
+    if (localTimes?.length) {
+      return parseTimes(localTimes);
+    } else {
+      date = date ? `?date=${date}` : '';
+      const res = await fetch(`${apiURL}/stops/${stopID}/times${date}`);
+      return parseTimes(await res.json());
+    }
   } else {
     date = date ? `?date=${date}` : '';
     const res = await fetch(`${apiURL}/stops/${stopID}/times${date}`);
     return parseTimes(await res.json());
   }
-  // } else {
-  //   date = date ? `?date=${date}` : '';
-  //   const res = await fetch(`${apiURL}/stops/${stopID}/times${date}`);
-  //   return parseTimes(await res.json());
-  // }
 };
 
 const parseTimes = (data: any[]): Time[] => {

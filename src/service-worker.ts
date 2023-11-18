@@ -106,7 +106,8 @@ self.addEventListener('fetch', (ev) => {
   const { url } = ev.request;
   if (
     url.includes('dot-unibus-app.nw.r.appspot.com/') ||
-    url.includes('localhost:8080')
+    url.includes('localhost:8080') ||
+    url.includes('/api/')
   ) {
     ev.respondWith(
       (async () => {
