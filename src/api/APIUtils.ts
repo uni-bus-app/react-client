@@ -5,9 +5,9 @@ import LocalDB from './NewLocalDB';
 import config from '../config';
 
 const db = new LocalDB();
-// if (process.env.NODE_ENV === 'development') {
-db.init();
-// }
+if (process.env.NODE_ENV === 'development') {
+  db.init();
+}
 
 const apiURL = config.apiURL;
 
