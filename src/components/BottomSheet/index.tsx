@@ -11,7 +11,7 @@ interface BottomSheetProps {
   children: ReactNode;
   disableBackdrop?: boolean;
   zIndex?: number;
-  minHeight?: number;
+  minHeight?: string;
   borderRadius?: number;
 }
 

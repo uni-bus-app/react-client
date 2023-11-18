@@ -44,6 +44,17 @@
     font-weight: 500;
   }
 
+  &-noWeekendService {
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+  }
+
   &-nextTime {
     display: flex;
     flex-direction: row;
