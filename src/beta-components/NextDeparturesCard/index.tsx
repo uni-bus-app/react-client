@@ -5,6 +5,8 @@ import './styles.scss';
 import { StarBorder } from '@mui/icons-material';
 import { useSettings } from '../../components/SettingsProvider';
 import { Divider } from '@mui/material';
+import NoTransfer from '@mui/icons-material/NoTransfer';
+import dayjs from 'dayjs';
 
 const uniLibraryObject = {
   name: 'Camrbidge Road',
@@ -35,14 +37,18 @@ const NextDeparturesCard = (props: NextDeparturesCardProps) => {
     }
   }, [times]);
 
+  const isWeekend = () => {
+    return dayjs().day() === 6 || dayjs().day() === 0;
+  };
+
   return (
     <div className="routeCard">
       <div className="routeCard-nextBusTimeLogo">
         <StarBorder fontSize="small" />
-        Next Departures
+        Next Departures from <b>{stop?.name}</b>
       </div>
       <>
-        {times && times[0]?.time && (
+        {!isWeekend() && times && times[0]?.time && (
           <div className="routeCard-nextTime">
             <div className="routeCard-nextTime-startLocation">
               {stop?.name}{' '}
@@ -52,7 +58,7 @@ const NextDeparturesCard = (props: NextDeparturesCardProps) => {
             </div>
           </div>
         )}
-        {times && times[1]?.time && (
+        {!isWeekend() && times && times[1]?.time && (
           <div className="routeCard-nextTime">
             <div className="routeCard-nextTime-startLocation">
               {stop?.name}{' '}
@@ -65,6 +71,12 @@ const NextDeparturesCard = (props: NextDeparturesCardProps) => {
         {times && !times[0]?.time && times && !times[1]?.time && (
           <div className="routeCard-nextTime-startLocation">
             No more departures today
+          </div>
+        )}
+        {isWeekend() && (
+          <div className="routeCard-noWeekendService">
+            <NoTransfer fontSize="large" />
+            Services are unavailable during weekends.
           </div>
         )}
       </>
