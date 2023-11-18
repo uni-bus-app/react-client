@@ -3,7 +3,7 @@ import NavigateNext from '@mui/icons-material/NavigateNext';
 import NoTransfer from '@mui/icons-material/NoTransfer';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { Dispatch, MouseEventHandler, SetStateAction } from 'react';
 import { Time } from '../../types';
 import BusEta from '../BusEta';
@@ -17,10 +17,12 @@ const NoServiceCard = ({
   onClick,
   currentStop,
   setNextCardOpen,
+  issue,
 }: {
   onClick: MouseEventHandler<HTMLDivElement>;
   currentStop: any;
   setNextCardOpen: Dispatch<SetStateAction<boolean>>;
+  issue: 'bankholiday' | 'outofterm';
 }) => {
   return (
     <>
@@ -49,11 +51,17 @@ const NoServiceCard = ({
       >
         <NoTransfer fontSize="large" />
         <Box>
-          <Typography style={{ paddingTop: '0.25em', fontWeight: 'bold' }}>
-            No more services today
-          </Typography>
+          {issue === 'bankholiday' ? (
+            <Typography style={{ paddingTop: '0.25em', fontWeight: 'bold' }}>
+              This service does not run on bank holidays
+            </Typography>
+          ) : (
+            <Typography style={{ paddingTop: '0.25em', fontWeight: 'bold' }}>
+              This service is not available out of term time
+            </Typography>
+          )}
           <Typography style={{ fontStyle: 'italic' }}>
-            Tap to see later departures
+            Tap to see future departures
           </Typography>
         </Box>
       </div>
@@ -61,6 +69,16 @@ const NoServiceCard = ({
   );
 };
 
+const getDay = (value: Dayjs | undefined) => {
+  const time = dayjs();
+  if (time.isSame(value, 'date')) {
+    return 'Today';
+  } else if (time.add(1, 'day').isSame(value, 'date')) {
+    return 'Tomorrow';
+  } else {
+    return value?.format('dddd');
+  }
+};
 interface NextTimeCardProps {
   currentStop: any;
   darkMode: boolean;
@@ -74,8 +92,7 @@ const NextTimeCard = (props: NextTimeCardProps) => {
 
   let time: Time | undefined = times?.[0];
 
-  return (time?.timeValue?.diff(dayjs(), 'minutes') || 0) < 60 ||
-    time?.timeValue?.day() === dayjs().day() ? (
+  return (
     <>
       <div className={styles.top}>
         <span className={styles.pill} />
@@ -114,7 +131,20 @@ const NextTimeCard = (props: NextTimeCardProps) => {
             )}
           </div>
           {time ? (
-            <div className={styles.destination}>{time?.destination}</div>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                marginLeft: '6px',
+              }}
+            >
+              <div className={styles.destination}>{time?.destination}</div>
+              {time && !dayjs(time?.timeValue).isSame(dayjs(), 'day') && (
+                <div className={styles.dateOfDeparture}>
+                  {getDay(time?.timeValue)}, {time?.timeValue.format('DD MMM')}
+                </div>
+              )}
+            </div>
           ) : (
             <Skeleton
               variant="text"
@@ -123,19 +153,21 @@ const NextTimeCard = (props: NextTimeCardProps) => {
             />
           )}
         </div>
+
         <div className={styles.endContainer}>
           <BusEta eta={time?.eta} />
           {time ? <NavigateNext /> : <Skeleton width={24} height={24} />}
         </div>
       </div>
     </>
-  ) : (
-    <NoServiceCard
-      onClick={onClick}
-      currentStop={currentStop}
-      setNextCardOpen={setNextCardOpen}
-    />
   );
+  // ) : (
+  //   <NoServiceCard
+  //     onClick={onClick}
+  //     currentStop={currentStop}
+  //     setNextCardOpen={setNextCardOpen}
+  //   />
+  // );
 };
 
 export default NextTimeCard;
