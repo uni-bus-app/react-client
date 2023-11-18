@@ -7,7 +7,6 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { getRoutePath, getStops } from '../../api/APIUtils';
 import config from '../../config';
 import { LatLng, Stop } from '../../types';
 import RoutePath from './components/RoutePath';
@@ -32,6 +31,23 @@ interface MapProps {
   routeOverlay?: LatLng[];
 }
 
+const bounds = {
+  north: 50.878276,
+  south: 50.74024,
+  west: -1.150673,
+  east: -0.974604,
+};
+
+const mapRestriction: google.maps.MapRestriction = {
+  latLngBounds: {
+    north: bounds.north,
+    south: bounds.south,
+    west: bounds.west,
+    east: bounds.east,
+  },
+  strictBounds: true,
+};
+
 const Map = (props: MapProps) => {
   const {
     darkModeEnabled,
@@ -49,15 +65,22 @@ const Map = (props: MapProps) => {
 
   const [map, setMap] = useState<google.maps.Map>();
 
-  const mapOptions: google.maps.MapOptions = {
-    disableDefaultUI: true,
-    gestureHandling: 'greedy',
-    clickableIcons: false,
-    zoom: currentStop ? 17 : 13,
-    center: currentStop
-      ? { lat: currentStop.location.lat, lng: currentStop.location.lng }
-      : { lat: 50.794236, lng: -1.075 },
-  };
+  /**
+   * Animate map camera on marker tap
+   */
+  useEffect(() => {
+    if (map && currentStop) {
+      map.setOptions({
+        center: {
+          lat: currentStop.location.lat,
+          lng: currentStop.location.lng,
+        },
+        zoom: 17,
+        tilt: 45,
+        restriction: mapRestriction,
+      });
+    }
+  }, [currentStop]);
 
   /**
    * Map loading logic
@@ -74,6 +97,21 @@ const Map = (props: MapProps) => {
 
     const onUnmount = () => {
       setMap(undefined);
+    };
+
+    const mapOptions: google.maps.MapOptions = {
+      disableDefaultUI: true,
+      gestureHandling: 'greedy',
+      clickableIcons: false,
+      zoom: currentStop ? 17 : 13,
+      center: currentStop
+        ? {
+            lat: currentStop.location.lat,
+            lng: currentStop.location.lng,
+          }
+        : { lat: 50.794236, lng: -1.075 },
+      tilt: 0,
+      restriction: mapRestriction,
     };
 
     return (
@@ -110,13 +148,13 @@ const Map = (props: MapProps) => {
           setOpen={setNextCardOpen}
           disableBackdrop={true}
           zIndex={5000}
-          minHeight={220}
+          minHeight={'calc(env(safe-area-inset-bottom, 0px) + 220px)'}
           borderRadius={50}
         >
           <NextTimeCard
             darkMode={true}
             currentStop={currentStop}
-            onClick={() => setTimesSheetOpen(true)}
+            setTimesSheetOpen={setTimesSheetOpen}
             setNextCardOpen={setNextCardOpen}
           />
         </BottomSheet>

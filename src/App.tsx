@@ -8,7 +8,14 @@ import Snackbar from '@mui/material/Snackbar';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { getAnalytics, logEvent } from 'firebase/analytics';
-import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  Suspense,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+} from 'react';
 import lazy from 'react-lazy-with-preload';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import styles from './App.module.css';
@@ -18,9 +25,8 @@ import NotificationsView from './beta-components/Views/NotificationsView';
 import SettingsView from './beta-components/Views/SettingsView';
 import { useScreenTracking, useUpdate } from './hooks';
 import { LatLng, Stop } from './types';
-import SettingsProvider, { useSettings } from './components/SettingsProvider';
+import { useSettings } from './components/SettingsProvider';
 import InitialStartup from './beta-components/InitialStartup';
-import LowDataModeView from './beta-components/Views/LowDataModeView';
 import AlertComponent from './beta-components/Alert';
 import { getRoutePath, getStops } from './api/APIUtils';
 
@@ -47,6 +53,22 @@ const UpdateSnackBar = ({ updateAvailable, restarting, restart }: any) => {
   );
 };
 
+const getDesignTokens = (mode: PaletteMode) => ({
+  palette: {
+    mode,
+    background: {
+      default: '#eeeeee',
+      paper: '#f5f5f5',
+    },
+    text: {
+      primary: '#222222',
+    },
+    icon: {
+      default: '#000000',
+    },
+  },
+});
+
 const App = () => {
   useScreenTracking();
   const update = useUpdate();
@@ -56,12 +78,13 @@ const App = () => {
   const [nextCardOpen, setNextCardOpen] = useState(false); // ISSUE 65 - Show next card popup
 
   const [pathName, setPathname] = useState(''); // BETA - Track page location
-  const [splashScreen, setSplashScreen] = useState(true); // BETA - Show splash screen
   const [showAlert, setShowAlert] = useState(false); // BETA - Show alert
   const [userLocation, setUserLocation] = useState<any>(); // BETA - Users location
 
+  const settings = useSettings();
+
   // Moved from map, move to own service
-  const [stops, setStops] = useState<Stop[]>(); // Store all stops data
+  const [stops, setStops] = useState<Stop[]>();
   const [routeOverlay, setRouteOverlay] = useState<LatLng[]>();
   useEffect(() => {
     const getData = async () => {
@@ -71,30 +94,9 @@ const App = () => {
     getData();
   }, []);
 
-  useEffect(() => {
-    console.log(stops, 'stops data');
-  }, [stops]);
-
   const darkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const logoContainer = useRef() as any;
-
   const location = useLocation(); // Fetch page location on each page change (BETA)
-
-  const getDesignTokens = (mode: PaletteMode) => ({
-    palette: {
-      mode,
-      background: {
-        default: '#eeeeee',
-        paper: '#f5f5f5',
-      },
-      text: {
-        primary: '#222222',
-      },
-      icon: {
-        default: '#000000',
-      },
-    },
-  });
 
   const theme = useMemo(
     () => createTheme(getDesignTokens(darkMode ? 'dark' : 'light')),
@@ -142,14 +144,6 @@ const App = () => {
     setPathname(location.pathname);
   }, [location, pathName]);
 
-  // Check localhost to see if the user has seen the splash screen (BETA)
-  // TODO: Replace with userSettings object
-  useEffect(() => {
-    if (localStorage.getItem('splashScreen') === 'true') {
-      setSplashScreen(false);
-    }
-  }, []);
-
   // Show alert for downloaded content (BETA)
   // TODO: Delete this, it should be dynamically generated
   useEffect(() => {
@@ -160,72 +154,63 @@ const App = () => {
   }, []);
 
   return (
-    <SettingsProvider>
-      {/* If the user has low data mode on, show them this */}
-      {/* {userSettings.lowData ? (
-        <LowDataModeView />
-      ) : ( */}
-      <>
-        {splashScreen ? (
-          <InitialStartup setSplashScreen={setSplashScreen} />
-        ) : (
-          <ThemeProvider theme={theme}>
-            <AlertComponent
-              message="Offline content downloaded"
-              alertSeverity="Success"
-              showAlert={showAlert}
-              setShowAlert={setShowAlert}
+    <>
+      {settings.initialSetup ? (
+        <InitialStartup />
+      ) : (
+        <ThemeProvider theme={theme}>
+          <AlertComponent
+            message="Offline content downloaded"
+            alertSeverity="Success"
+            showAlert={showAlert}
+            setShowAlert={setShowAlert}
+          />
+          <CssBaseline />
+          <UpdateSnackBar
+            updateAvailable={update.updateAvailable}
+            restarting={update.restarting}
+            restart={update.restart}
+          />
+          <Suspense fallback={<div>Loading...</div>}></Suspense>
+          <Routes>
+            <Route path="/" element={<Navigate to={'/home'} />} />
+            <Route path="/home" element={<HomepageView stops={stops} />} />
+            <Route path="/notifications" element={<NotificationsView />} />
+            <Route path="/settings" element={<SettingsView stops={stops} />} />
+            <Route
+              path="/map"
+              element={
+                <>
+                  <Map
+                    stopMarkersEnabled={true}
+                    routeOverlayEnabled={true}
+                    darkModeEnabled={false /**darkMode */}
+                    currentStop={currentStop}
+                    onMarkerSelect={onMarkerSelect}
+                    logoContainer={logoContainer}
+                    stops={stops}
+                    routeOverlay={routeOverlay}
+                    setTimesSheetOpen={setTimesSheetOpen}
+                    nextCardOpen={nextCardOpen}
+                    setNextCardOpen={setNextCardOpen}
+                  />
+                </>
+              }
             />
-            <CssBaseline />
-            <UpdateSnackBar
-              updateAvailable={update.updateAvailable}
-              restarting={update.restarting}
-              restart={update.restart}
-            />
-            <Suspense fallback={<div>Loading...</div>}></Suspense>
-            <Routes>
-              <Route path="/" element={<Navigate to={'/home'} />} />
-              <Route path="/home" element={<HomepageView stops={stops} />} />
-              <Route path="/notifications" element={<NotificationsView />} />
-              <Route
-                path="/settings"
-                element={<SettingsView stops={stops} />}
-              />
-              <Route
-                path="/map"
-                element={
-                  <>
-                    <Map
-                      stopMarkersEnabled={true}
-                      routeOverlayEnabled={true}
-                      darkModeEnabled={false /**darkMode */}
-                      currentStop={currentStop}
-                      onMarkerSelect={onMarkerSelect}
-                      logoContainer={logoContainer}
-                      stops={stops}
-                      routeOverlay={routeOverlay}
-                      setTimesSheetOpen={setTimesSheetOpen}
-                      nextCardOpen={nextCardOpen}
-                      setNextCardOpen={setNextCardOpen}
-                    />
-                  </>
-                }
-              />
-            </Routes>
-            <NextTimesSheet
-              openNextTimesSheet={timesSheetOpen}
-              setOpenNextTimesSheet={setTimesSheetOpen}
-              stop={currentStop}
-            />
-            <Nav
-              pathName={pathName}
-              getLocation={getCurrentLocation}
-              setNextCardOpen={setNextCardOpen}
-            />
-          </ThemeProvider>
-        )}
-      </>
-    </SettingsProvider>
+          </Routes>
+          <NextTimesSheet
+            openNextTimesSheet={timesSheetOpen}
+            setOpenNextTimesSheet={setTimesSheetOpen}
+            stop={currentStop}
+          />
+          <Nav
+            pathName={pathName}
+            getLocation={getCurrentLocation}
+            setNextCardOpen={setNextCardOpen}
+          />
+        </ThemeProvider>
+      )}
+    </>
   );
 };
 

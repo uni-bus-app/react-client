@@ -34,6 +34,10 @@
   color: white;
 }
 
+.dateOfDeparture {
+  font-size: 0.7em;
+}
+
 .lightServiceIcon {
   background-color: #621360;
 }
@@ -47,7 +51,6 @@
   flex-grow: 2;
   justify-content: center;
   align-items: center;
-  margin-left: 6px;
 }
 
 .endContainer {
@@ -71,6 +74,10 @@
   justify-content: center;
   align-items: center;
   font-size: 1.5em;
+}
+
+.icon {
+  color: black;
 }
 
 .etaUnit {
@@ -101,5 +108,5 @@
   box-sizing: border-box;
   margin-top: 6px;
   border-radius: 20px;
-  background-color: #fefefe;
+  background-color: #343231;
 }

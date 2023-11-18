@@ -102,7 +102,7 @@
   padding: 6px;
   box-sizing: border-box;
   border-radius: 40px;
-  width: 3.5em;
+  width: 25%;
   height: 50px;
   transition: 0.5s;
 }
@@ -116,36 +116,36 @@
 }
 
 .animatedPill {
-  animation-duration: 0.5s;
+  animation-duration: 0.3s;
   animation-name: movement;
   animation-timing-function: ease-in-out;
 }
 
 @keyframes movement {
   0% {
-    width: 3.5em;
+    width: 25%;
   }
   25% {
     border-radius: 43px;
     margin-right: 2px;
-    transform: translateX('-20px');
-    width: 3.7em;
+    transform: translateX('20px');
+    width: 27%;
     height: 35px;
   }
   50% {
     border-radius: 49px;
     margin-right: 5px;
-    width: 4em;
+    width: 30%;
     height: 35px;
   }
   75% {
     border-radius: 43px;
     margin-right: 2px;
-    width: 3.7em;
+    width: 27%;
     height: 35px;
   }
   100% {
-    width: 3.5em;
+    width: 25%;
   }
 }
 
