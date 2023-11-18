@@ -26,7 +26,6 @@ export const getStops = async (): Promise<any> => {
     if (process.env.NODE_ENV === 'development') {
       await db.init();
       const stops = await db.getStops();
-      console.log(stops);
       if (stops && stops?.length > 0) {
         return parseStops(stops);
       } else {
