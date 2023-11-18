@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { SettingsItems } from './types';
 import { get, set } from 'idb-keyval'; // Import idb-keyval package
+import LoadingScreen from '../../beta-components/LoadingScreen';
 
 const defaultSettings: SettingsItems = {
   useSystemTheme: true,
@@ -10,6 +11,7 @@ const defaultSettings: SettingsItems = {
   lowDataMode: false,
   favouriteStop: '6TRxDIF8NDpofem64867',
   rainbowNav: false,
+  initialSetup: true,
 };
 
 interface ContextState extends SettingsItems {
@@ -25,7 +27,7 @@ const SettingsContext = createContext<ContextState>({
 });
 
 const SettingsProvider = ({ children }: any) => {
-  const [state, setState] = useState<SettingsItems>(defaultSettings);
+  const [state, setState] = useState<SettingsItems | null>(null);
 
   useEffect(() => {
     loadSettingsFromIDB();
@@ -35,7 +37,7 @@ const SettingsProvider = ({ children }: any) => {
     name: K,
     value: SettingsItems[K]
   ) => {
-    const updatedSettings = { ...state, [name]: value };
+    const updatedSettings = { ...state!, [name]: value };
     setState(updatedSettings);
     setSettingsToIDB(updatedSettings);
   };
@@ -54,17 +56,22 @@ const SettingsProvider = ({ children }: any) => {
       if (savedSettings !== undefined && savedSettings !== null) {
         setState(savedSettings);
         console.log(savedSettings, 'settings loaded from IndexedDB');
+      } else {
+        // If no settings are found, set the default settings
+        setState(defaultSettings);
+        await set('settings', defaultSettings); // Save default settings to IndexedDB
+        console.log('Default settings applied and saved to IndexedDB');
       }
     } catch (error) {
       console.error('Error loading settings from IndexedDB:', error);
     }
   };
 
-  const value: ContextState = { ...state, setValue };
+  const value: ContextState = { ...(state || defaultSettings), setValue };
 
   return (
     <SettingsContext.Provider value={value}>
-      {children}
+      {state !== null ? children : <LoadingScreen />}
     </SettingsContext.Provider>
   );
 };

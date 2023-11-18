@@ -3,26 +3,32 @@ import {
   WelcomeView,
   FinalScreenView,
   LocationPermissionView,
+  NotificationPermissionView,
+  WhatsNewInThisUpdate,
 } from '../SetupScreens';
+import './styles.scss';
 
-interface InitialStartupProps {
-  setSplashScreen: (value: boolean) => void;
-}
-
-const InitialStartup = (props: InitialStartupProps) => {
-  const { setSplashScreen } = props;
+const InitialStartup = () => {
   return (
-    <Carousel setSplashScreen={setSplashScreen}>
-      <CarouselItem>
-        <WelcomeView />
-      </CarouselItem>
-      <CarouselItem>
-        <LocationPermissionView />
-      </CarouselItem>
-      <CarouselItem>
-        <FinalScreenView />
-      </CarouselItem>
-    </Carousel>
+    <div className="InitialStartup">
+      <Carousel>
+        <CarouselItem>
+          <WelcomeView />
+        </CarouselItem>
+        <CarouselItem>
+          <WhatsNewInThisUpdate />
+        </CarouselItem>
+        <CarouselItem>
+          <LocationPermissionView />
+        </CarouselItem>
+        <CarouselItem>
+          <NotificationPermissionView />
+        </CarouselItem>
+        <CarouselItem>
+          <FinalScreenView />
+        </CarouselItem>
+      </Carousel>
+    </div>
   );
 };
 
