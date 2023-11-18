@@ -26,11 +26,13 @@ const NextDeparturesCard = (props: NextDeparturesCardProps) => {
   const stop =
     stops?.find((stop) => stop.id === settings.favouriteStop) ||
     uniLibraryObject;
-  let { times } = useTimetable(stop);
-  let time: Time | undefined;
+  let { times, loadMore } = useTimetable(stop);
 
   useEffect(() => {
-    times !== undefined && (time = times[0]);
+    if (times && (!times[0]?.time || !times[1]?.time)) {
+      loadMore();
+      console.log(times);
+    }
   }, [times]);
 
   return (
@@ -40,24 +42,29 @@ const NextDeparturesCard = (props: NextDeparturesCardProps) => {
         Next Departures
       </div>
       <>
-        {times && (
+        {times && times[0]?.time && (
           <div className="routeCard-nextTime">
             <div className="routeCard-nextTime-startLocation">
               {stop?.name}{' '}
             </div>
             <div className="routeCard-nextTime-leavingTime">
-              {times[0].time}
+              {times[0]?.time}
             </div>
           </div>
         )}
-        {times && (
+        {times && times[1]?.time && (
           <div className="routeCard-nextTime">
             <div className="routeCard-nextTime-startLocation">
               {stop?.name}{' '}
             </div>
             <div className="routeCard-nextTime-leavingTime">
-              {times[1].time}
+              {times[1]?.time}
             </div>
+          </div>
+        )}
+        {times && !times[0]?.time && times && !times[1]?.time && (
+          <div className="routeCard-nextTime-startLocation">
+            No more departures today
           </div>
         )}
       </>

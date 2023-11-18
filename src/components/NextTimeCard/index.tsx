@@ -1,7 +1,6 @@
 import DirectionsBus from '@mui/icons-material/DirectionsBus';
 import NavigateNext from '@mui/icons-material/NavigateNext';
 import NoTransfer from '@mui/icons-material/NoTransfer';
-import Card from '@mui/material/Card';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
 import dayjs from 'dayjs';
@@ -12,26 +11,53 @@ import ServiceIcon from '../ServiceIcon';
 import styles from './styles.module.css';
 import { useTimetable } from '../../hooks';
 import { Close } from '@mui/icons-material';
-import { IconButton } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 
 const NoServiceCard = ({
   onClick,
+  currentStop,
+  setNextCardOpen,
 }: {
   onClick: MouseEventHandler<HTMLDivElement>;
+  currentStop: any;
+  setNextCardOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
   return (
-    <Card
-      className={styles.card}
-      style={{ flexDirection: 'column', alignItems: 'center' }}
-      sx={{ boxShadow: 7 }}
-      onClick={onClick}
-    >
-      <NoTransfer />
-      <Typography style={{ paddingTop: '0.25em' }}>
-        No services today
-      </Typography>
-      <Typography>Click to see later departures</Typography>
-    </Card>
+    <>
+      <div className={styles.top}>
+        <span className={styles.pill} />
+      </div>
+      <div className={styles.header}>
+        <p>{currentStop?.name}</p>
+        <IconButton
+          onClick={() => setNextCardOpen(false)}
+          className={styles.closeButton}
+        >
+          <Close className={styles.icon} />
+        </IconButton>
+      </div>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          width: '100%',
+          gap: '20px',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+        onClick={onClick}
+      >
+        <NoTransfer fontSize="large" />
+        <Box>
+          <Typography style={{ paddingTop: '0.25em', fontWeight: 'bold' }}>
+            No more services today
+          </Typography>
+          <Typography style={{ fontStyle: 'italic' }}>
+            Tap to see later departures
+          </Typography>
+        </Box>
+      </div>
+    </>
   );
 };
 
@@ -60,7 +86,7 @@ const NextTimeCard = (props: NextTimeCardProps) => {
           onClick={() => setNextCardOpen(false)}
           className={styles.closeButton}
         >
-          <Close className="icon" />
+          <Close className={styles.icon} />
         </IconButton>
       </div>
       <div className={styles.card} onClick={onClick}>
@@ -104,7 +130,11 @@ const NextTimeCard = (props: NextTimeCardProps) => {
       </div>
     </>
   ) : (
-    <NoServiceCard onClick={onClick} />
+    <NoServiceCard
+      onClick={onClick}
+      currentStop={currentStop}
+      setNextCardOpen={setNextCardOpen}
+    />
   );
 };
 

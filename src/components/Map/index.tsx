@@ -53,11 +53,26 @@ const Map = (props: MapProps) => {
     disableDefaultUI: true,
     gestureHandling: 'greedy',
     clickableIcons: false,
-    zoom: currentStop ? 17 : 13,
-    center: currentStop
-      ? { lat: currentStop.location.lat, lng: currentStop.location.lng }
-      : { lat: 50.794236, lng: -1.075 },
+    zoom: 13,
+    center: { lat: 50.794236, lng: -1.075 },
+    tilt: 0,
   };
+
+  /**
+   * Animate map moving on marker tap
+   */
+  useEffect(() => {
+    if (map && currentStop) {
+      map.setOptions({
+        center: {
+          lat: currentStop.location.lat,
+          lng: currentStop.location.lng,
+        },
+        zoom: 17,
+        tilt: 45,
+      });
+    }
+  }, [currentStop]);
 
   /**
    * Map loading logic

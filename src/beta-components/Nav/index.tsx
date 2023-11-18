@@ -41,7 +41,7 @@ const Nav = (props: NavProps) => {
     }
     pathName === '/home' && setTranslate(25);
     pathName === '/map' && setTranslate(150);
-    pathName === '/settings' && setTranslate(270);
+    pathName === '/settings' && setTranslate(275);
     setMovement(true);
   }, [pathName]);
 
