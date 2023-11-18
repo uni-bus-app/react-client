@@ -6,6 +6,7 @@ export interface SettingsItems {
   favouriteStop: string | null;
   lowDataMode: boolean;
   rainbowNav: boolean;
+  initialSetup: boolean;
 }
 
 export enum SettingsItemsNames {
@@ -16,4 +17,5 @@ export enum SettingsItemsNames {
   favouriteStop = 'favouriteStop',
   lowDataMode = 'lowDataMode',
   rainbowNav = 'rainbowNav',
+  initialSetup = 'initialSetup',
 }
