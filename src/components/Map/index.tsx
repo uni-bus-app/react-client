@@ -49,7 +49,20 @@ const Map = (props: MapProps) => {
     const position = await getLocation();
     setThing(position);
     if (map) {
-      map?.fitBounds(getBounds(position), 20);
+      map.setZoom(13);
+      window.setTimeout(() => {
+        map.fitBounds(getBounds(position), {
+          top:
+            Number(
+              getComputedStyle(document.documentElement)
+                .getPropertyValue('--sat')
+                .replace('px', '')
+            ) + 5,
+          left: 5,
+          right: 5,
+          bottom: 5,
+        });
+      }, 100);
     }
   };
 
