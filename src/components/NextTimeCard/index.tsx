@@ -82,12 +82,12 @@ const getDay = (value: Dayjs | undefined) => {
 interface NextTimeCardProps {
   currentStop: any;
   darkMode: boolean;
-  onClick: MouseEventHandler<HTMLDivElement>;
+  setTimesSheetOpen: Dispatch<SetStateAction<boolean>>;
   setNextCardOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 const NextTimeCard = (props: NextTimeCardProps) => {
-  let { currentStop, darkMode, onClick, setNextCardOpen } = props;
+  let { currentStop, darkMode, setTimesSheetOpen, setNextCardOpen } = props;
   const { times } = useTimetable(currentStop);
 
   let time: Time | undefined = times?.[0];
@@ -106,7 +106,8 @@ const NextTimeCard = (props: NextTimeCardProps) => {
           <Close className={styles.icon} />
         </IconButton>
       </div>
-      <div className={styles.card} onClick={onClick}>
+
+      <div className={styles.card} onClick={() => setTimesSheetOpen(true)}>
         <div className={styles.details}>
           <div className={styles.icons}>
             {time ? (
