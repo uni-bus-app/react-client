@@ -79,6 +79,7 @@ const parseTimes = (data: any[]): Time[] => {
   data.forEach((element) => {
     if (element) {
       const newServiceTime: Time | any = {};
+      console.log(element, 'ELEMENT');
       newServiceTime.destination = element.destination;
       newServiceTime.service = 'U1';
       newServiceTime.routeNumber = element.routeNumber;
