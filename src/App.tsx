@@ -153,11 +153,14 @@ const App = () => {
     const channel = new BroadcastChannel('my_channel');
     channel.onmessage = (event) => {
       console.log('Received:', event.data);
+      if (event.data.type === 'sync') {
+        setShowAlert(true);
+      }
     };
-    navigator.serviceWorker.addEventListener('message', (event) => {
-      console.log(event);
-      setShowAlert(true);
-    });
+    // navigator.serviceWorker.addEventListener('message', (event) => {
+    //   console.log(event);
+    //   setShowAlert(true);
+    // });
 
     // return () => clearTimeout(showAlertAfterDelay);
   }, []);

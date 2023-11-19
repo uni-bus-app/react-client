@@ -87,7 +87,7 @@ class LocalDB {
 
   constructor() {}
 
-  async init() {
+  async init(): Promise<boolean> {
     if (this._db) {
       return;
     }
@@ -105,7 +105,7 @@ class LocalDB {
       },
     });
     try {
-      await this.sync();
+      return await this.sync();
     } catch (error) {}
   }
 
@@ -115,7 +115,7 @@ class LocalDB {
     return { stopsVersion, timesVersion };
   }
 
-  async sync() {
+  async sync(): Promise<boolean> {
     const checksums = await this.generateChecksums();
     const res = await fetch(`${config.apiURL}/sync?new_format=true`, {
       method: 'POST',
@@ -136,6 +136,7 @@ class LocalDB {
     }
     const routePath = await getRoutePath();
     await set('u1RoutePath', routePath);
+    return data.updates;
   }
 
   async getStops() {
