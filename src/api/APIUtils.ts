@@ -80,10 +80,10 @@ export const getTimes = async (
 
 const parseTimes = (data: any[]): Time[] => {
   const result: Time[] = [];
+  console.log(data);
   data.forEach((element) => {
     if (element) {
       const newServiceTime: Time | any = {};
-      console.log(element, 'ELEMENT');
       newServiceTime.destination = element.destination;
       newServiceTime.service = 'U1';
       newServiceTime.routeNumber = element.routeNumber;

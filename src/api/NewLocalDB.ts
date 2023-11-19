@@ -18,7 +18,9 @@ const formatTimes = (times: any[], currentTime: Dayjs): Time[] => {
     if (item.scheduled === '....') {
       return;
     }
+    console.log(item.scheduled, 'item.scheduled', currentTime);
     const scheduledDeparture = getServiceTime(item.scheduled, currentTime);
+    console.log(scheduledDeparture, 'scheduledDeparture');
     result.push({ ...item, scheduledDeparture });
   });
   return result;
@@ -34,10 +36,19 @@ const isBankHoliday = async (date: Dayjs) => {
 
 const nextWorkingDay = async (date: Dayjs): Promise<Dayjs> => {
   const day = date.day();
+  console.log(
+    dayjs().format('DD-MM-YYYY'),
+    day,
+    date,
+    date.format('DD-MM-YYYY')
+  );
+  debugger;
+  console.log(day, 'DAY');
+  console.log(date.add(1, 'day').day(), 'DAY');
   if (day === 6 || day === 0) {
-    return await nextWorkingDay(date.add(1, 'day'));
+    return await nextWorkingDay(date.add(0, 'day'));
   } else if (await isBankHoliday(date)) {
-    return await nextWorkingDay(date.add(1, 'day'));
+    return await nextWorkingDay(date.add(0, 'day'));
   } else {
     return date;
   }
@@ -171,10 +182,12 @@ class LocalDB {
       currentTime.add(1, 'day').day(),
       true
     );
+    console.log('rollovertimes function');
     return formatTimes(res, currentTime.add(1, 'day'));
   }
 
   async getTimes2(stopID: string, currentTime: Dayjs): Promise<Time[]> {
+    console.log('getTimes2 function');
     const value = await isBankHoliday(currentTime);
     const times = formatTimes(
       await this.queryTimes(stopID, currentTime.day(), value),
