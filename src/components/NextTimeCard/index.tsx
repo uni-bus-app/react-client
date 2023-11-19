@@ -92,6 +92,8 @@ const NextTimeCard = (props: NextTimeCardProps) => {
 
   let time: Time | undefined = times?.[0];
 
+  console.log(time);
+  console.log(dayjs().day());
   return (
     <>
       <div className={styles.top}>
