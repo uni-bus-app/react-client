@@ -104,10 +104,12 @@ self.addEventListener('message', async (event) => {
 
 self.addEventListener('fetch', (ev) => {
   const { url } = ev.request;
+  const serviceWorkerOrigin = new URL(self.registration.scope).origin;
+  const requestOrigin = new URL(url).origin;
   if (
     url.includes('dot-unibus-app.nw.r.appspot.com/') ||
     url.includes('localhost:8080') ||
-    url.includes('/api/')
+    (serviceWorkerOrigin === requestOrigin && url.includes('/api/'))
   ) {
     ev.respondWith(
       (async () => {
