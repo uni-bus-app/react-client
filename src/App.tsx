@@ -147,10 +147,15 @@ const App = () => {
   // Show alert for downloaded content (BETA)
   // TODO: Delete this, it should be dynamically generated
   useEffect(() => {
-    const showAlertAfterDelay = setTimeout(() => {
+    // const showAlertAfterDelay = setTimeout(() => {
+    //   setShowAlert(true);
+    // }, 1000);
+    navigator.serviceWorker.addEventListener('message', (event) => {
+      console.log(event);
       setShowAlert(true);
-    }, 1000);
-    return () => clearTimeout(showAlertAfterDelay);
+    });
+
+    // return () => clearTimeout(showAlertAfterDelay);
   }, []);
 
   return (

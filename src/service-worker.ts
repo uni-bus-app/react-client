@@ -76,7 +76,13 @@ registerRoute(
 initialize();
 
 const db = new LocalDB();
-db.init();
+db.init().then(() => {
+  self.clients.matchAll().then((clients) => {
+    clients.forEach((client) => {
+      client.postMessage('Your Message');
+    });
+  });
+});
 
 // const cacheBus = async () => {
 //   const cache = await caches.open('bus');
