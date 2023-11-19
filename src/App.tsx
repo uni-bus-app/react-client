@@ -147,23 +147,23 @@ const App = () => {
   // Show alert for downloaded content (BETA)
   // TODO: Delete this, it should be dynamically generated
   useEffect(() => {
-    // const showAlertAfterDelay = setTimeout(() => {
-    //   setShowAlert(true);
-    // }, 1000);
-    const channel = new BroadcastChannel('my_channel');
-    channel.onmessage = (event) => {
-      console.log('Received:', event.data);
-      if (event.data.type === 'sync') {
+    const showAlertAfterDelay = setTimeout(() => {
+      const channel = new BroadcastChannel('my_channel');
+      channel.onmessage = (event) => {
+        console.log('Received:', event.data);
+        if (event.data.type === 'sync') {
+          setShowAlert(true);
+        }
         setShowAlert(true);
-      }
-      setShowAlert(true);
-    };
+      };
+    }, 1000);
+
     // navigator.serviceWorker.addEventListener('message', (event) => {
     //   console.log(event);
     //   setShowAlert(true);
     // });
 
-    // return () => clearTimeout(showAlertAfterDelay);
+    return () => clearTimeout(showAlertAfterDelay);
   }, []);
 
   return (
