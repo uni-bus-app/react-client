@@ -61,14 +61,17 @@ export const getTimes = async (
   if (process.env.NODE_ENV === 'development') {
     const localTimes = await db.getTimes(stopID, date);
     if (localTimes?.length) {
+      console.log('local times');
       return parseTimes(localTimes);
     } else {
+      console.log('dev live');
       date = date ? `?date=${date}` : '';
       console.log(date, 'DATE');
       const res = await fetch(`${apiURL}/stops/${stopID}/times${date}`);
       return parseTimes(await res.json());
     }
   } else {
+    console.log('else live');
     date = date ? `?date=${date}` : '';
     const res = await fetch(`${apiURL}/stops/${stopID}/times${date}`);
     return parseTimes(await res.json());
