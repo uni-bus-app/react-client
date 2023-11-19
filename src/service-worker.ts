@@ -78,7 +78,7 @@ initialize();
 
 const db = new LocalDB();
 db.init().then((updates) => {
-  const channel = new BroadcastChannel('my_channel');
+  const channel = new BroadcastChannel('sw_channel');
   channel.postMessage({ type: 'sync', updates });
 });
 
