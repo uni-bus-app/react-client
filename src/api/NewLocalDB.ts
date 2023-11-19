@@ -85,6 +85,8 @@ class LocalDB {
     this._db = value;
   }
 
+  public initialised = false;
+
   constructor() {}
 
   async init(): Promise<boolean | void> {
@@ -107,6 +109,7 @@ class LocalDB {
     try {
       return await this.sync();
     } catch (error) {}
+    this.initialised = true;
   }
 
   async generateChecksums() {

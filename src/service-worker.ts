@@ -84,7 +84,9 @@ db.init().then((updates) => {
 
 channel.onmessage = (event) => {
   if (event.data.action === 'sync') {
-    db.sync();
+    if (db.initialised) {
+      db.sync();
+    }
   }
 };
 
