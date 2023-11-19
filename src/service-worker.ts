@@ -77,10 +77,16 @@ registerRoute(
 initialize();
 
 const db = new LocalDB();
+const channel = new BroadcastChannel('sw_channel');
 db.init().then((updates) => {
-  const channel = new BroadcastChannel('sw_channel');
   channel.postMessage({ type: 'sync', updates });
 });
+
+channel.onmessage = (event) => {
+  if (event.data.action === 'sync') {
+    db.sync();
+  }
+};
 
 // const cacheBus = async () => {
 //   const cache = await caches.open('bus');

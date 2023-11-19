@@ -152,6 +152,7 @@ const App = () => {
         setShowAlert(true);
       }
     };
+    channel.postMessage({ action: 'sync' });
   }, []);
 
   return (
