@@ -101,7 +101,7 @@ registerRoute(({ url }) => {
 
 const cacheMaps = async () => {
   const apiLoaderScript =
-    'https://maps.googleapis.com/maps/api/js?callback=__googleMapsCallback&key=AIzaSyDkT81ky0Yn3JYuk6bFCsq4PVmjXawppFI&v=beta';
+    'https://maps.googleapis.com/maps/api/js?callback=__googleMapsCallback&key=AIzaSyDkT81ky0Yn3JYuk6bFCsq4PVmjXawppFI&v=weekly&map_ids=f9e34791c612c2be,8d48c9186a06dab';
   const res = await fetch(`${apiLoaderScript}&${Date.now()}`, {
     mode: 'no-cors',
     cache: 'no-store',
