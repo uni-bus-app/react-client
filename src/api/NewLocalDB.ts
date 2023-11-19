@@ -87,7 +87,7 @@ class LocalDB {
 
   constructor() {}
 
-  async init(): Promise<boolean> {
+  async init(): Promise<boolean | void> {
     if (this._db) {
       return;
     }
