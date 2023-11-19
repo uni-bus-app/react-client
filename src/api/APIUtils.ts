@@ -64,6 +64,7 @@ export const getTimes = async (
       return parseTimes(localTimes);
     } else {
       date = date ? `?date=${date}` : '';
+      console.log(date, 'DATE');
       const res = await fetch(`${apiURL}/stops/${stopID}/times${date}`);
       return parseTimes(await res.json());
     }
