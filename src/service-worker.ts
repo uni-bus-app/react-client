@@ -13,7 +13,7 @@ import { ExpirationPlugin } from 'workbox-expiration';
 import { initialize } from 'workbox-google-analytics';
 import { createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
-import { StaleWhileRevalidate } from 'workbox-strategies';
+import { CacheFirst, StaleWhileRevalidate } from 'workbox-strategies';
 import LocalDB from './api/NewLocalDB';
 import config from './config';
 import { get } from 'idb-keyval';
@@ -89,6 +89,30 @@ channel.onmessage = (event) => {
     }
   }
 };
+
+registerRoute(({ url }) => {
+  if (url.pathname.includes('maps-api') && url.pathname.endsWith('.js')) {
+    return true;
+  }
+  if (url.pathname.includes('__googleMapsCallback')) {
+    return true;
+  }
+}, new CacheFirst({ cacheName: 'offline-maps-scripts' }));
+
+const cacheMaps = async () => {
+  const apiLoaderScript =
+    'https://maps.googleapis.com/maps/api/js?callback=__googleMapsCallback&key=AIzaSyDkT81ky0Yn3JYuk6bFCsq4PVmjXawppFI&v=beta';
+  const res = await fetch(`${apiLoaderScript}&${Date.now()}`, {
+    mode: 'no-cors',
+    cache: 'no-store',
+  });
+  const cache = await caches.open('offline-maps-scripts');
+  cache.put(apiLoaderScript, res.clone());
+};
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(Promise.all([cacheMaps()]));
+});
 
 // const cacheBus = async () => {
 //   const cache = await caches.open('bus');
