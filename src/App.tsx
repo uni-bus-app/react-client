@@ -82,6 +82,7 @@ const App = () => {
 
   const [userLocation, setUserLocation] = useState<any>(); // BETA - Users location
   const [persistActive, setPersistActive] = useState(false); // 74 - Turn on persistant tracking mode
+  const [walkingTime, setWalkingTime] = useState(0); // BETA - Walking time to stop
 
   const settings = useSettings();
 
@@ -198,6 +199,8 @@ const App = () => {
                     setNextCardOpen={setNextCardOpen}
                     persistActive={persistActive}
                     setPersistActive={setPersistActive}
+                    walkingTime={walkingTime}
+                    setWalkingTime={setWalkingTime}
                   />
                 </>
               }

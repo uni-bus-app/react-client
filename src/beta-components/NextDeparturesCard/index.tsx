@@ -33,7 +33,6 @@ const NextDeparturesCard = (props: NextDeparturesCardProps) => {
   useEffect(() => {
     if (times && (!times[0]?.time || !times[1]?.time)) {
       loadMore();
-      console.log(times);
     }
   }, [times]);
 

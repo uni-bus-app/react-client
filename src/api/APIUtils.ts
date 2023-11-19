@@ -61,19 +61,13 @@ export const getTimes = async (
   if (process.env.NODE_ENV === 'development') {
     const localTimes = await db.getTimes(stopID, date);
     if (localTimes?.length) {
-      console.log('local times');
-      console.log(date, 'DATE LOCAL');
       return parseTimes(localTimes);
     } else {
-      console.log('dev live');
       date = date ? `?date=${date}` : '';
-      console.log(date, 'DATE');
       const res = await fetch(`${apiURL}/stops/${stopID}/times${date}`);
       return parseTimes(await res.json());
     }
   } else {
-    console.log('live timetable');
-    console.log(date, 'DATE LIVE');
     date = date ? `?date=${date}` : '';
     const res = await fetch(`${apiURL}/stops/${stopID}/times${date}`);
     return parseTimes(await res.json());
@@ -92,7 +86,6 @@ export const getTimes = async (
 
 const parseTimes = (data: any[]): Time[] => {
   const result: Time[] = [];
-  console.log(data);
   data.forEach((element) => {
     if (element) {
       const newServiceTime: Time | any = {};

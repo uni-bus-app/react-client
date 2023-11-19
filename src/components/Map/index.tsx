@@ -1,10 +1,4 @@
-import { useTheme } from '@mui/material/styles';
-import {
-  GoogleMap,
-  Marker,
-  MarkerF,
-  useJsApiLoader,
-} from '@react-google-maps/api';
+import { GoogleMap, MarkerF, useJsApiLoader } from '@react-google-maps/api';
 import {
   Dispatch,
   RefObject,
@@ -35,8 +29,10 @@ interface MapProps {
   setNextCardOpen: Dispatch<SetStateAction<boolean>>; // ISSUE 65
   stops?: Stop[];
   routeOverlay?: LatLng[];
-  persistActive: boolean;
-  setPersistActive: Dispatch<SetStateAction<boolean>>;
+  persistActive: boolean; // ISSUE 74
+  setPersistActive: Dispatch<SetStateAction<boolean>>; // ISSUE 74
+  setWalkingTime: any; // ISSUE 74
+  walkingTime: number; // ISSUE 74
 }
 
 const bounds = {
@@ -44,13 +40,6 @@ const bounds = {
   south: 50.74024,
   west: -1.150673,
   east: -0.974604,
-};
-
-const generateRandomCoords = (bounds: any) => {
-  const { north, south, west, east } = bounds;
-  const randomLatitude = south + Math.random() * (north - south);
-  const randomLongitude = west + Math.random() * (east - west);
-  return { lat: randomLatitude, lng: randomLongitude };
 };
 
 const mapRestriction: google.maps.MapRestriction = {
@@ -69,19 +58,30 @@ const Map = (props: MapProps) => {
     routeOverlayEnabled,
     stopMarkersEnabled,
     onMarkerSelect,
-    currentStop,
     logoContainer,
+    stops,
+    routeOverlay,
     setTimesSheetOpen, // ISSUE 65
     nextCardOpen, // ISSUE 65
     setNextCardOpen, // ISSUE 65
-    stops,
-    routeOverlay,
+    currentStop,
+
+    // Location tracking
     persistActive,
     setPersistActive,
+
+    // Walking distance
+    setWalkingTime,
+    walkingTime,
   } = props;
 
   const [map, setMap] = useState<google.maps.Map>();
   const [markerPosition, setMarkerPosition] = useState({ lat: 0, lng: 0 });
+  const [prevStop, setPrevStop] = useState<Stop | undefined>(undefined);
+  useEffect(() => {
+    setPrevStop(currentStop);
+  }, [currentStop]);
+  const minHeightValue = walkingTime ? '265px' : '220px';
 
   /**
    * Animate map camera on marker tap
@@ -100,20 +100,7 @@ const Map = (props: MapProps) => {
     }
   }, [currentStop]);
 
-  // TODO: DELETE FUNCTIOIN
-  // useEffect(() => {
-  //   const intervalId = setInterval(() => {
-  //     const randomCoords = generateRandomCoords(bounds);
-  //     setMarkerPosition(randomCoords);
-  //   }, 2000);
-  //   return () => clearInterval(intervalId);
-  // }, []);
-
-  const [prevStop, setPrevStop] = useState<Stop | undefined>(undefined);
-  useEffect(() => {
-    setPrevStop(currentStop);
-  }, [currentStop]);
-
+  // Find the center based on factors
   const center = () => {
     const center = map && map.getCenter();
     if (currentStop) {
@@ -142,6 +129,7 @@ const Map = (props: MapProps) => {
     );
   };
 
+  // Find the zoom based on factors
   const zoom = () => {
     let zoom = map && map.getZoom();
     if (currentStop) {
@@ -163,6 +151,34 @@ const Map = (props: MapProps) => {
     }
     return 0;
   };
+
+  // Calculate walking distance
+  useEffect(() => {
+    const calculateWalkingDistance = () => {
+      const service = new window.google.maps.DistanceMatrixService();
+      currentStop &&
+        service.getDistanceMatrix(
+          {
+            origins: [{ lat: markerPosition.lat, lng: markerPosition.lng }],
+            destinations: [
+              { lat: currentStop.location.lat, lng: currentStop.location.lng },
+            ],
+            travelMode: window.google.maps.TravelMode.WALKING,
+          },
+          (response, status) => {
+            if (status === 'OK' && response) {
+              setWalkingTime(response.rows[0].elements[0].duration.text);
+            } else {
+              console.error('Error calculating walking distance:', status);
+            }
+          }
+        );
+    };
+
+    if (window.google && window.google.maps && markerPosition && currentStop) {
+      calculateWalkingDistance();
+    }
+  }, [currentStop]);
 
   const mapOptions: google.maps.MapOptions = {
     disableDefaultUI: true,
@@ -187,7 +203,6 @@ const Map = (props: MapProps) => {
         (position) => {
           const { latitude, longitude } = position.coords;
           setMarkerPosition({ lat: latitude, lng: longitude });
-          console.log('User location:', latitude, longitude);
         },
         (error) => {
           console.error('Error getting user location:', error);
@@ -217,6 +232,7 @@ const Map = (props: MapProps) => {
     googleMapsApiKey: config.mapsApiKey,
     mapIds: ['f9e34791c612c2be', '8d48c9186a06dab'],
   });
+
   const renderMap = () => {
     const onLoad = (mapInstance: google.maps.Map) => {
       setMap(mapInstance);
@@ -242,7 +258,7 @@ const Map = (props: MapProps) => {
           }}
           onLoad={onLoad}
           onUnmount={onUnmount}
-          onDragStart={() => setPersistActive(false)}
+          onDrag={() => setPersistActive(false)}
         >
           <RoutePath
             enabled={routeOverlayEnabled}
@@ -268,12 +284,13 @@ const Map = (props: MapProps) => {
             }}
           />
         </GoogleMap>
+        {/* <Button onClick={calculateWalkingDistance}>Calculate</Button> */}
         <BottomSheet
           open={nextCardOpen}
           setOpen={setNextCardOpen}
           disableBackdrop={true}
           zIndex={5000}
-          minHeight={'calc(env(safe-area-inset-bottom, 0px) + 220px)'}
+          minHeight={`calc(env(safe-area-inset-bottom, 0px) + ${minHeightValue})`}
           borderRadius={50}
         >
           <NextTimeCard
@@ -281,6 +298,7 @@ const Map = (props: MapProps) => {
             currentStop={currentStop}
             setTimesSheetOpen={setTimesSheetOpen}
             setNextCardOpen={setNextCardOpen}
+            walkingTime={walkingTime}
           />
         </BottomSheet>
       </>

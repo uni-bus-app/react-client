@@ -10,7 +10,7 @@ import BusEta from '../BusEta';
 import ServiceIcon from '../ServiceIcon';
 import styles from './styles.module.css';
 import { useTimetable } from '../../hooks';
-import { Close } from '@mui/icons-material';
+import { Close, DirectionsWalk } from '@mui/icons-material';
 import { Box, IconButton } from '@mui/material';
 
 const NoServiceCard = ({
@@ -84,10 +84,17 @@ interface NextTimeCardProps {
   darkMode: boolean;
   setTimesSheetOpen: Dispatch<SetStateAction<boolean>>;
   setNextCardOpen: Dispatch<SetStateAction<boolean>>;
+  walkingTime: number;
 }
 
 const NextTimeCard = (props: NextTimeCardProps) => {
-  let { currentStop, darkMode, setTimesSheetOpen, setNextCardOpen } = props;
+  let {
+    currentStop,
+    darkMode,
+    setTimesSheetOpen,
+    setNextCardOpen,
+    walkingTime,
+  } = props;
   const { times } = useTimetable(currentStop);
 
   let time: Time | undefined = times?.[0];
@@ -160,15 +167,16 @@ const NextTimeCard = (props: NextTimeCardProps) => {
           {time ? <NavigateNext /> : <Skeleton width={24} height={24} />}
         </div>
       </div>
+      {!!walkingTime && (
+        <div className={styles.actions}>
+          <div className={styles.actionButton}>
+            <DirectionsWalk fontSize="small" />
+            <span className={styles.actionButtonLabel}>{walkingTime}</span>
+          </div>
+        </div>
+      )}
     </>
   );
-  // ) : (
-  //   <NoServiceCard
-  //     onClick={onClick}
-  //     currentStop={currentStop}
-  //     setNextCardOpen={setNextCardOpen}
-  //   />
-  // );
 };
 
 export default NextTimeCard;
