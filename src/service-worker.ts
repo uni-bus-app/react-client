@@ -77,8 +77,11 @@ initialize();
 
 const db = new LocalDB();
 db.init().then(() => {
+  console.log('db init');
   self.clients.matchAll().then((clients) => {
+    console.log(clients);
     clients.forEach((client) => {
+      console.log(client);
       client.postMessage('Your Message');
     });
   });
