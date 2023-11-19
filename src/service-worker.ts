@@ -78,6 +78,8 @@ initialize();
 
 const db = new LocalDB();
 db.init().then(() => {
+  const channel = new BroadcastChannel('my_channel');
+  channel.postMessage({ type: 'test' });
   console.log('db init');
   self.clients.matchAll().then((clients) => {
     console.log(clients);

@@ -150,6 +150,10 @@ const App = () => {
     // const showAlertAfterDelay = setTimeout(() => {
     //   setShowAlert(true);
     // }, 1000);
+    const channel = new BroadcastChannel('my_channel');
+    channel.onmessage = (event) => {
+      console.log('Received:', event.data);
+    };
     navigator.serviceWorker.addEventListener('message', (event) => {
       console.log(event);
       setShowAlert(true);
