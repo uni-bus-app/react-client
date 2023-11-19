@@ -62,6 +62,7 @@ export const getTimes = async (
     const localTimes = await db.getTimes(stopID, date);
     if (localTimes?.length) {
       console.log('local times');
+      console.log(date, 'DATE LOCAL');
       return parseTimes(localTimes);
     } else {
       console.log('dev live');
@@ -71,12 +72,23 @@ export const getTimes = async (
       return parseTimes(await res.json());
     }
   } else {
-    console.log('else live');
+    console.log('live timetable');
+    console.log(date, 'DATE LIVE');
     date = date ? `?date=${date}` : '';
     const res = await fetch(`${apiURL}/stops/${stopID}/times${date}`);
     return parseTimes(await res.json());
   }
 };
+
+// const isWeekday = (date) => {
+//   const day = date.getDay();
+//   if (day === 0 || day === 6) {
+//     day.add(1, 'day');
+//     isWeekday(day);
+//   } else {
+//     return day;
+//   }
+// }
 
 const parseTimes = (data: any[]): Time[] => {
   const result: Time[] = [];
