@@ -106,10 +106,10 @@ class LocalDB {
         timesStore.createIndex('stopID', 'stopID');
       },
     });
+    this.initialised = true;
     try {
       return await this.sync();
-    } catch (error) {}
-    this.initialised = true;
+    } catch {}
   }
 
   async generateChecksums() {
