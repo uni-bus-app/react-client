@@ -156,6 +156,7 @@ const App = () => {
       if (event.data.type === 'sync') {
         setShowAlert(true);
       }
+      setShowAlert(true);
     };
     // navigator.serviceWorker.addEventListener('message', (event) => {
     //   console.log(event);
