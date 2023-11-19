@@ -3,6 +3,7 @@ import { DBSchema, IDBPDatabase, openDB } from 'idb';
 import { get, set } from 'idb-keyval';
 import config from '../config';
 import { Time } from '../types';
+import { getRoutePath } from './APIUtils';
 
 const getServiceTime = (scheduled: string, currentTime: Dayjs): string => {
   return currentTime
@@ -133,6 +134,8 @@ class LocalDB {
         this.db.put('times', item);
       });
     }
+    const routePath = await getRoutePath();
+    await set('u1RoutePath', routePath);
   }
 
   async getStops() {

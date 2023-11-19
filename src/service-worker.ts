@@ -16,6 +16,7 @@ import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate } from 'workbox-strategies';
 import LocalDB from './api/NewLocalDB';
 import config from './config';
+import { get } from 'idb-keyval';
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -136,6 +137,9 @@ self.addEventListener('fetch', (ev) => {
             const stops = await db.getStops();
             return new Response(JSON.stringify(stops));
           }
+        } else if (url.includes('u1routepath')) {
+          const times = await get('u1RoutePath');
+          return new Response(JSON.stringify(times));
         } else {
           return fetch(ev.request);
         }
