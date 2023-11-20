@@ -78,6 +78,11 @@ const Map = (props: MapProps) => {
   const [map, setMap] = useState<google.maps.Map>();
   const [markerPosition, setMarkerPosition] = useState({ lat: 0, lng: 0 });
   const [prevStop, setPrevStop] = useState<Stop | undefined>(undefined);
+  const [cachedWalkingValues, setCachedWalkingValues] = useState<any>({});
+  const [previousMarkerPosition, setPreviousMarkerPosition] = useState({
+    lat: 0,
+    lng: 0,
+  });
   useEffect(() => {
     setPrevStop(currentStop);
   }, [currentStop]);
@@ -154,29 +159,69 @@ const Map = (props: MapProps) => {
 
   // Calculate walking distance
   useEffect(() => {
+    const currentStopId = currentStop?.id;
+
     const calculateWalkingDistance = () => {
-      const service = new window.google.maps.DistanceMatrixService();
-      currentStop &&
-        service.getDistanceMatrix(
-          {
-            origins: [{ lat: markerPosition.lat, lng: markerPosition.lng }],
-            destinations: [
-              { lat: currentStop.location.lat, lng: currentStop.location.lng },
-            ],
-            travelMode: window.google.maps.TravelMode.WALKING,
-          },
-          (response, status) => {
-            if (status === 'OK' && response) {
-              setWalkingTime(response.rows[0].elements[0].duration.text);
-            } else {
-              console.error('Error calculating walking distance:', status);
+      return new Promise((resolve, reject) => {
+        const service = new window.google.maps.DistanceMatrixService();
+        if (currentStop) {
+          service.getDistanceMatrix(
+            {
+              origins: [{ lat: markerPosition.lat, lng: markerPosition.lng }],
+              destinations: [
+                {
+                  lat: currentStop.location.lat,
+                  lng: currentStop.location.lng,
+                },
+              ],
+              travelMode: window.google.maps.TravelMode.WALKING,
+            },
+            (response, status) => {
+              if (status === 'OK' && response) {
+                const value = response.rows[0].elements[0].duration.text;
+
+                resolve(value);
+              } else {
+                console.error('Error calculating walking distance:', status);
+                reject(status);
+              }
             }
-          }
-        );
+          );
+        } else {
+          reject('No current stop');
+        }
+      });
+    };
+
+    const calculate = (currentStopId: string) => {
+      calculateWalkingDistance().then((value) => {
+        setCachedWalkingValues({
+          ...cachedWalkingValues,
+          [currentStopId]: value,
+        });
+        setWalkingTime(value);
+      });
     };
 
     if (window.google && window.google.maps && markerPosition && currentStop) {
-      calculateWalkingDistance();
+      if (currentStopId) {
+        if (cachedWalkingValues[currentStopId]) {
+          const markerPositionChanged =
+            markerPosition.lat !== previousMarkerPosition.lat ||
+            markerPosition.lng !== previousMarkerPosition.lng;
+          if (markerPositionChanged) {
+            // If the user has moved, recalculate walking time
+            setPreviousMarkerPosition(markerPosition); // Update previous marker position
+            calculate(currentStopId);
+          } else {
+            // If the user hasn't moved and the stop hasn't changed, use cached values
+            setWalkingTime(cachedWalkingValues[currentStopId]);
+          }
+        } else {
+          // If this is a new stop, add to cache and update walking time
+          calculate(currentStopId);
+        }
+      }
     }
   }, [currentStop]);
 
@@ -191,7 +236,6 @@ const Map = (props: MapProps) => {
   };
 
   /**
-   * ISSUE 74
    *
    * Get user location
    * Watch user location
