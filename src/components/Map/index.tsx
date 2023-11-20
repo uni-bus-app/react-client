@@ -81,7 +81,6 @@ const Map = (props: MapProps) => {
   useEffect(() => {
     setPrevStop(currentStop);
   }, [currentStop]);
-  const minHeightValue = walkingTime ? '265px' : '220px';
 
   /**
    * Animate map camera on marker tap
@@ -289,7 +288,7 @@ const Map = (props: MapProps) => {
           setOpen={setNextCardOpen}
           disableBackdrop={true}
           zIndex={5000}
-          minHeight={`calc(env(safe-area-inset-bottom, 0px) + ${minHeightValue})`}
+          minHeight={'calc(env(safe-area-inset-bottom, 0px) + 270px)'}
           borderRadius={50}
         >
           <NextTimeCard
