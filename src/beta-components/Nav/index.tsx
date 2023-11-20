@@ -58,7 +58,6 @@ const Nav = (props: NavProps) => {
   useEffect(() => {
     if ('geolocation' in navigator) {
       navigator.permissions.query({ name: 'geolocation' }).then((result) => {
-        alert(result.state);
         if (result.state === 'granted' || result.state === 'prompt') {
           setShowLocationButton(true);
         }
