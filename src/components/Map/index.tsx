@@ -157,6 +157,8 @@ const Map = (props: MapProps) => {
     }
     return 0;
   };
+  // Store users previous location
+  const [prevLocation, setPrevLocation] = useState({ lat: 0, lng: 0 });
 
   // Calculate walking distance
   useEffect(() => {
@@ -207,19 +209,24 @@ const Map = (props: MapProps) => {
     if (window.google && window.google.maps && markerPosition && currentStop) {
       if (currentStopId) {
         if (cachedWalkingValues[currentStopId]) {
-          const markerPositionChanged =
-            markerPosition.lat !== previousMarkerPosition.lat ||
-            markerPosition.lng !== previousMarkerPosition.lng;
-          if (markerPositionChanged) {
+          const hasUserMoved = checkBoundary(
+            markerPosition.lat,
+            markerPosition.lng
+          );
+          if (hasUserMoved) {
             // If the user has moved, recalculate walking time
+            console.log('User has moved');
             setPreviousMarkerPosition(markerPosition); // Update previous marker position
             calculate(currentStopId);
           } else {
+            console.log('User has not moved');
             // If the user hasn't moved and the stop hasn't changed, use cached values
             setWalkingTime(cachedWalkingValues[currentStopId]);
           }
         } else {
-          // If this is a new stop, add to cache and update walking time
+          console.log('No cached value');
+          // If a new stop, add the users location to prevLocation and calculate walking time, add to cache
+          setPrevLocation(markerPosition);
           calculate(currentStopId);
         }
       }
@@ -269,6 +276,53 @@ const Map = (props: MapProps) => {
       console.error('Geolocation is not supported by this browser.');
     }
   }, []);
+
+  const checkBoundary = (userLat: number, userLng: number) => {
+    // Center coordinates of the circle
+    const centerLat = prevLocation.lat; // users initial lat
+    const centerLng = prevLocation.lng; // users initial lng
+
+    // User coordinates
+    const userCoordinates = { latitude: userLat, longitude: userLng };
+    const centerCoordinates = { latitude: centerLat, longitude: centerLng };
+
+    // Function to calculate distance between two coordinates using the haversine formula
+    function getDistance(
+      coord1: { latitude: number; longitude: number },
+      coord2: { latitude: number; longitude: number }
+    ) {
+      const earthRadius = 3958.8; // Earth's radius in miles
+      const latDiff = toRadians(coord2.latitude - coord1.latitude);
+      const lngDiff = toRadians(coord2.longitude - coord1.longitude);
+      const a =
+        Math.sin(latDiff / 2) * Math.sin(latDiff / 2) +
+        Math.cos(toRadians(coord1.latitude)) *
+          Math.cos(toRadians(coord2.latitude)) *
+          Math.sin(lngDiff / 2) *
+          Math.sin(lngDiff / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const distance = earthRadius * c;
+      return distance;
+    }
+
+    // Function to convert degrees to radians
+    function toRadians(degrees: number) {
+      return degrees * (Math.PI / 180);
+    }
+
+    // Calculate distance between user and center coordinates
+    const distance = getDistance(userCoordinates, centerCoordinates);
+
+    // Define the boundary radius
+    const boundaryRadius = 0.5; // in miles
+
+    // Check if the user is within the boundary
+    if (distance <= boundaryRadius) {
+      return false;
+    } else {
+      return true;
+    }
+  };
 
   /**
    * Map loading logic
@@ -322,7 +376,7 @@ const Map = (props: MapProps) => {
             selectedStop={currentStop}
             onMarkerSelect={onMarkerSelect}
           />
-          {/* <MarkerF
+          <MarkerF
             position={markerPosition}
             options={{
               icon: {
@@ -332,7 +386,7 @@ const Map = (props: MapProps) => {
                 anchor: new google.maps.Point(12.5, 12.5),
               },
             }}
-          /> */}
+          />
         </GoogleMap>
         <BottomSheet
           open={nextCardOpen}
