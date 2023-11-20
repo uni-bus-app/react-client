@@ -2,6 +2,7 @@ import { MarkerF, OverlayView } from '@react-google-maps/api';
 import { useEffect, useState } from 'react';
 import { getRoutePath, getVehicles } from '../../../../api/APIUtils';
 import { ReactComponent as VehicleIcon } from '../../../../assets/Asset 2.svg';
+import dayjs from 'dayjs';
 import './index.css';
 
 const getClosestPoint = (inputLat: any, inputLng: any, points: any): any => {
@@ -108,6 +109,12 @@ const LiveVehicleLocation = (props: LiveVehicleLocationProps) => {
   return (
     <>
       {vehicles?.map((stop, index) => {
+        if (
+          dayjs(stop.MonitoredVehicleJourney.OriginAimedDepartureTime).isAfter(
+            dayjs()
+          )
+        )
+          return;
         return (
           <OverlayView
             position={getPosition(
