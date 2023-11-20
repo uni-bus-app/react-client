@@ -1,25 +1,21 @@
-import NearMeOutlined from '@mui/icons-material/NearMeOutlined';
-import Fab from '@mui/material/Fab';
 import { useTheme } from '@mui/material/styles';
 import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
-import { RefObject, useEffect, useState } from 'react';
-import { getRoutePath, getStops } from '../../api/APIUtils';
+import {
+  Dispatch,
+  RefObject,
+  SetStateAction,
+  useEffect,
+  useState,
+} from 'react';
 import config from '../../config';
 import { LatLng, Stop } from '../../types';
 import RoutePath from './components/RoutePath';
 import StopMarkers from './components/StopMarkers';
-import { mapStylesDark, mapStylesLight } from './styles';
 import styles from './styles.module.css';
 import { getBounds, getLocation, moveLogo } from './utils';
+import NextTimeCard from '../NextTimeCard';
+import BottomSheet from '../BottomSheet';
 import LiveVehicleLocation from './components/LiveVehicleLocation';
-
-const mapOptions: google.maps.MapOptions = {
-  disableDefaultUI: true,
-  gestureHandling: 'greedy',
-  clickableIcons: false,
-  zoom: 13,
-  center: { lat: 50.794236, lng: -1.075 },
-};
 
 interface MapProps {
   darkModeEnabled?: boolean;
@@ -27,8 +23,31 @@ interface MapProps {
   stopMarkersEnabled?: boolean;
   onMarkerSelect?: (stop: Stop) => void;
   currentStop?: Stop;
-  logoContainer: RefObject<HTMLDivElement>;
+  logoContainer?: RefObject<HTMLDivElement>;
+  userLocation?: any;
+  setTimesSheetOpen: Dispatch<SetStateAction<boolean>>;
+  nextCardOpen: boolean; // ISSUE 65
+  setNextCardOpen: Dispatch<SetStateAction<boolean>>; // ISSUE 65
+  stops?: Stop[];
+  routeOverlay?: LatLng[];
 }
+
+const bounds = {
+  north: 50.878276,
+  south: 50.74024,
+  west: -1.150673,
+  east: -0.974604,
+};
+
+const mapRestriction: google.maps.MapRestriction = {
+  latLngBounds: {
+    north: bounds.north,
+    south: bounds.south,
+    west: bounds.west,
+    east: bounds.east,
+  },
+  strictBounds: true,
+};
 
 const Map = (props: MapProps) => {
   const {
@@ -38,59 +57,39 @@ const Map = (props: MapProps) => {
     onMarkerSelect,
     currentStop,
     logoContainer,
+    setTimesSheetOpen, // ISSUE 65
+    nextCardOpen, // ISSUE 65
+    setNextCardOpen, // ISSUE 65
+    stops,
+    routeOverlay,
   } = props;
 
   const [map, setMap] = useState<google.maps.Map>();
-  const [routeOverlay, setRouteOverlay] = useState<LatLng[]>();
-  const [stops, setStops] = useState<Stop[]>();
 
-  const [thing, setThing] = useState<any>();
-
-  const getCurrentLocation = async () => {
-    const position = await getLocation();
-    setThing(position);
-    if (map) {
-      map?.fitBounds(getBounds(position), 20);
-    }
-  };
-
-  useEffect(() => {
-    const getData = async () => {
-      setRouteOverlay(await getRoutePath());
-      setStops(await getStops());
-    };
-    getData();
-  }, []);
-
+  /**
+   * Animate map camera on marker tap
+   */
   useEffect(() => {
     if (map && currentStop) {
-      const pos = new google.maps.LatLng(
-        currentStop.location.lat,
-        currentStop.location.lng
-      );
-      map.setZoom(13);
-      window.setTimeout(() => {
-        map.fitBounds(getBounds(pos), {
-          top:
-            Number(
-              getComputedStyle(document.documentElement)
-                .getPropertyValue('--sat')
-                .replace('px', '')
-            ) + 5,
-          left: 5,
-          right: 5,
-          bottom: 5,
-        });
-      }, 100);
+      map.setOptions({
+        center: {
+          lat: currentStop.location.lat,
+          lng: currentStop.location.lng,
+        },
+        zoom: 17,
+        tilt: 45,
+        restriction: mapRestriction,
+      });
     }
   }, [currentStop]);
-  // map.panToBounds()
 
+  /**
+   * Map loading logic
+   */
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: config.mapsApiKey,
     mapIds: ['f9e34791c612c2be', '8d48c9186a06dab'],
   });
-  const theme = useTheme();
   const renderMap = () => {
     const onLoad = (mapInstance: google.maps.Map) => {
       setMap(mapInstance);
@@ -101,13 +100,28 @@ const Map = (props: MapProps) => {
       setMap(undefined);
     };
 
+    const mapOptions: google.maps.MapOptions = {
+      disableDefaultUI: true,
+      gestureHandling: 'greedy',
+      clickableIcons: false,
+      zoom: currentStop ? 17 : 13,
+      center: currentStop
+        ? {
+            lat: currentStop.location.lat,
+            lng: currentStop.location.lng,
+          }
+        : { lat: 50.794236, lng: -1.075 },
+      tilt: 0,
+      restriction: mapRestriction,
+    };
+
     return (
       <>
         <GoogleMap
           mapContainerStyle={{
             width: '100vw',
-            // height: 'calc(40vh + env(safe-area-inset-top))',
             position: 'absolute',
+            borderRadius: '0',
           }}
           mapContainerClassName={styles.mapContainer}
           options={{
@@ -131,59 +145,24 @@ const Map = (props: MapProps) => {
             onMarkerSelect={onMarkerSelect}
           />
         </GoogleMap>
-        {/* {thing && (
-          <Marker
-            position={map.getCenter()}
-            options={{
-              icon: {
-                url: locationMarkerIcon,
-                // scaledSize: new google.maps.Size(35, 50),
-                // origin: new google.maps.Point(0, 0),
-                // anchor: new google.maps.Point(17.5, 50),
-              },
-            }}
-          />
-        )} */}
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            // height: '3em',
-            width: '100%',
-          }}
-          className={styles.statusBarContainer}
+        <BottomSheet
+          open={nextCardOpen}
+          setOpen={setNextCardOpen}
+          disableBackdrop={true}
+          zIndex={5000}
+          minHeight={'calc(env(safe-area-inset-bottom, 0px) + 220px)'}
+          borderRadius={50}
         >
-          <div
-            style={{
-              // position: 'absolute',
-              // top: 0,
-              opacity: theme.palette.mode === 'dark' ? 0 : undefined,
-            }}
-            className={styles.statusBar}
+          <NextTimeCard
+            darkMode={true}
+            currentStop={currentStop}
+            setTimesSheetOpen={setTimesSheetOpen}
+            setNextCardOpen={setNextCardOpen}
           />
-          <div className={styles.statusBarBlur} />
-        </div>
-
-        <Fab
-          size="small"
-          style={{
-            position: 'absolute',
-            // bottom: '63.5%',
-            right: '1em',
-            backgroundColor: theme.palette.background.default,
-            color: theme.palette.text.primary,
-          }}
-          className={styles.locationButton}
-          onClick={getCurrentLocation}
-        >
-          <NearMeOutlined />
-        </Fab>
+        </BottomSheet>
       </>
     );
   };
-
   if (loadError) {
     return <div>Map cannot be loaded :(</div>;
   }

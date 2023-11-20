@@ -10,6 +10,8 @@ import config from './config';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import { Workbox } from 'workbox-window';
+import SettingsProvider from './components/SettingsProvider';
+import LoadingScreen from './beta-components/LoadingScreen';
 
 export const wrapPromise = (
   promise: Promise<any>
@@ -71,7 +73,11 @@ if (container) {
       <Suspense fallback={<div>Loading...</div>}>
         <ServiceWorkerProvider res={res}>
           <Router>
-            <App />
+            <Suspense fallback={<LoadingScreen />}>
+              <SettingsProvider>
+                <App />
+              </SettingsProvider>
+            </Suspense>
           </Router>
         </ServiceWorkerProvider>
       </Suspense>

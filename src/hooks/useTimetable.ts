@@ -2,18 +2,21 @@ import { useEffect, useRef, useState } from 'react';
 import { getTimes, updateServiceTimes } from '../api/APIUtils';
 import { Stop, Time } from '../types';
 
-const useTimetable = (stop?: Stop) => {
+const useTimetable = (stop?: Stop, disable?: boolean) => {
   const intervalID = useRef<number>();
   const allTimes = useRef<Time[]>();
   const [times, setTimes] = useState<Time[]>();
+
   const updateTimes = () => {
-    intervalID.current = window.setInterval(() => {
-      if (allTimes.current) {
-        const updatedTimes = updateServiceTimes(allTimes.current);
-        allTimes.current = updatedTimes;
-        setTimes(updatedTimes);
-      }
-    }, 1000);
+    if (disable !== true) {
+      intervalID.current = window.setInterval(() => {
+        if (allTimes.current) {
+          const updatedTimes = updateServiceTimes(allTimes.current);
+          allTimes.current = updatedTimes;
+          setTimes(updatedTimes);
+        }
+      }, 1000);
+    }
   };
   useEffect(() => {
     window.clearInterval(intervalID.current);
