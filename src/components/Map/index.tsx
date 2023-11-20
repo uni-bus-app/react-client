@@ -284,7 +284,6 @@ const Map = (props: MapProps) => {
             }}
           />
         </GoogleMap>
-        {/* <Button onClick={calculateWalkingDistance}>Calculate</Button> */}
         <BottomSheet
           open={nextCardOpen}
           setOpen={setNextCardOpen}

@@ -12,6 +12,7 @@ const defaultSettings: SettingsItems = {
   favouriteStop: '6TRxDIF8NDpofem64867',
   rainbowNav: false,
   initialSetup: true,
+  canUserDirectionService: true,
 };
 
 interface ContextState extends SettingsItems {
