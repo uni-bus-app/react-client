@@ -27,7 +27,6 @@ const Nav = (props: NavProps) => {
     setPersistActive,
   } = props;
 
-  const [showLocationButton, setShowLocationButton] = useState(false);
   const [translate, setTranslate] = useState(0);
   const [moving, setMovement] = useState(false);
   const navigate = useNavigate();
@@ -54,16 +53,6 @@ const Nav = (props: NavProps) => {
   }, [pathName]);
 
   const buttonClasses = `${styles.icon} ${persistActive ? styles.pulse : ''}`;
-
-  useEffect(() => {
-    if ('geolocation' in navigator) {
-      navigator.permissions.query({ name: 'geolocation' }).then((result) => {
-        if (result.state === 'granted' || result.state === 'prompt') {
-          setShowLocationButton(true);
-        }
-      });
-    }
-  }, []);
 
   return (
     <div className={styles.Nav}>
@@ -132,7 +121,7 @@ const Nav = (props: NavProps) => {
         </IconButton>
       </div>
 
-      {showLocationButton && pathName === '/map' && (
+      {pathName === '/map' && (
         <div className={styles.location}>
           <IconButton
             sx={{ height: '100%' }}
