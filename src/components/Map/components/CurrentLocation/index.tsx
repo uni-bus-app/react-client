@@ -1,20 +1,27 @@
 import { OverlayView } from '@react-google-maps/api';
 import './index.scss';
 import { getPixelPositionOffset } from '../../utils';
+import classNames from 'classnames';
 
 interface CurrentLocationProps {
   darkModeEnabled?: boolean;
   position: google.maps.LatLng | google.maps.LatLngLiteral;
+  persistActive: boolean;
 }
 
-const CustomMarker = () => (
-  <div className="location-marker">
-    <div className="location-marker__circle" />
-  </div>
-);
-
 const CurrentLocation = (props: CurrentLocationProps) => {
-  const { darkModeEnabled, position } = props;
+  const { darkModeEnabled, position, persistActive } = props;
+
+  const CustomMarker = () => (
+    <div className="location-marker">
+      <div
+        className={classNames(
+          persistActive && 'location-maker__pulse',
+          'location-marker__circle'
+        )}
+      />
+    </div>
+  );
 
   return (
     <>

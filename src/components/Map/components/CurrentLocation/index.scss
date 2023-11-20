@@ -8,6 +8,9 @@
     border: 2px solid white;
     background-color: #1b73e1;
     border-radius: 50%;
+  }
+
+  &__pulse {
     animation: pulse 2s infinite;
   }
 }
@@ -20,6 +23,6 @@
   }
   50% {
     box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
-    border-width: 8px;
+    border-width: 4px;
   }
 }

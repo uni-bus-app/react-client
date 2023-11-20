@@ -308,6 +308,7 @@ const Map = (props: MapProps) => {
           <CurrentLocation
             darkModeEnabled={darkModeEnabled}
             position={markerPosition}
+            persistActive={persistActive}
           />
           <RoutePath
             enabled={routeOverlayEnabled}
@@ -321,7 +322,7 @@ const Map = (props: MapProps) => {
             selectedStop={currentStop}
             onMarkerSelect={onMarkerSelect}
           />
-          <MarkerF
+          {/* <MarkerF
             position={markerPosition}
             options={{
               icon: {
@@ -331,7 +332,7 @@ const Map = (props: MapProps) => {
                 anchor: new google.maps.Point(12.5, 12.5),
               },
             }}
-          />
+          /> */}
         </GoogleMap>
         <BottomSheet
           open={nextCardOpen}
