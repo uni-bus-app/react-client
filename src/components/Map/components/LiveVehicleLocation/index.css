@@ -11,8 +11,8 @@
 
 .arrow {
   position: absolute;
-  top: -20px; /* Adjust this value as needed */
-  left: 50%;
+  top: -22px; /* Adjust this value as needed */
+  left: 16px;
   transform: translateX(-50%);
   width: 0;
   height: 0;

@@ -78,7 +78,7 @@ const CustomMarker = ({ text, bearing }: any) => (
       style={{ transform: `rotate(${Number(bearing)}deg)` }}
     >
       <div className="circle"></div>
-      <div className="arrow"></div>
+      {!!bearing && <div className="arrow"></div>}
     </div>
     <VehicleIcon style={{ width: '100%', height: '100%' }} />
   </div>
