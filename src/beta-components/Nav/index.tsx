@@ -141,6 +141,7 @@ const Nav = (props: NavProps) => {
                 navigate('/map', { replace: true });
                 handleClick(e);
                 setPersistActive(true);
+                setNextCardOpen(false);
                 setTimeout(() => {
                   getLocation();
                 }, 700);
