@@ -157,6 +157,7 @@ const Map = (props: MapProps) => {
     }
     return 0;
   };
+
   // Store users previous location
   const [prevLocation, setPrevLocation] = useState({ lat: 0, lng: 0 });
 
@@ -214,10 +215,10 @@ const Map = (props: MapProps) => {
             markerPosition.lng
           );
           if (hasUserMoved) {
-            // If the user has moved, recalculate walking time
+            // If the user has moved
             console.log('User has moved');
             setPreviousMarkerPosition(markerPosition); // Update previous marker position
-            calculate(currentStopId);
+            calculate(currentStopId); // Recalculate walking time for the stop
           } else {
             console.log('User has not moved');
             // If the user hasn't moved and the stop hasn't changed, use cached values
@@ -277,6 +278,15 @@ const Map = (props: MapProps) => {
     }
   }, []);
 
+  /**
+   *
+   * Check if the user has moved outside of the designated boundary
+   *
+   * @param userLat number
+   * @param userLng number
+   *
+   * @returns boolean
+   */
   const checkBoundary = (userLat: number, userLng: number) => {
     // Center coordinates of the circle
     const centerLat = prevLocation.lat; // users initial lat
