@@ -15,6 +15,7 @@ import { moveLogo } from './utils';
 import NextTimeCard from '../NextTimeCard';
 import BottomSheet from '../BottomSheet';
 import locationMarkerIcon from '../../assets/locationmarkericon.png';
+import CurrentLocation from './components/CurrentLocation';
 
 interface MapProps {
   darkModeEnabled?: boolean;
@@ -304,6 +305,10 @@ const Map = (props: MapProps) => {
           onUnmount={onUnmount}
           onDrag={() => setPersistActive(false)}
         >
+          <CurrentLocation
+            darkModeEnabled={darkModeEnabled}
+            position={markerPosition}
+          />
           <RoutePath
             enabled={routeOverlayEnabled}
             path={routeOverlay}
