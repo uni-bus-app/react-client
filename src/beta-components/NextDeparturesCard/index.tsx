@@ -37,6 +37,8 @@ const NextDeparturesCard = (props: NextDeparturesCardProps) => {
   }, [times]);
 
   const isWeekend = () => {
+    // Lets make sure we can cover for the past midnight buses here
+    const time = times && (times[0].timeValue as any);
     return dayjs().day() === 6 || dayjs().day() === 0;
   };
 
