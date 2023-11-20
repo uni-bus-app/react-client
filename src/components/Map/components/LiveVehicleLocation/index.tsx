@@ -70,8 +70,8 @@ const CustomMarker = ({ text, bearing }: any) => (
     style={{
       position: 'relative',
       display: 'flex',
-      width: '50px',
-      height: '50px',
+      width: '40px',
+      height: '40px',
     }}
   >
     <div
