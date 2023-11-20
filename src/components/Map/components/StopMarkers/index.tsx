@@ -34,6 +34,7 @@ const StopMarkers = (props: StopMarkersProps) => {
                 anchor: new google.maps.Point(17.5, 50),
               },
             }}
+            zIndex={1}
             onClick={() => {
               onMarkerSelect?.(stop);
             }}

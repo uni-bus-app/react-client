@@ -1,6 +1,8 @@
-import { MarkerF } from '@react-google-maps/api';
+import { MarkerF, OverlayView } from '@react-google-maps/api';
 import { useEffect, useState } from 'react';
 import { getRoutePath, getVehicles } from '../../../../api/APIUtils';
+import { ReactComponent as VehicleIcon } from '../../../../assets/Asset 2.svg';
+import './index.css';
 
 const getClosestPoint = (inputLat: any, inputLng: any, points: any): any => {
   let closestPoint = null;
@@ -57,6 +59,31 @@ interface LiveVehicleLocationProps {
   darkModeEnabled?: boolean;
 }
 
+const getPixelPositionOffset = (width: number, height: number) => ({
+  x: -(width / 2),
+  y: -(height / 2),
+});
+
+const CustomMarker = ({ text, bearing }: any) => (
+  <div
+    style={{
+      position: 'relative',
+      display: 'flex',
+      width: '50px',
+      height: '50px',
+    }}
+  >
+    <div
+      className="circle-with-arrow"
+      style={{ transform: `rotate(${Number(bearing)}deg)` }}
+    >
+      <div className="circle"></div>
+      <div className="arrow"></div>
+    </div>
+    <VehicleIcon style={{ width: '100%', height: '100%' }} />
+  </div>
+);
+
 const LiveVehicleLocation = (props: LiveVehicleLocationProps) => {
   const { darkModeEnabled } = props;
   const [vehicles, setVehicles] = useState<any[]>([]);
@@ -82,14 +109,35 @@ const LiveVehicleLocation = (props: LiveVehicleLocationProps) => {
     <>
       {vehicles?.map((stop, index) => {
         return (
-          <MarkerF
-            key={index}
+          <OverlayView
             position={getPosition(
               stop.MonitoredVehicleJourney.VehicleLocation,
               routePath
             )}
-            zIndex={10}
-          />
+            mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+            getPixelPositionOffset={getPixelPositionOffset}
+          >
+            <CustomMarker
+              text="Static Content"
+              bearing={stop.MonitoredVehicleJourney.Bearing}
+            />
+          </OverlayView>
+          // <MarkerF
+          //   key={index}
+          //   position={getPosition(
+          //     stop.MonitoredVehicleJourney.VehicleLocation,
+          //     routePath
+          //   )}
+          //   options={{
+          //     icon: {
+          //       url: test,
+          //       scaledSize: new google.maps.Size(48, 48),
+          //       origin: new google.maps.Point(0, 0),
+          //       anchor: new google.maps.Point(17.5, 50),
+          //     },
+          //   }}
+          //   zIndex={10}
+          // />
         );
       })}
     </>

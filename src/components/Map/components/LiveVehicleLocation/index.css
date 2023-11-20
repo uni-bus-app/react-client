@@ -1,0 +1,22 @@
+.circle-with-arrow {
+  position: absolute;
+  display: inline-block;
+}
+.circle {
+  width: 50px;
+  height: 50px;
+  border: 3px solid #621360;
+  border-radius: 50%;
+}
+
+.arrow {
+  position: absolute;
+  top: -20px; /* Adjust this value as needed */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 20px solid #621360; /* Creates the upward arrow */
+}
