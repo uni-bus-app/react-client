@@ -13,9 +13,10 @@ import { ExpirationPlugin } from 'workbox-expiration';
 import { initialize } from 'workbox-google-analytics';
 import { createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
-import { StaleWhileRevalidate } from 'workbox-strategies';
+import { CacheFirst, StaleWhileRevalidate } from 'workbox-strategies';
 import LocalDB from './api/NewLocalDB';
 import config from './config';
+import { get } from 'idb-keyval';
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -76,7 +77,42 @@ registerRoute(
 initialize();
 
 const db = new LocalDB();
-db.init();
+const channel = new BroadcastChannel('sw_channel');
+db.init().then((updates) => {
+  channel.postMessage({ type: 'sync', updates });
+});
+
+channel.onmessage = (event) => {
+  if (event.data.action === 'sync') {
+    if (db.initialised) {
+      db.sync();
+    }
+  }
+};
+
+registerRoute(({ url }) => {
+  if (url.pathname.includes('maps-api') && url.pathname.endsWith('.js')) {
+    return true;
+  }
+  if (url.pathname.includes('__googleMapsCallback')) {
+    return true;
+  }
+}, new CacheFirst({ cacheName: 'offline-maps-scripts' }));
+
+const cacheMaps = async () => {
+  const apiLoaderScript =
+    'https://maps.googleapis.com/maps/api/js?callback=__googleMapsCallback&key=AIzaSyDkT81ky0Yn3JYuk6bFCsq4PVmjXawppFI&v=weekly&map_ids=f9e34791c612c2be,8d48c9186a06dab';
+  const res = await fetch(`${apiLoaderScript}&${Date.now()}`, {
+    mode: 'no-cors',
+    cache: 'no-store',
+  });
+  const cache = await caches.open('offline-maps-scripts');
+  cache.put(apiLoaderScript, res.clone());
+};
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(Promise.all([cacheMaps()]));
+});
 
 // const cacheBus = async () => {
 //   const cache = await caches.open('bus');
@@ -104,9 +140,12 @@ self.addEventListener('message', async (event) => {
 
 self.addEventListener('fetch', (ev) => {
   const { url } = ev.request;
+  const serviceWorkerOrigin = new URL(self.registration.scope).origin;
+  const requestOrigin = new URL(url).origin;
   if (
     url.includes('dot-unibus-app.nw.r.appspot.com/') ||
-    url.includes('localhost:8080')
+    url.includes('localhost:8080') ||
+    (serviceWorkerOrigin === requestOrigin && url.includes('/api/'))
   ) {
     ev.respondWith(
       (async () => {
@@ -124,6 +163,9 @@ self.addEventListener('fetch', (ev) => {
             const stops = await db.getStops();
             return new Response(JSON.stringify(stops));
           }
+        } else if (url.includes('u1routepath')) {
+          const times = await get('u1RoutePath');
+          return new Response(JSON.stringify(times));
         } else {
           return fetch(ev.request);
         }
