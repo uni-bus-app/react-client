@@ -10,8 +10,9 @@ import BusEta from '../BusEta';
 import ServiceIcon from '../ServiceIcon';
 import styles from './styles.module.css';
 import { useTimetable } from '../../hooks';
-import { Close, DirectionsWalk } from '@mui/icons-material';
+import { Close, DirectionsWalk, Star, StarOutline } from '@mui/icons-material';
 import { Box, IconButton } from '@mui/material';
+import { useSettings } from '../SettingsProvider';
 
 const NoServiceCard = ({
   onClick,
@@ -96,6 +97,7 @@ const NextTimeCard = (props: NextTimeCardProps) => {
     walkingTime,
   } = props;
   const { times } = useTimetable(currentStop);
+  const settings = useSettings();
 
   let time: Time | undefined = times?.[0];
 
@@ -113,7 +115,6 @@ const NextTimeCard = (props: NextTimeCardProps) => {
           <Close className={styles.icon} />
         </IconButton>
       </div>
-
       <div className={styles.card} onClick={() => setTimesSheetOpen(true)}>
         <div className={styles.details}>
           <div className={styles.icons}>
@@ -167,14 +168,33 @@ const NextTimeCard = (props: NextTimeCardProps) => {
           {time ? <NavigateNext /> : <Skeleton width={24} height={24} />}
         </div>
       </div>
-      {!!walkingTime && (
-        <div className={styles.actions}>
+
+      <div className={styles.actions} onClick={(e) => e.preventDefault()}>
+        {!!walkingTime && (
           <div className={styles.actionButton}>
             <DirectionsWalk fontSize="small" />
             <span className={styles.actionButtonLabel}>{walkingTime}</span>
           </div>
+        )}
+        <div
+          className={styles.actionButton}
+          onClick={() => {
+            settings.favouriteStop !== currentStop?.id &&
+              settings.setValue('favouriteStop', currentStop?.id);
+          }}
+        >
+          {settings.favouriteStop === currentStop?.id ? (
+            <Star fontSize="small" />
+          ) : (
+            <StarOutline fontSize="small" />
+          )}
+          <span className={styles.actionButtonLabel}>
+            {settings.favouriteStop === currentStop?.id
+              ? 'Favourited'
+              : 'Favourite this stop'}
+          </span>
         </div>
-      )}
+      </div>
     </>
   );
 };

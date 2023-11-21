@@ -108,6 +108,7 @@
   justify-content: start;
   padding: 8px 16px 0px 16px;
   align-items: center;
+  gap: 12px;
 }
 
 .actionButton {

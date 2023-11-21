@@ -2,26 +2,17 @@ import { PaletteMode } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import { grey } from '@mui/material/colors';
 import CssBaseline from '@mui/material/CssBaseline';
 import Snackbar from '@mui/material/Snackbar';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { getAnalytics, logEvent } from 'firebase/analytics';
-import {
-  Suspense,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  useTransition,
-} from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import lazy from 'react-lazy-with-preload';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import styles from './App.module.css';
 import HomepageView from './beta-components/Views/HomepageView';
 import Nav from './beta-components/Nav';
-import NotificationsView from './beta-components/Views/NotificationsView';
 import SettingsView from './beta-components/Views/SettingsView';
 import { useScreenTracking, useUpdate } from './hooks';
 import { LatLng, Stop } from './types';
@@ -179,7 +170,6 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Navigate to={'/home'} />} />
             <Route path="/home" element={<HomepageView stops={stops} />} />
-            <Route path="/notifications" element={<NotificationsView />} />
             <Route path="/settings" element={<SettingsView stops={stops} />} />
             <Route
               path="/map"
