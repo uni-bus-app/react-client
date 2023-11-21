@@ -131,7 +131,10 @@ const Map = (props: MapProps) => {
           onLoad={onLoad}
           onUnmount={onUnmount}
         >
-          <LiveVehicleLocation darkModeEnabled={darkModeEnabled} />
+          <LiveVehicleLocation
+            darkModeEnabled={darkModeEnabled}
+            routePath={routeOverlay}
+          />
           <RoutePath
             enabled={routeOverlayEnabled}
             path={routeOverlay}

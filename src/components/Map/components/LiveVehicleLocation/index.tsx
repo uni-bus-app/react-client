@@ -58,6 +58,7 @@ const getPosition = (
 
 interface LiveVehicleLocationProps {
   darkModeEnabled?: boolean;
+  routePath?: google.maps.LatLng[] | google.maps.LatLngLiteral[];
 }
 
 const getPixelPositionOffset = (width: number, height: number) => ({
@@ -65,7 +66,7 @@ const getPixelPositionOffset = (width: number, height: number) => ({
   y: -(height / 2),
 });
 
-const CustomMarker = ({ text, bearing }: any) => (
+const CustomMarker = ({ bearing }: any) => (
   <div
     style={{
       position: 'relative',
@@ -86,13 +87,9 @@ const CustomMarker = ({ text, bearing }: any) => (
 );
 
 const LiveVehicleLocation = (props: LiveVehicleLocationProps) => {
-  const { darkModeEnabled } = props;
+  const { darkModeEnabled, routePath } = props;
   const [vehicles, setVehicles] = useState<any[]>([]);
-  const [routePath, setRoutePath] = useState<any>();
   useEffect(() => {
-    getRoutePath().then((data) => {
-      setRoutePath(data);
-    });
     const fetchVehicles = async () => {
       const data = await getVehicles();
       console.log(data);
@@ -101,7 +98,7 @@ const LiveVehicleLocation = (props: LiveVehicleLocationProps) => {
 
     fetchVehicles();
 
-    const intervalId = setInterval(fetchVehicles, 30000);
+    const intervalId = setInterval(fetchVehicles, 10000);
 
     return () => clearInterval(intervalId);
   }, []);
@@ -124,27 +121,8 @@ const LiveVehicleLocation = (props: LiveVehicleLocationProps) => {
             mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
             getPixelPositionOffset={getPixelPositionOffset}
           >
-            <CustomMarker
-              text="Static Content"
-              bearing={stop.MonitoredVehicleJourney.Bearing}
-            />
+            <CustomMarker bearing={stop.MonitoredVehicleJourney.Bearing} />
           </OverlayView>
-          // <MarkerF
-          //   key={index}
-          //   position={getPosition(
-          //     stop.MonitoredVehicleJourney.VehicleLocation,
-          //     routePath
-          //   )}
-          //   options={{
-          //     icon: {
-          //       url: test,
-          //       scaledSize: new google.maps.Size(48, 48),
-          //       origin: new google.maps.Point(0, 0),
-          //       anchor: new google.maps.Point(17.5, 50),
-          //     },
-          //   }}
-          //   zIndex={10}
-          // />
         );
       })}
     </>
