@@ -15,13 +15,20 @@ interface NavProps {
   pathName: string;
   getLocation: () => void;
   setNextCardOpen: Dispatch<SetStateAction<boolean>>;
+  setPersistActive: Dispatch<SetStateAction<boolean>>;
+  persistActive: boolean;
 }
 const Nav = (props: NavProps) => {
-  const { pathName, getLocation, setNextCardOpen } = props;
+  const {
+    pathName,
+    getLocation,
+    persistActive,
+    setNextCardOpen,
+    setPersistActive,
+  } = props;
 
   const [translate, setTranslate] = useState(0);
   const [moving, setMovement] = useState(false);
-  const [locationActive, setLocationActive] = useState(false);
   const navigate = useNavigate();
   const settings = useSettings();
 
@@ -36,7 +43,7 @@ const Nav = (props: NavProps) => {
 
   useEffect(() => {
     if (pathName !== '/map') {
-      setLocationActive(false); // Turn off location persistence if moving around the app
+      setPersistActive(false); // Turn off location persistence if moving around the app
       setNextCardOpen(false); // Make sure the cards are closed if we move away from the map
     }
     pathName === '/home' && setTranslate(25);
@@ -45,7 +52,7 @@ const Nav = (props: NavProps) => {
     setMovement(true);
   }, [pathName]);
 
-  const buttonClasses = `${styles.icon} ${locationActive ? styles.pulse : ''}`;
+  const buttonClasses = `${styles.icon} ${persistActive ? styles.pulse : ''}`;
 
   return (
     <div className={styles.Nav}>
@@ -119,15 +126,15 @@ const Nav = (props: NavProps) => {
           <IconButton
             sx={{ height: '100%' }}
             onClick={(e) => {
-              if (!locationActive) {
+              if (!persistActive) {
                 navigate('/map', { replace: true });
                 handleClick(e);
-                setLocationActive(true);
+                setPersistActive(true);
                 setTimeout(() => {
                   getLocation();
                 }, 700);
               } else {
-                setLocationActive(false);
+                setPersistActive(false);
               }
             }}
             id={'map'}
@@ -135,7 +142,7 @@ const Nav = (props: NavProps) => {
             <Locate
               className={buttonClasses}
               style={{
-                color: locationActive
+                color: persistActive
                   ? 'rgba(255,255,255,0.87)'
                   : 'rgba(255,255,255,0.2)',
               }}

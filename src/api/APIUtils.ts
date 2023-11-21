@@ -74,6 +74,16 @@ export const getTimes = async (
   }
 };
 
+// const isWeekday = (date) => {
+//   const day = date.getDay();
+//   if (day === 0 || day === 6) {
+//     day.add(1, 'day');
+//     isWeekday(day);
+//   } else {
+//     return day;
+//   }
+// }
+
 const parseTimes = (data: any[]): Time[] => {
   const result: Time[] = [];
   data.forEach((element) => {

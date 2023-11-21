@@ -79,7 +79,10 @@ const App = () => {
 
   const [pathName, setPathname] = useState(''); // BETA - Track page location
   const [showAlert, setShowAlert] = useState(false); // BETA - Show alert
+
   const [userLocation, setUserLocation] = useState<any>(); // BETA - Users location
+  const [persistActive, setPersistActive] = useState(false); // 74 - Turn on persistant tracking mode
+  const [walkingTime, setWalkingTime] = useState(0); // BETA - Walking time to stop
 
   const settings = useSettings();
 
@@ -105,6 +108,7 @@ const App = () => {
 
   // Set the current stop when a marker is selected
   const onMarkerSelect = (stop: Stop) => {
+    setPersistActive(false);
     setCurrentStop(stop);
     setNextCardOpen(true);
   };
@@ -193,6 +197,10 @@ const App = () => {
                     setTimesSheetOpen={setTimesSheetOpen}
                     nextCardOpen={nextCardOpen}
                     setNextCardOpen={setNextCardOpen}
+                    persistActive={persistActive}
+                    setPersistActive={setPersistActive}
+                    walkingTime={walkingTime}
+                    setWalkingTime={setWalkingTime}
                   />
                 </>
               }
@@ -207,6 +215,8 @@ const App = () => {
             pathName={pathName}
             getLocation={getCurrentLocation}
             setNextCardOpen={setNextCardOpen}
+            setPersistActive={setPersistActive}
+            persistActive={persistActive}
           />
         </ThemeProvider>
       )}

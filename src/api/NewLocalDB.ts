@@ -35,9 +35,9 @@ const isBankHoliday = async (date: Dayjs) => {
 const nextWorkingDay = async (date: Dayjs): Promise<Dayjs> => {
   const day = date.day();
   if (day === 6 || day === 0) {
-    return await nextWorkingDay(date.add(1, 'day'));
+    return await nextWorkingDay(date.add(0, 'day'));
   } else if (await isBankHoliday(date)) {
-    return await nextWorkingDay(date.add(1, 'day'));
+    return await nextWorkingDay(date.add(0, 'day'));
   } else {
     return date;
   }

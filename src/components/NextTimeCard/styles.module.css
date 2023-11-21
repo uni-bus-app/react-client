@@ -102,6 +102,30 @@
   align-items: center;
 }
 
+.actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  padding: 8px 16px 0px 16px;
+  align-items: center;
+}
+
+.actionButton {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  border-radius: 22px;
+  background-color: #e9ecee;
+  padding: 6px 12px 6px 12px;
+}
+
+.actionButtonLabel {
+  font-size: 0.8em;
+  margin-left: 5px;
+  font-weight: 600;
+}
+
 .pill {
   width: 40px;
   height: 5px;
