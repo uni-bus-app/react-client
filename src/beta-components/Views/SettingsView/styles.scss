@@ -92,3 +92,16 @@
     margin-bottom: 0.5rem;
   }
 }
+
+.versionPill {
+  border-radius: 12px;
+  padding: 8px;
+  background-color: #e8e8e8;
+
+  &-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    margin-bottom: 0;
+    text-align: left;
+  }
+}

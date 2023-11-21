@@ -17,6 +17,7 @@ import { useSettings } from '../../../components/SettingsProvider';
 import { SettingsItemsNames } from '../../../components/SettingsProvider/types';
 import { Stop } from '../../../types';
 import { ChangeEvent } from 'react';
+import packageJson from '../../../../package.json';
 
 interface SettingsViewProps {
   stops: Stop[] | undefined;
@@ -124,6 +125,12 @@ const SettingsView = (props: SettingsViewProps) => {
           <img src={Jools} className="profile--image" alt="Jools"></img>
           <p className="profession">Full Stack Developer</p>
         </Paper>
+
+        <div className="versionPill">
+          <div className="versionPill-label">
+            Version {packageJson?.version}
+          </div>
+        </div>
       </main>
     </div>
   );

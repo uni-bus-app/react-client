@@ -1,0 +1,28 @@
+.location-marker {
+  position: relative;
+  display: inline-block;
+
+  &__circle {
+    width: 32px;
+    height: 32px;
+    border: 2px solid white;
+    background-color: #1b73e1;
+    border-radius: 50%;
+  }
+
+  &__pulse {
+    animation: pulse 2s infinite;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
+    border-width: 2px;
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+    border-width: 4px;
+  }
+}

@@ -15,6 +15,7 @@ import { moveLogo } from './utils';
 import NextTimeCard from '../NextTimeCard';
 import BottomSheet from '../BottomSheet';
 import locationMarkerIcon from '../../assets/locationmarkericon.png';
+import CurrentLocation from './components/CurrentLocation';
 
 interface MapProps {
   darkModeEnabled?: boolean;
@@ -78,9 +79,15 @@ const Map = (props: MapProps) => {
   const [map, setMap] = useState<google.maps.Map>();
   const [markerPosition, setMarkerPosition] = useState({ lat: 0, lng: 0 });
   const [prevStop, setPrevStop] = useState<Stop | undefined>(undefined);
+  const [cachedWalkingValues, setCachedWalkingValues] = useState<any>({});
+  const [previousMarkerPosition, setPreviousMarkerPosition] = useState({
+    lat: 0,
+    lng: 0,
+  });
   useEffect(() => {
     setPrevStop(currentStop);
   }, [currentStop]);
+  const minHeightValue = walkingTime ? '265px' : '220px';
 
   /**
    * Animate map camera on marker tap
@@ -151,31 +158,79 @@ const Map = (props: MapProps) => {
     return 0;
   };
 
+  // Store users previous location
+  const [prevLocation, setPrevLocation] = useState({ lat: 0, lng: 0 });
+
   // Calculate walking distance
   useEffect(() => {
+    const currentStopId = currentStop?.id;
+
     const calculateWalkingDistance = () => {
-      const service = new window.google.maps.DistanceMatrixService();
-      currentStop &&
-        service.getDistanceMatrix(
-          {
-            origins: [{ lat: markerPosition.lat, lng: markerPosition.lng }],
-            destinations: [
-              { lat: currentStop.location.lat, lng: currentStop.location.lng },
-            ],
-            travelMode: window.google.maps.TravelMode.WALKING,
-          },
-          (response, status) => {
-            if (status === 'OK' && response) {
-              setWalkingTime(response.rows[0].elements[0].duration.text);
-            } else {
-              console.error('Error calculating walking distance:', status);
+      return new Promise((resolve, reject) => {
+        const service = new window.google.maps.DistanceMatrixService();
+        if (currentStop) {
+          service.getDistanceMatrix(
+            {
+              origins: [{ lat: markerPosition.lat, lng: markerPosition.lng }],
+              destinations: [
+                {
+                  lat: currentStop.location.lat,
+                  lng: currentStop.location.lng,
+                },
+              ],
+              travelMode: window.google.maps.TravelMode.WALKING,
+            },
+            (response, status) => {
+              if (status === 'OK' && response) {
+                const value = response.rows[0].elements[0].duration.text;
+
+                resolve(value);
+              } else {
+                console.error('Error calculating walking distance:', status);
+                reject(status);
+              }
             }
-          }
-        );
+          );
+        } else {
+          reject('No current stop');
+        }
+      });
+    };
+
+    const calculate = (currentStopId: string) => {
+      calculateWalkingDistance().then((value) => {
+        setCachedWalkingValues({
+          ...cachedWalkingValues,
+          [currentStopId]: value,
+        });
+        setWalkingTime(value);
+      });
     };
 
     if (window.google && window.google.maps && markerPosition && currentStop) {
-      calculateWalkingDistance();
+      if (currentStopId) {
+        if (cachedWalkingValues[currentStopId]) {
+          const hasUserMoved = checkBoundary(
+            markerPosition.lat,
+            markerPosition.lng
+          );
+          if (hasUserMoved) {
+            // If the user has moved
+            console.log('User has moved');
+            setPreviousMarkerPosition(markerPosition); // Update previous marker position
+            calculate(currentStopId); // Recalculate walking time for the stop
+          } else {
+            console.log('User has not moved');
+            // If the user hasn't moved and the stop hasn't changed, use cached values
+            setWalkingTime(cachedWalkingValues[currentStopId]);
+          }
+        } else {
+          console.log('No cached value');
+          // If a new stop, add the users location to prevLocation and calculate walking time, add to cache
+          setPrevLocation(markerPosition);
+          calculate(currentStopId);
+        }
+      }
     }
   }, [currentStop]);
 
@@ -190,7 +245,6 @@ const Map = (props: MapProps) => {
   };
 
   /**
-   * ISSUE 74
    *
    * Get user location
    * Watch user location
@@ -223,6 +277,62 @@ const Map = (props: MapProps) => {
       console.error('Geolocation is not supported by this browser.');
     }
   }, []);
+
+  /**
+   *
+   * Check if the user has moved outside of the designated boundary
+   *
+   * @param userLat number
+   * @param userLng number
+   *
+   * @returns boolean
+   */
+  const checkBoundary = (userLat: number, userLng: number) => {
+    // Center coordinates of the circle
+    const centerLat = prevLocation.lat; // users initial lat
+    const centerLng = prevLocation.lng; // users initial lng
+
+    // User coordinates
+    const userCoordinates = { latitude: userLat, longitude: userLng };
+    const centerCoordinates = { latitude: centerLat, longitude: centerLng };
+
+    // Function to calculate distance between two coordinates using the haversine formula
+    function getDistance(
+      coord1: { latitude: number; longitude: number },
+      coord2: { latitude: number; longitude: number }
+    ) {
+      const earthRadius = 3958.8; // Earth's radius in miles
+      const latDiff = toRadians(coord2.latitude - coord1.latitude);
+      const lngDiff = toRadians(coord2.longitude - coord1.longitude);
+      const a =
+        Math.sin(latDiff / 2) * Math.sin(latDiff / 2) +
+        Math.cos(toRadians(coord1.latitude)) *
+          Math.cos(toRadians(coord2.latitude)) *
+          Math.sin(lngDiff / 2) *
+          Math.sin(lngDiff / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const distance = earthRadius * c;
+      return distance;
+    }
+
+    // Function to convert degrees to radians
+    function toRadians(degrees: number) {
+      return degrees * (Math.PI / 180);
+    }
+
+    // Calculate distance between user and center coordinates
+    const distance = getDistance(userCoordinates, centerCoordinates);
+
+    // Define the boundary radius
+    const boundaryRadius = 0.5; // in miles
+
+    // Check if the user is within the boundary
+    if (distance <= boundaryRadius) {
+      return false;
+    } else {
+      return true;
+    }
+  };
 
   /**
    * Map loading logic
@@ -259,6 +369,11 @@ const Map = (props: MapProps) => {
           onUnmount={onUnmount}
           onDrag={() => setPersistActive(false)}
         >
+          {/* <CurrentLocation
+            darkModeEnabled={darkModeEnabled}
+            position={markerPosition}
+            persistActive={persistActive}
+          /> */}
           <RoutePath
             enabled={routeOverlayEnabled}
             path={routeOverlay}
@@ -276,7 +391,7 @@ const Map = (props: MapProps) => {
             options={{
               icon: {
                 url: locationMarkerIcon,
-                scaledSize: new google.maps.Size(15, 15),
+                scaledSize: new google.maps.Size(17, 17),
                 origin: new google.maps.Point(0, 0),
                 anchor: new google.maps.Point(12.5, 12.5),
               },
