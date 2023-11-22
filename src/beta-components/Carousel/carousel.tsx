@@ -46,9 +46,20 @@ export const Carousel = ({ children }: any) => {
             className="button"
             variant="contained"
             size="large"
+            disabled={activeIndex === 1 && !settings.usersName}
             onClick={() => updateIndex(activeIndex + 1)}
           >
             Continue
+          </Button>
+        )}
+        {activeIndex === 1 && (
+          <Button
+            className="button noBackground"
+            variant="text"
+            size="large"
+            onClick={() => updateIndex(activeIndex + 1)}
+          >
+            No thanks
           </Button>
         )}
       </div>

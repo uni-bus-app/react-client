@@ -5,6 +5,7 @@ import {
   LocationPermissionView,
   NotificationPermissionView,
   WhatsNewInThisUpdate,
+  CaptureNameView,
 } from '../SetupScreens';
 import './styles.scss';
 
@@ -14,6 +15,9 @@ const InitialStartup = () => {
       <Carousel>
         <CarouselItem>
           <WelcomeView />
+        </CarouselItem>
+        <CarouselItem>
+          <CaptureNameView />
         </CarouselItem>
         <CarouselItem>
           <WhatsNewInThisUpdate />

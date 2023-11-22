@@ -86,6 +86,7 @@ interface NextTimeCardProps {
   setTimesSheetOpen: Dispatch<SetStateAction<boolean>>;
   setNextCardOpen: Dispatch<SetStateAction<boolean>>;
   walkingTime: number;
+  userLocation: google.maps.LatLng | google.maps.LatLngLiteral;
 }
 
 const NextTimeCard = (props: NextTimeCardProps) => {
@@ -100,6 +101,18 @@ const NextTimeCard = (props: NextTimeCardProps) => {
   const settings = useSettings();
 
   let time: Time | undefined = times?.[0];
+
+  const openMapsApp = () => {
+    const destination = `${currentStop.location.lat},${currentStop.location.lng}`;
+    const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    if (isiOS) {
+      window.open(`https://maps.apple.com/?daddr=${destination}`);
+    } else {
+      window.open(
+        `https://www.google.com/maps/dir/?api=1&destination=${destination}`
+      );
+    }
+  };
 
   return (
     <>
@@ -169,9 +182,9 @@ const NextTimeCard = (props: NextTimeCardProps) => {
         </div>
       </div>
 
-      <div className={styles.actions} onClick={(e) => e.preventDefault()}>
+      <div className={styles.actions}>
         {!!walkingTime && (
-          <div className={styles.actionButton}>
+          <div className={styles.actionButton} onClick={() => openMapsApp()}>
             <DirectionsWalk fontSize="small" />
             <span className={styles.actionButtonLabel}>{walkingTime}</span>
           </div>

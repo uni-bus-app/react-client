@@ -16,7 +16,7 @@ const CurrentLocation = (props: CurrentLocationProps) => {
     <div className="location-marker">
       <div
         className={classNames(
-          persistActive && 'location-maker__pulse',
+          persistActive && 'location-marker__pulse',
           'location-marker__circle'
         )}
       />
