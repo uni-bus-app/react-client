@@ -144,7 +144,7 @@ const updateServiceEta = (serviceTime: Time): Eta | undefined => {
     show = false;
   } else if (eta < 3600000) {
     value = Math.ceil(eta / 60000).toString();
-    unit = 'min';
+    unit = 'mins';
     show = true;
   }
   if (eta > 3600000) {

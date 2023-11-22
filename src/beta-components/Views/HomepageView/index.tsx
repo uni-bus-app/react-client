@@ -6,6 +6,7 @@ import MiniMap from '../../MiniMap';
 import './styles.scss';
 import WhatsNewCard from '../../WhatsNewCard';
 import { Stop } from '../../../types';
+import GreetingMessage from '../../GreetingMessage';
 
 interface HomepageViewProps {
   stops: Stop[] | undefined;
@@ -25,6 +26,7 @@ const HomepageView = (props: HomepageViewProps) => {
       )}
       <div className="HomePageView">
         <main className="pageStructure">
+          <GreetingMessage />
           <NextDeparturesCard stops={stops} />
           <MiniMap />
           <WhatsNewCard />

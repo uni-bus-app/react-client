@@ -7,7 +7,7 @@ export interface SettingsItems {
   lowDataMode: boolean;
   rainbowNav: boolean;
   initialSetup: boolean;
-  canUserDirectionService: boolean;
+  usersName: string | null;
 }
 
 export enum SettingsItemsNames {
@@ -19,5 +19,5 @@ export enum SettingsItemsNames {
   lowDataMode = 'lowDataMode',
   rainbowNav = 'rainbowNav',
   initialSetup = 'initialSetup',
-  canUserDirectionService = 'canUserDirectionService',
+  usersName = 'usersName',
 }

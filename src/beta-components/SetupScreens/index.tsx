@@ -2,7 +2,8 @@ import Satellite from '../../assets/satellite.png';
 import Bus from '../../assets/busStop.png';
 import Notifications from '../../assets/notifications.png';
 import styles from './styles.module.css';
-import { CircularProgress } from '@mui/material';
+import { CircularProgress, Input } from '@mui/material';
+import { useSettings } from '../../components/SettingsProvider';
 
 export const WelcomeView = () => {
   return (
@@ -44,12 +45,67 @@ export const WhatsNewInThisUpdate = () => {
                 users and we'd like to thank you.
               </p>
               <p className={styles.pageContainerIntroduction}>
-                This update is huge, let's quickly cover some of the new stuff.
+                This update is pretty big, let's quickly cover some of the new
+                stuff.
               </p>
               <br />
               <i className={styles.smallText}>
                 Don't worry, if you don't care you can press the skip button at
                 the top to get straight to the app!
+              </i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const CaptureNameView = () => {
+  const settings = useSettings();
+
+  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    settings.setValue('usersName', toTitleCase(event.target.value));
+  };
+
+  const toTitleCase = (str: string): string => {
+    return str.toLowerCase().replace(/(?:^|\s)\w/g, (match) => {
+      return match.toUpperCase();
+    });
+  };
+
+  return (
+    <div className={styles.box}>
+      <div className={styles.pageContainer}>
+        <div className={styles.imageTextContainer}>
+          <div className={styles.pageContainerTextContainer}>
+            <p className={styles.pageContainerTitle}>First things first...</p>
+            <div className={styles.pageContainerBody}>
+              <p className={styles.pageContainerIntroduction}>
+                <b>What's your name?</b>
+              </p>
+              <br />
+              <Input
+                sx={{
+                  color: 'white',
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  borderColor: 'white',
+                  borderRadius: '8px',
+                  padding: '10px 15px',
+                  width: '300px',
+                  outline: 'none',
+                  transition: 'all 0.3s ease',
+                }}
+                type="text"
+                placeholder="Enter your first name"
+                onChange={handleNameChange}
+              />
+              <br />
+              <br />
+              <i className={styles.smallText}>
+                Don't worry, we aren't harvesting any data, we just want to be
+                able to greet you properly when you open the app! All data is
+                stored locally on your device and is never sent to any servers.
               </i>
             </div>
           </div>
@@ -115,19 +171,25 @@ export const NotificationPermissionView = () => {
 };
 
 export const FinalScreenView = () => {
+  const settings = useSettings();
   return (
     <div className={styles.box}>
       <div className={styles.pageContainer}>
         <div className={styles.imageTextContainer}>
           <div className={styles.pageContainerTextContainer}>
-            <p className={styles.pageContainerTitle}>You're all set!</p>
+            <p className={styles.pageContainerTitle}>
+              You're all set{settings.usersName !== '' && ','}{' '}
+              {settings.usersName}!
+            </p>
             <div className={styles.pageContainerBody}>
               <p className={styles.pageContainerIntroduction}>
-                We're just doing some final setup bits, should only take a
-                few...
+                We're just doing some final setup bits to prep the app for you,
+                should only take a few...
               </p>
             </div>
           </div>
+          <br />
+          <br />
           <CircularProgress />
         </div>
       </div>

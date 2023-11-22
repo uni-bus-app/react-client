@@ -1,12 +1,11 @@
 import { useEffect } from 'react';
 import { useTimetable } from '../../hooks';
-import { Stop, Time } from '../../types';
-import './styles.scss';
-import { StarBorder } from '@mui/icons-material';
+import { Stop } from '../../types';
+import { Star } from '@mui/icons-material';
 import { useSettings } from '../../components/SettingsProvider';
-import { Divider } from '@mui/material';
 import NoTransfer from '@mui/icons-material/NoTransfer';
 import dayjs from 'dayjs';
+import './styles.scss';
 
 const uniLibraryObject = {
   name: 'Camrbidge Road',
@@ -45,7 +44,7 @@ const NextDeparturesCard = (props: NextDeparturesCardProps) => {
   return (
     <div className="routeCard">
       <div className="routeCard-nextBusTimeLogo">
-        <StarBorder fontSize="small" />
+        <Star fontSize="small" />
         Next Departures from <b>{stop?.name}</b>
       </div>
       <>
