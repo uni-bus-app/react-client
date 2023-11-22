@@ -6,16 +6,7 @@ import { useSettings } from '../../components/SettingsProvider';
 import NoTransfer from '@mui/icons-material/NoTransfer';
 import dayjs from 'dayjs';
 import './styles.scss';
-
-const uniLibraryObject = {
-  name: 'Camrbidge Road',
-  id: '6TRxDIF8NDpofem64867',
-  routeOrder: 1,
-  location: {
-    lat: 50.794438,
-    lng: -1.097187,
-  },
-};
+import { Skeleton } from '@mui/material';
 
 interface NextDeparturesCardProps {
   stops: Stop[] | undefined;
@@ -24,9 +15,7 @@ interface NextDeparturesCardProps {
 const NextDeparturesCard = (props: NextDeparturesCardProps) => {
   const { stops } = props;
   const settings = useSettings();
-  const stop =
-    stops?.find((stop) => stop.id === settings.favouriteStop) ||
-    uniLibraryObject;
+  const stop = stops?.find((stop) => stop.id === settings.favouriteStop);
   let { times, loadMore } = useTimetable(stop);
 
   useEffect(() => {
@@ -36,35 +25,82 @@ const NextDeparturesCard = (props: NextDeparturesCardProps) => {
   }, [times]);
 
   const isWeekend = () => {
-    // Lets make sure we can cover for the past midnight buses here
-    const time = times && (times[0].timeValue as any);
-    return dayjs().day() === 6 || dayjs().day() === 0;
+    return !times && (dayjs().day() === 6 || dayjs().day() === 0);
   };
 
   return (
     <div className="routeCard">
       <div className="routeCard-nextBusTimeLogo">
-        <Star fontSize="small" />
-        Next Departures from <b>{stop?.name}</b>
+        {stop ? (
+          <>
+            <Star fontSize="small" />
+            <span>
+              Next Departures from <b>{stop?.name}</b>{' '}
+            </span>
+          </>
+        ) : (
+          <Skeleton
+            width={120}
+            height={26}
+            variant="rectangular"
+            style={{ borderRadius: '0.25em' }}
+          />
+        )}
       </div>
       <>
         {!isWeekend() && times && times[0]?.time && (
           <div className="routeCard-nextTime">
             <div className="routeCard-nextTime-startLocation">
-              {stop?.name}{' '}
+              {stop ? (
+                stop?.name
+              ) : (
+                <Skeleton
+                  width={120}
+                  height={26}
+                  variant="rectangular"
+                  style={{ borderRadius: '0.25em' }}
+                />
+              )}
             </div>
             <div className="routeCard-nextTime-leavingTime">
-              {times[0]?.time}
+              {times[0] ? (
+                times[0]?.time
+              ) : (
+                <Skeleton
+                  width={50}
+                  height={26}
+                  variant="rectangular"
+                  style={{ borderRadius: '0.25em' }}
+                />
+              )}
             </div>
           </div>
         )}
         {!isWeekend() && times && times[1]?.time && (
           <div className="routeCard-nextTime">
             <div className="routeCard-nextTime-startLocation">
-              {stop?.name}{' '}
+              {stop ? (
+                stop?.name
+              ) : (
+                <Skeleton
+                  width={120}
+                  height={26}
+                  variant="rectangular"
+                  style={{ borderRadius: '0.25em' }}
+                />
+              )}
             </div>
             <div className="routeCard-nextTime-leavingTime">
-              {times[1]?.time}
+              {times[1] ? (
+                times[1]?.time
+              ) : (
+                <Skeleton
+                  width={50}
+                  height={26}
+                  variant="rectangular"
+                  style={{ borderRadius: '0.25em' }}
+                />
+              )}
             </div>
           </div>
         )}

@@ -3,26 +3,28 @@
   display: inline-block;
 
   &__circle {
-    width: 32px;
-    height: 32px;
+    width: 18px;
+    height: 18px;
     border: 2px solid white;
     background-color: #1b73e1;
     border-radius: 50%;
   }
-
   &__pulse {
-    animation: pulse 2s infinite;
+    animation: pulse 2s ease-in-out infinite;
   }
 }
 
 @keyframes pulse {
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
-    border-width: 2px;
+  0% {
+    box-shadow: 0 0 0 0px rgba(27, 115, 225, 0.3);
   }
-  50% {
-    box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
-    border-width: 4px;
+  33% {
+    box-shadow: 0 0 0 5px rgba(27, 115, 225, 0.3);
+  }
+  66% {
+    box-shadow: 0 0 0 10px rgba(27, 115, 225, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 5px rgba(27, 115, 225, 0);
   }
 }
