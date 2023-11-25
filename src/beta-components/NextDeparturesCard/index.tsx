@@ -33,11 +33,12 @@ const NextDeparturesCard = (props: NextDeparturesCardProps) => {
   useEffect(() => {
     if (times && (!times[0]?.time || !times[1]?.time)) {
       loadMore();
-      console.log(times);
     }
   }, [times]);
 
   const isWeekend = () => {
+    // Lets make sure we can cover for the past midnight buses here
+    const time = times && (times[0].timeValue as any);
     return dayjs().day() === 6 || dayjs().day() === 0;
   };
 

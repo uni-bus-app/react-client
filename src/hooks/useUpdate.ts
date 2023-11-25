@@ -19,7 +19,6 @@ const useUpdate = () => {
     wb?.messageSkipWaiting();
   };
   const visibilityChange = async () => {
-    console.log('visibilit change', document.hidden);
     if (document.hidden) {
       if (updateAvailableRef.current && !isRestartingRef.current) {
         restartTimeoutID.current = window.setTimeout(() => {
