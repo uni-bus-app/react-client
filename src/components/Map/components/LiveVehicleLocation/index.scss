@@ -1,0 +1,43 @@
+.vehicle-location-marker {
+  position: relative;
+  display: flex;
+  width: 32px;
+  height: 32px;
+
+  &__circle-with-arrow {
+    position: absolute;
+    display: inline-block;
+  }
+
+  &__circle {
+    width: 32px;
+    height: 32px;
+    border: 2px solid #621360;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  &__arrow {
+    position: absolute;
+    top: -16px;
+    left: 10px;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 12px solid #621360; /* Creates the upward arrow */
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgb(98, 19, 96, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgb(98, 19, 96, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgb(98, 19, 96, 0);
+  }
+}
