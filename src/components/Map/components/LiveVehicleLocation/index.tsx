@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { getRoutePath, getVehicles } from '../../../../api/APIUtils';
 import { ReactComponent as VehicleIcon } from '../../../../assets/Asset 2.svg';
 import dayjs from 'dayjs';
-import './index.css';
+import './index.scss';
 
 const getClosestPoint = (inputLat: any, inputLng: any, points: any): any => {
   let closestPoint = null;
@@ -67,22 +67,15 @@ const getPixelPositionOffset = (width: number, height: number) => ({
 });
 
 const CustomMarker = ({ bearing }: any) => (
-  <div
-    style={{
-      position: 'relative',
-      display: 'flex',
-      width: '32px',
-      height: '32px',
-    }}
-  >
+  <div className="vehicle-location-marker">
     <div
-      className="circle-with-arrow"
+      className="vehicle-location-marker__circle-with-arrow"
       style={{ transform: `rotate(${Number(bearing)}deg)` }}
     >
-      <div className="circle"></div>
-      {!!bearing && <div className="arrow"></div>}
+      <div className="vehicle-location-marker__circle" />
+      {!!bearing && <div className="vehicle-location-marker__arrow" />}
     </div>
-    <VehicleIcon style={{ width: '100%', height: '100%' }} />
+    <VehicleIcon />
   </div>
 );
 

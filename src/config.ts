@@ -27,7 +27,7 @@ export default {
   // apiURL: 'http://localhost:8080',
   apiURL:
     process.env.NODE_ENV === 'development'
-      ? 'https://create-new-endpoint-for-live-t---unibus-api-test-igs2fx2gia-nw.a.run.app/api'
+      ? 'https://unibus-api-test-igs2fx2gia-nw.a.run.app/api'
       : '/api',
   firebase: isProd ? prodFirebaseConfig : devFirebaseConfig,
 };
