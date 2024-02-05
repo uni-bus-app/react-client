@@ -1,4 +1,4 @@
-import { IconButton } from '@mui/material';
+import { IconButton, useMediaQuery } from '@mui/material';
 import { ReactComponent as Map } from '../../assets/SVGs/map.svg';
 import { ReactComponent as Menu } from '../../assets/SVGs/menu.svg';
 import { ReactComponent as Locate } from '../../assets/SVGs/locate.svg';
@@ -64,73 +64,78 @@ const Nav = (props: NavProps) => {
       });
     }
   }, []);
+  const isBigDisplay = useMediaQuery('(min-width:600px)');
 
   return (
     <div className={styles.Nav}>
-      {pathName === '/map' && (
+      {/* {pathName === '/map' && (
         <div className={styles.filter}>
           <IconButton onClick={() => console.log('filters')}>
             <Tune className={styles.icon} />
           </IconButton>
         </div>
-      )}
+      )} */}
 
-      <div className={styles.menuItems}>
-        <div
-          className={classNames(
-            styles.selectedPill,
-            settings.rainbowNav && pathName === '/map' && styles.bluePill,
-            settings.rainbowNav && pathName === '/settings' && styles.greenPill,
-            moving === true && styles.animatedPill
-          )}
-          style={{
-            transform: `translateX(${translate}%)`,
-          }}
-          onAnimationEnd={() => setMovement(false)}
-        />
-
-        {/**
-         * Sites navigation
-         *
-         */}
-        <IconButton onClick={(e) => handleClick(e)} id={'home'}>
-          <Home
+      {!isBigDisplay && (
+        <div className={styles.menuItems}>
+          <div
             className={classNames(
-              styles.icon,
-              pathName === '/home' && styles.iconActive
+              styles.selectedPill,
+              settings.rainbowNav && pathName === '/map' && styles.bluePill,
+              settings.rainbowNav &&
+                pathName === '/settings' &&
+                styles.greenPill,
+              moving === true && styles.animatedPill
             )}
-            id={'home'}
+            style={{
+              transform: `translateX(${translate}%)`,
+            }}
+            onAnimationEnd={() => setMovement(false)}
           />
-        </IconButton>
 
-        <IconButton
-          sx={{ height: '100%' }}
-          onClick={(e) => handleClick(e)}
-          id={'map'}
-        >
-          <Map
-            className={classNames(
-              styles.icon,
-              pathName === '/map' && styles.iconActive
-            )}
+          {/**
+           * Sites navigation
+           *
+           */}
+          <IconButton onClick={(e) => handleClick(e)} id={'home'}>
+            <Home
+              className={classNames(
+                styles.icon,
+                pathName === '/home' && styles.iconActive
+              )}
+              id={'home'}
+            />
+          </IconButton>
+
+          <IconButton
+            sx={{ height: '100%' }}
+            onClick={(e) => handleClick(e)}
             id={'map'}
-          />
-        </IconButton>
+          >
+            <Map
+              className={classNames(
+                styles.icon,
+                pathName === '/map' && styles.iconActive
+              )}
+              id={'map'}
+            />
+          </IconButton>
 
-        <IconButton
-          sx={{ height: '100%' }}
-          onClick={(e) => handleClick(e)}
-          id={'settings'}
-        >
-          <Menu
-            className={classNames(
-              styles.icon,
-              pathName === '/settings' && styles.iconActive
-            )}
+          <IconButton
+            sx={{ height: '100%' }}
+            onClick={(e) => handleClick(e)}
             id={'settings'}
-          />
-        </IconButton>
-      </div>
+          >
+            <Menu
+              className={classNames(
+                styles.icon,
+                pathName === '/settings' && styles.iconActive
+              )}
+              id={'settings'}
+            />
+          </IconButton>
+        </div>
+      )}
 
       {showLocationButton && pathName === '/map' && (
         <div className={styles.location}>
