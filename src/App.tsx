@@ -148,6 +148,8 @@ const App = () => {
     return () => clearTimeout(showAlertAfterDelay);
   }, []);
 
+  const isBigDisplay = useMediaQuery('(min-width:600px)');
+
   return (
     <>
       {settings.initialSetup ? (
@@ -168,7 +170,10 @@ const App = () => {
           />
           <Suspense fallback={<div>Loading...</div>}></Suspense>
           <Routes>
-            <Route path="/" element={<Navigate to={'/home'} />} />
+            <Route
+              path="/"
+              element={<Navigate to={isBigDisplay ? '/map' : '/home'} />}
+            />
             <Route path="/home" element={<HomepageView stops={stops} />} />
             <Route path="/settings" element={<SettingsView stops={stops} />} />
             <Route
