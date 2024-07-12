@@ -29,7 +29,7 @@ const SettingsView = (props: SettingsViewProps) => {
 
   const handleSendEmailClick = (subject: string) => {
     const subjectEncoded = encodeURIComponent(subject);
-    const link = 'mailto:admin@unib.us?subject=' + subjectEncoded;
+    const link = 'mailto:unibusportsmouth@gmail.com?subject=' + subjectEncoded;
     window.open(link, 'emailWin');
   };
 
