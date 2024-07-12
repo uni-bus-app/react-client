@@ -174,25 +174,23 @@ const App = () => {
             <Route
               path="/map"
               element={
-                <>
-                  <Map
-                    stopMarkersEnabled={true}
-                    routeOverlayEnabled={true}
-                    darkModeEnabled={false /**darkMode */}
-                    currentStop={currentStop}
-                    onMarkerSelect={onMarkerSelect}
-                    logoContainer={logoContainer}
-                    stops={stops}
-                    routeOverlay={routeOverlay}
-                    setTimesSheetOpen={setTimesSheetOpen}
-                    nextCardOpen={nextCardOpen}
-                    setNextCardOpen={setNextCardOpen}
-                    persistActive={persistActive}
-                    setPersistActive={setPersistActive}
-                    walkingTime={walkingTime}
-                    setWalkingTime={setWalkingTime}
-                  />
-                </>
+                <Map
+                  stopMarkersEnabled={true}
+                  routeOverlayEnabled={true}
+                  darkModeEnabled={false /**darkMode */}
+                  currentStop={currentStop}
+                  onMarkerSelect={onMarkerSelect}
+                  logoContainer={logoContainer}
+                  stops={stops}
+                  routeOverlay={routeOverlay}
+                  setTimesSheetOpen={setTimesSheetOpen}
+                  nextCardOpen={nextCardOpen}
+                  setNextCardOpen={setNextCardOpen}
+                  persistActive={persistActive}
+                  setPersistActive={setPersistActive}
+                  walkingTime={walkingTime}
+                  setWalkingTime={setWalkingTime}
+                />
               }
             />
           </Routes>

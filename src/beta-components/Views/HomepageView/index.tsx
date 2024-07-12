@@ -1,4 +1,3 @@
-import { Button } from '@mui/material';
 import { useState } from 'react';
 import RouteSwitchView from '../RouteSwitchView';
 import NextDeparturesCard from '../../NextDeparturesCard';
@@ -6,6 +5,7 @@ import MiniMap from '../../MiniMap';
 import './styles.scss';
 import WhatsNewCard from '../../WhatsNewCard';
 import { Stop } from '../../../types';
+import NoService from '../../../components/NoService';
 
 interface HomepageViewProps {
   stops: Stop[] | undefined;
@@ -25,6 +25,7 @@ const HomepageView = (props: HomepageViewProps) => {
       )}
       <div className="HomePageView">
         <main className="pageStructure">
+          <NoService />
           <NextDeparturesCard stops={stops} />
           <MiniMap />
           <WhatsNewCard />
