@@ -21,9 +21,9 @@ const InitialStartup = () => {
         <CarouselItem>
           <LocationPermissionView />
         </CarouselItem>
-        <CarouselItem>
+        {/* <CarouselItem>
           <NotificationPermissionView />
-        </CarouselItem>
+        </CarouselItem> */}
         <CarouselItem>
           <FinalScreenView />
         </CarouselItem>
