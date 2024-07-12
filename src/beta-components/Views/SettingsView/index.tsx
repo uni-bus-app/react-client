@@ -88,7 +88,6 @@ const SettingsView = (props: SettingsViewProps) => {
               />
             }
           />
-          <Divider />
         </Paper>
 
         <Paper className="card">
