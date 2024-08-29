@@ -165,32 +165,41 @@ const Map = (props: MapProps) => {
   useEffect(() => {
     const currentStopId = currentStop?.id;
 
+    if (!currentStopId) {
+      return undefined;
+    }
+
     const calculateWalkingDistance = () => {
       return new Promise((resolve, reject) => {
         const service = new window.google.maps.DistanceMatrixService();
         if (currentStop) {
-          service.getDistanceMatrix(
-            {
-              origins: [{ lat: markerPosition.lat, lng: markerPosition.lng }],
-              destinations: [
-                {
-                  lat: currentStop.location.lat,
-                  lng: currentStop.location.lng,
-                },
-              ],
-              travelMode: window.google.maps.TravelMode.WALKING,
-            },
-            (response, status) => {
-              if (status === 'OK' && response) {
-                const value = response.rows[0].elements[0].duration.text;
+          try {
+            service.getDistanceMatrix(
+              {
+                origins: [{ lat: markerPosition.lat, lng: markerPosition.lng }],
+                destinations: [
+                  {
+                    lat: currentStop.location.lat,
+                    lng: currentStop.location.lng,
+                  },
+                ],
+                travelMode: window.google.maps.TravelMode.WALKING,
+              },
+              (response, status) => {
+                if (status === 'OK' && response) {
+                  const value = response.rows[0].elements[0].duration.text;
 
-                resolve(value);
-              } else {
-                console.error('Error calculating walking distance:', status);
-                reject(status);
+                  resolve(value);
+                } else {
+                  console.error('Error calculating walking distance:', status);
+                  reject(status);
+                }
               }
-            }
-          );
+            );
+          } catch (e) {
+            console.error('Error calculating walking distance:', e);
+            reject(e);
+          }
         } else {
           reject('No current stop');
         }

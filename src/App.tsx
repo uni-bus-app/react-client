@@ -151,69 +151,63 @@ const App = () => {
   const isBigDisplay = useMediaQuery('(min-width:600px)');
 
   return (
-    <>
-      {settings.initialSetup ? (
-        <InitialStartup />
-      ) : (
-        <ThemeProvider theme={theme}>
-          <AlertComponent
-            message="Offline content downloaded"
-            alertSeverity="Success"
-            showAlert={showAlert}
-            setShowAlert={setShowAlert}
+      <ThemeProvider theme={theme}>
+        <AlertComponent
+          message="Offline content downloaded"
+          alertSeverity="Success"
+          showAlert={showAlert}
+          setShowAlert={setShowAlert}
+        />
+        <CssBaseline />
+        <UpdateSnackBar
+          updateAvailable={update.updateAvailable}
+          restarting={update.restarting}
+          restart={update.restart}
+        />
+        <Suspense fallback={<div>Loading...</div>}></Suspense>
+        <Routes>
+          <Route
+            path="/"
+            element={<Navigate to={isBigDisplay ? '/map' : '/home'} />}
           />
-          <CssBaseline />
-          <UpdateSnackBar
-            updateAvailable={update.updateAvailable}
-            restarting={update.restarting}
-            restart={update.restart}
+          <Route path="/home" element={<HomepageView stops={stops} />} />
+          <Route path="/settings" element={<SettingsView stops={stops} />} />
+          <Route
+            path="/map"
+            element={
+              <Map
+                stopMarkersEnabled={true}
+                routeOverlayEnabled={true}
+                darkModeEnabled={false /**darkMode */}
+                currentStop={currentStop}
+                onMarkerSelect={onMarkerSelect}
+                logoContainer={logoContainer}
+                stops={stops}
+                routeOverlay={routeOverlay}
+                setTimesSheetOpen={setTimesSheetOpen}
+                nextCardOpen={nextCardOpen}
+                setNextCardOpen={setNextCardOpen}
+                persistActive={persistActive}
+                setPersistActive={setPersistActive}
+                walkingTime={walkingTime}
+                setWalkingTime={setWalkingTime}
+              />
+            }
           />
-          <Suspense fallback={<div>Loading...</div>}></Suspense>
-          <Routes>
-            <Route
-              path="/"
-              element={<Navigate to={isBigDisplay ? '/map' : '/home'} />}
-            />
-            <Route path="/home" element={<HomepageView stops={stops} />} />
-            <Route path="/settings" element={<SettingsView stops={stops} />} />
-            <Route
-              path="/map"
-              element={
-                <Map
-                  stopMarkersEnabled={true}
-                  routeOverlayEnabled={true}
-                  darkModeEnabled={false /**darkMode */}
-                  currentStop={currentStop}
-                  onMarkerSelect={onMarkerSelect}
-                  logoContainer={logoContainer}
-                  stops={stops}
-                  routeOverlay={routeOverlay}
-                  setTimesSheetOpen={setTimesSheetOpen}
-                  nextCardOpen={nextCardOpen}
-                  setNextCardOpen={setNextCardOpen}
-                  persistActive={persistActive}
-                  setPersistActive={setPersistActive}
-                  walkingTime={walkingTime}
-                  setWalkingTime={setWalkingTime}
-                />
-              }
-            />
-          </Routes>
-          <NextTimesSheet
-            openNextTimesSheet={timesSheetOpen}
-            setOpenNextTimesSheet={setTimesSheetOpen}
-            stop={currentStop}
-          />
-          <Nav
-            pathName={pathName}
-            getLocation={getCurrentLocation}
-            setNextCardOpen={setNextCardOpen}
-            setPersistActive={setPersistActive}
-            persistActive={persistActive}
-          />
-        </ThemeProvider>
-      )}
-    </>
+        </Routes>
+        <NextTimesSheet
+          openNextTimesSheet={timesSheetOpen}
+          setOpenNextTimesSheet={setTimesSheetOpen}
+          stop={currentStop}
+        />
+        <Nav
+          pathName={pathName}
+          getLocation={getCurrentLocation}
+          setNextCardOpen={setNextCardOpen}
+          setPersistActive={setPersistActive}
+          persistActive={persistActive}
+        />
+      </ThemeProvider>
   );
 };
 
