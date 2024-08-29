@@ -4,8 +4,9 @@ import { Stop, Eta, Time, LatLng, Message } from '../types';
 import LocalDB from './NewLocalDB';
 import config from '../config';
 
-const db = new LocalDB();
+let db: LocalDB;
 if (process.env.NODE_ENV === 'development') {
+  db = new LocalDB();
   db.init();
 }
 
@@ -59,6 +60,7 @@ export const getTimes = async (
   date?: string
 ): Promise<Time[]> => {
   if (process.env.NODE_ENV === 'development') {
+    await db.init();
     const localTimes = await db.getTimes(stopID, date);
     if (localTimes?.length) {
       return parseTimes(localTimes);

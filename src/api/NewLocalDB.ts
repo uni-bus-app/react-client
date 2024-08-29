@@ -3,6 +3,7 @@ import { DBSchema, IDBPDatabase, openDB } from 'idb';
 import { get, set } from 'idb-keyval';
 import config from '../config';
 import { Time } from '../types';
+import { getRoutePath } from './APIUtils';
 
 const getServiceTime = (scheduled: string, currentTime: Dayjs): string => {
   return currentTime
@@ -84,9 +85,11 @@ class LocalDB {
     this._db = value;
   }
 
+  public initialised = false;
+
   constructor() {}
 
-  async init() {
+  async init(): Promise<boolean | void> {
     if (this._db) {
       return;
     }
@@ -103,7 +106,10 @@ class LocalDB {
         timesStore.createIndex('stopID', 'stopID');
       },
     });
-    await this.sync();
+    this.initialised = true;
+    try {
+      return await this.sync();
+    } catch {}
   }
 
   async generateChecksums() {
@@ -112,7 +118,7 @@ class LocalDB {
     return { stopsVersion, timesVersion };
   }
 
-  async sync() {
+  async sync(): Promise<boolean> {
     const checksums = await this.generateChecksums();
     const res = await fetch(`${config.apiURL}/sync?new_format=true`, {
       method: 'POST',
@@ -131,6 +137,9 @@ class LocalDB {
         this.db.put('times', item);
       });
     }
+    const routePath = await getRoutePath();
+    await set('u1RoutePath', routePath);
+    return data.updates;
   }
 
   async getStops() {

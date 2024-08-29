@@ -140,12 +140,14 @@ const App = () => {
   }, [location, pathName]);
 
   // Show alert for downloaded content (BETA)
-  // TODO: Delete this, it should be dynamically generated
   useEffect(() => {
-    const showAlertAfterDelay = setTimeout(() => {
-      setShowAlert(true);
-    }, 1000);
-    return () => clearTimeout(showAlertAfterDelay);
+    const channel = new BroadcastChannel('sw_channel');
+    channel.onmessage = (event) => {
+      if (event.data.type === 'sync') {
+        setShowAlert(true);
+      }
+    };
+    channel.postMessage({ action: 'sync' });
   }, []);
 
   const isBigDisplay = useMediaQuery('(min-width:600px)');
