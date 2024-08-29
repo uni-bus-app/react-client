@@ -27,6 +27,8 @@ const BottomSheet = (props: BottomSheetProps) => {
     borderRadius = 0,
   } = props;
 
+  const screenSize = window.screen.width;
+
   return disableSwipe ? (
     <Drawer anchor={'bottom'} open={open} onClose={() => setOpen(false)}>
       {children}
@@ -34,7 +36,7 @@ const BottomSheet = (props: BottomSheetProps) => {
   ) : (
     <SwipeableDrawer
       sx={{ zIndex: zIndex || 10000000000000, borderRadius: '50%' }}
-      anchor={'bottom'}
+      anchor={screenSize > 768 ? 'left' : 'bottom'}
       open={open}
       onClose={() => setOpen(false)}
       onOpen={() => setOpen(true)}
