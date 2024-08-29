@@ -67,3 +67,8 @@ export const getLocation: () => Promise<google.maps.LatLng> = () => {
     });
   });
 };
+
+export const getPixelPositionOffset = (width: number, height: number) => ({
+  x: -(width / 2),
+  y: -(height / 2),
+});

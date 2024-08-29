@@ -1,23 +1,32 @@
 .card {
   display: flex;
   flex-direction: column;
-  margin: 24px 16px 0 16px;
-  padding: 16px;
   border-radius: 12px !important;
+  width: 100%;
 }
 
-.header {
+.StopInfoheader {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  gap: 6px;
   align-items: center;
-  justify-content: center;
-  /* font-family: GoogleSans; */
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 1.3em;
+}
+
+.headerText {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
 }
 
 .details {
   width: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: center;
 }
 
 .item {
@@ -39,6 +48,4 @@ p.bodyText {
   font-smooth: antialiased;
   text-rendering: optimizeLegibility;
   text-shadow: rgba(0, 0, 0, 0.01) 0 0 1px;
-  color: gray;
-  /* font-family: GoogleSans; */
 }

@@ -7,25 +7,16 @@ jobs:
   build_and_preview:
     if: '${{ github.event.pull_request.head.repo.full_name == github.repository }}'
     runs-on: ubuntu-latest
-    env:
-      # This should be set to enabled when deploying to production
-      ANALYTICS: disabled
-      PROD_FIREBASE_CONFIG: '${{ secrets.PROD_FIREBASE_CONFIG }}'
-      DEV_FIREBASE_CONFIG: '${{ secrets.DEV_FIREBASE_CONFIG }}'
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Node.js 16
-        uses: actions/setup-node@v1
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: '16.x'
-      - name: Install dependencies
-        run: npm install
-      - name: Build
-        run: CI='' npm run build-prod
+          cache: 'npm'
+      - run: npm install
+      - run: npm run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_UNI_BUS_PROD }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_UNIBUS_APP }}'
+          target: test
           projectId: unibus-app
-        env:
-          FIREBASE_CLI_PREVIEWS: hostingchannels

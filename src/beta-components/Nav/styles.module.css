@@ -1,0 +1,166 @@
+.Nav {
+  position: absolute;
+  bottom: calc(env(safe-area-inset-bottom));
+  left: 0;
+  padding: 12px;
+  gap: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  z-index: 10000000;
+  pointer-events: none;
+}
+
+.filter {
+  position: absolute;
+  bottom: 18px;
+  left: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(50, 50, 50);
+  color: white;
+  padding: 6px;
+  box-sizing: border-box;
+  border-radius: 40px;
+  width: 60px;
+  height: 45px;
+  flex-grow: 0;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  pointer-events: all;
+}
+
+.location {
+  position: absolute;
+  bottom: 18px;
+  right: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(50, 50, 50);
+  color: white;
+  padding: 6px;
+  box-sizing: border-box;
+  border-radius: 40px;
+  width: 60px;
+  height: 45px;
+  flex-grow: 0;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  pointer-events: all;
+}
+
+.menuItems {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background-color: #f5f5f5;
+  border-radius: 40px;
+  width: 60%; /* Default width for screens smaller than a phone */
+  padding: 6px;
+  height: 60px;
+  box-sizing: border-box;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  pointer-events: all;
+}
+
+@media (min-width: 600px) {
+  /* Media query for screens bigger than a phone */
+  .menuItems {
+    width: 30%; /* Adjusted width for larger screens */
+  }
+}
+
+@media (min-width: 900px) {
+  /* Media query for screens bigger than a phone */
+  .menuItems {
+    width: 20%; /* Adjusted width for larger screens */
+  }
+}
+
+.icon {
+  width: 20px !important;
+  height: 20px !important;
+  color: rgb(183, 183, 183);
+}
+
+.iconActive {
+  transition: 0.2s;
+  color: white;
+}
+
+.selectedPill {
+  position: absolute;
+  left: 0;
+  transition: transform 0.7s;
+  background: linear-gradient(to right, rgb(133, 56, 234), rgb(189, 106, 240));
+  color: white;
+  z-index: 0;
+  padding: 6px;
+  box-sizing: border-box;
+  border-radius: 40px;
+  width: 25%;
+  height: 50px;
+  transition: 0.5s;
+}
+
+.bluePill {
+  background: linear-gradient(to right, rgb(56, 56, 234), rgb(106, 154, 240));
+}
+
+.greenPill {
+  background: linear-gradient(to right, rgb(56, 234, 56), rgb(146, 241, 146));
+}
+
+.animatedPill {
+  animation-duration: 0.3s;
+  animation-name: movement;
+  animation-timing-function: ease-in-out;
+}
+
+@keyframes movement {
+  0% {
+    width: 25%;
+  }
+  25% {
+    border-radius: 43px;
+    margin-right: 2px;
+    transform: translateX('20px');
+    width: 27%;
+    height: 35px;
+  }
+  50% {
+    border-radius: 49px;
+    margin-right: 5px;
+    width: 30%;
+    height: 35px;
+  }
+  75% {
+    border-radius: 43px;
+    margin-right: 2px;
+    width: 27%;
+    height: 35px;
+  }
+  100% {
+    width: 25%;
+  }
+}
+
+.pulse {
+  animation: pulseAnimation 1s infinite;
+}
+
+@keyframes pulseAnimation {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

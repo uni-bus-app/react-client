@@ -13,9 +13,7 @@ html {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Product Sans Regular';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   position: fixed;
@@ -59,4 +57,20 @@ code {
 
 .gm-style div {
   -webkit-transform: scale(1.002);
+}
+
+@font-face {
+  font-family: 'Product Sans Regular';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Product Sans Regular'),
+    url('./assets/fonts/ProductSans-Regular.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Product Sans Black';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Product Sans Black'),
+    url('./assets/fonts/ProductSans-Black.woff') format('woff');
 }
