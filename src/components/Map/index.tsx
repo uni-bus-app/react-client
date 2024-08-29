@@ -164,6 +164,10 @@ const Map = (props: MapProps) => {
   // Calculate walking distance
   useEffect(() => {
     const currentStopId = currentStop?.id;
+   
+    if (!currentStopId) {
+      return undefined;
+    }
 
     const calculateWalkingDistance = () => {
       return new Promise((resolve, reject) => {
