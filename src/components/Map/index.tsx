@@ -11,11 +11,12 @@ import { LatLng, Stop } from '../../types';
 import RoutePath from './components/RoutePath';
 import StopMarkers from './components/StopMarkers';
 import styles from './styles.module.css';
-import { moveLogo } from './utils';
+import { getBounds, getLocation, moveLogo } from './utils';
 import NextTimeCard from '../NextTimeCard';
 import BottomSheet from '../BottomSheet';
 import locationMarkerIcon from '../../assets/locationmarkericon.png';
 import CurrentLocation from './components/CurrentLocation';
+import LiveVehicleLocation from './components/LiveVehicleLocation';
 
 interface MapProps {
   darkModeEnabled?: boolean;
@@ -383,6 +384,10 @@ const Map = (props: MapProps) => {
             position={markerPosition}
             persistActive={persistActive}
           /> */}
+          <LiveVehicleLocation
+            darkModeEnabled={darkModeEnabled}
+            routePath={routeOverlay}
+          />
           <RoutePath
             enabled={routeOverlayEnabled}
             path={routeOverlay}
